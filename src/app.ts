@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from 'body-parser';
-
+import User_Routes from './Users/Routes/User_Routes';
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -11,10 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json())
 
-
-app.get('/', (req, res) => {
-    res.send(`Servidor Corriendo en el puerto: ${PORT}`)
-})
+app.use('/Usuarios', User_Routes)
 
 
 
