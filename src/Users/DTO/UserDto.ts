@@ -1,75 +1,88 @@
-export class CreateUser{
-    private _name: String;
-    private _lastname: String;
-    private _age: String;
-    private _number: Number;
-    private _brithDate: Date;
-    private _email: String;
-    private _password: String;
+import { devNull } from "node:os";
 
-    constructor(name: String, Lastname: String, age: String, Number: Number, brithDate: Date, email: String, password: String){
-        this._name = name;
-        this._lastname = Lastname;
-        this._age = age;
-        this._number = Number;
-        this._brithDate = brithDate;
+class Usuario {
+    private _id: number;
+    private _estadoPerfil?: string | null;
+    private _email: string;
+    private _telefono: string;
+    private _nombreCompleto: string;
+    private _descripcion: string;
+    private _fotoPerfil?: string | null;
+    private _password: string;
+
+    constructor( email: string, telefono: string, nombreCompleto: string, password: string, id: number, descripcion: string, fotoPerfil?: string, estadoPerfil?: string,) {
+        this._id = id;
+        this._estadoPerfil = estadoPerfil ?? null;
         this._email = email;
-        this._password = password;
+        this._telefono = telefono;
+        this._nombreCompleto = nombreCompleto;
+        this._descripcion = descripcion;
+        this._fotoPerfil = fotoPerfil ?? null;
+        this._password = password; 
     }
 
-    get name():  String{
-        return this._name
+    get id(): number {
+        return this._id;
     }
 
-    get Lastname():  String{
-        return this._lastname
+    get estadoPerfil(): string | null {
+        return this._estadoPerfil ?? null;
     }
 
-    get age(): String{
-        return this._age
+    get email(): string {
+        return this._email;
     }
 
-    get Number():  Number{
-        return this._number
+    get telefono(): string {
+        return this._telefono;
     }
 
-    get brithDate():  Date{
-        return this._brithDate
+    get nombreCompleto(): string {
+        return this._nombreCompleto;
     }
 
-    get email():  String{
-        return this._email
-    }
-
-    get password():  String{
-        return this._password
+    get descripcion(): string {
+        return this._descripcion;
     }
     
-    set name(value: String){
-        this._name = value
+    get fotoPerfil(): string | null {
+        return this._fotoPerfil ?? null;
+    }
+    
+
+    get password(): string {
+        return this._password;
     }
 
-    set lastname(value: String){
-        this._lastname = value
+    set estadoPerfil(value: string | null) {
+        this._estadoPerfil = value ?? null;
+    }
+    
+
+    set email(value: string) {
+        this._email = value;
     }
 
-    set Number(value: Number){
-        this._number = value
+    set telefono(value: string) {
+        this._telefono = value;
     }
 
-    set brithDate(value: Date){
-        this._brithDate = value
+    set nombreCompleto(value: string) {
+        this._nombreCompleto = value;
     }
 
-    set email(value: String){
-        this._email = value
+    set descripcion(value: string) {
+        this._descripcion = value;
     }
 
-    set password(value: String){
+    set fotoPerfil(value: string | null) {
+        this._fotoPerfil = value ?? null;
+    }
+
+    set password(value: string){
         this._password = value
     }
-
     
 }
 
-export default CreateUser;
+export default Usuario;

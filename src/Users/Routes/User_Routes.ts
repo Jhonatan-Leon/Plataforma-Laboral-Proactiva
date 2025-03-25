@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { Users, getUsers } from "../controllers/ControllersUser";
+import register from "../controllers/ControllersUser";
 import { ValidatorUser } from "../Middleware/ValidaterUser";
 
 const router = Router();
 
-router.post('/users', ValidatorUser, Users);
+router.post('/RegisterUser', ValidatorUser, register);
 
-router.get('/getUsers', getUsers);
+ // router.get('/getUsers', );
 
 export default router;
