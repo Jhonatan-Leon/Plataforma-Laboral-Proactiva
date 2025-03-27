@@ -1,29 +1,53 @@
 import { Request, Response } from "express";
-import Usuario from "../DTO/UserDto";
 import UserService from "../Services/UserServices";
+import Usuario from "../DTO/UserDto"; 
+import { ContratanteDTO, ContratistaDTO } from "../DTO/tiposUsuario";
 
+let register = async (req: Request, res: Response) => {
+    try {
+        const {
+            id,
+            nombreCompleto,
+            email,
+            telefono,
+            password,
+            descripcion,
+            fotoPerfil,
+            estadoPerfil,
+            tipo_usuario,
+            NIT,
+            cedula,
+            categoria_trabajo,
+            hojaDeVida
+        } = req.body;
 
-let  register  = async (req: Request, res: Response) =>   {
-        try {
-            const {
-                nombreCompleto,
-                email,
-                telefono,
-                password,
-                estadoPerfil,
-                descripcion,
-                fotoPerfil
-            } = req.body;
-            
-            console.log("varibles", email, telefono, nombreCompleto, password, estadoPerfil, descripcion, fotoPerfil);
+        console.log(`Variables recibidas: Id: ${id} nombre: ${nombreCompleto}, email: ${email}, telefono: ${telefono}, password: ${password} ,
+            descripcion: ${descripcion}, fotoPerfil: ${fotoPerfil}, tipo_usuario: ${tipo_usuario}, NIT: ${NIT}, cedula: ${cedula}, categoriaTrabajo: ${categoria_trabajo}, hojaDeVida: ${hojaDeVida}`);
+        
+            const User = await  UserService.registerUser(new Usuario( nombreCompleto, email, telefono, password,descripcion, fotoPerfil, estadoPerfil, tipo_usuario));
 
-            const usuario =  await UserService.registerUser(new Usuario( email, telefono, nombreCompleto, password, estadoPerfil, descripcion, fotoPerfil));
-            res.status(200).json({message: "Usuario registrado"})
-        } catch (error: any) {
-            res.status(500).json({ error: error.message });
+        console.log("id: ",User)
+
+        let usuarioFinal: ContratanteDTO | ContratistaDTO;
+
+        if (tipo_usuario === "Contratante" && NIT) {
+           usuarioFinal = new ContratanteDTO(User, NIT);
+           await UserService.registerContratante(usuarioFinal);
+        } 
+        else if (tipo_usuario === "Contratista" && cedula && categoria_trabajo) {
+            usuarioFinal = new ContratistaDTO(User, cedula, categoria_trabajo, hojaDeVida);
+             await UserService.registerContratista(usuarioFinal);
+        } 
+        else {
+            throw new Error("Datos insuficientes para registrar un Contratante o Contratista");
         }
-    }
 
+        res.status(201).json({ message: "Usuario registrado con éxito", usuario: usuarioFinal });
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+};
 
 export default register;
 

@@ -1,32 +1,34 @@
-import { devNull } from "node:os";
+
 
 class Usuario {
-    private _id: number;
-    private _estadoPerfil?: string | null;
+    private _Id?: Number;
+    private _nombreCompleto: string;
     private _email: string;
     private _telefono: string;
-    private _nombreCompleto: string;
-    private _descripcion: string;
-    private _fotoPerfil?: string | null;
     private _password: string;
+    private _descripcion: string;
+    private _fotoPerfil: string | null;
+    private _estadoPerfil: "activo" | "inactivo" = "activo";
+    private _tipoUsuario: "Contratante" | "Contratista";
 
-    constructor( email: string, telefono: string, nombreCompleto: string, password: string, id: number, descripcion: string, fotoPerfil?: string, estadoPerfil?: string,) {
-        this._id = id;
-        this._estadoPerfil = estadoPerfil ?? null;
+    constructor( nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | null, estadoPerfil: "activo" | "inactivo",  tipoUsuario: "Contratante" | "Contratista", id?: number) { 
+        this._Id = id;
+        this._nombreCompleto = nombreCompleto;
         this._email = email;
         this._telefono = telefono;
-        this._nombreCompleto = nombreCompleto;
+        this._password = password;
         this._descripcion = descripcion;
         this._fotoPerfil = fotoPerfil ?? null;
-        this._password = password; 
+        this._estadoPerfil = estadoPerfil;
+        this._tipoUsuario = tipoUsuario;
     }
 
-    get id(): number {
-        return this._id;
+    get id():Number | undefined {
+        return this._Id;
     }
 
-    get estadoPerfil(): string | null {
-        return this._estadoPerfil ?? null;
+    get estadoPerfil(): "activo" | "inactivo" {
+        return this._estadoPerfil;
     }
 
     get email(): string {
@@ -44,20 +46,23 @@ class Usuario {
     get descripcion(): string {
         return this._descripcion;
     }
-    
+
     get fotoPerfil(): string | null {
-        return this._fotoPerfil ?? null;
+        return this._fotoPerfil;
     }
-    
 
     get password(): string {
         return this._password;
     }
 
-    set estadoPerfil(value: string | null) {
-        this._estadoPerfil = value ?? null;
+    get tipoUsuario(): "Contratante" | "Contratista" {
+        return this._tipoUsuario;
     }
     
+
+    set estadoPerfil(value: "activo" | "inactivo") {
+        this._estadoPerfil = value;
+    }
 
     set email(value: string) {
         this._email = value;
@@ -79,10 +84,14 @@ class Usuario {
         this._fotoPerfil = value ?? null;
     }
 
-    set password(value: string){
-        this._password = value
+    set password(value: string) {
+        this._password = value;
     }
-    
+
+    set tipoUsuario(value: "Contratante" | "Contratista") {
+        this._tipoUsuario = value;
+    }
 }
+
 
 export default Usuario;

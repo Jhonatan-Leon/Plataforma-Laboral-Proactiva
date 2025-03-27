@@ -1,41 +1,54 @@
-import Usuario from "./UserDto";
+import Usuario from "../DTO/UserDto";
 
-class ContratanteDTO extends Usuario {
-    private NIT: String;
+class ContratanteDTO {
+    private _usuarioId: number;
+    private _NIT: string;
 
-    constructor(data: Omit<ContratanteDTO, "id">, NIT: String) {
-        super(
-            data.email,
-            data.telefono,
-            data.nombreCompleto,
-            data.password,
-            0,
-            data.descripcion,
-            data.fotoPerfil ?? undefined,
-            data.estadoPerfil ?? undefined
-        );
-        this.NIT = NIT;
+    constructor(usuarioId: number, NIT: string) {
+        this._usuarioId = usuarioId;
+        this._NIT = NIT;
+    }
+
+    get usuarioId(): number {
+        return this._usuarioId;
+    }
+
+    get NIT(): string {
+        return this._NIT;
     }
 }
 
-class ContratistaDTO extends Usuario {
-    private hojaDeVida: String;
-    private categoriaTrabajo: String;
+class ContratistaDTO {
+    private _usuarioId: number;
+    private _cedula: string;
+    private _hojaDeVida: string | null;
+    private _categoriaTrabajo: string;
 
-    constructor(data: Omit<ContratistaDTO, "id">, hojaDevida: String, categoriaTrabajo: String) {
-        super(
-            data.email,
-            data.telefono,
-            data.nombreCompleto,
-            data.password,
-            0, 
-            data.descripcion,
-            data.fotoPerfil ?? undefined,
-            data.estadoPerfil ?? undefined
-        );
-        this.hojaDeVida = hojaDevida;
-        this.categoriaTrabajo = categoriaTrabajo;
+    constructor(usuarioId: number, cedula: string, categoriaTrabajo: string, hojaDeVida: string | null) {
+        this._usuarioId = usuarioId;
+        this._cedula = cedula;
+        this._hojaDeVida = hojaDeVida;
+        this._categoriaTrabajo = categoriaTrabajo;
+    }
+
+    get usuarioId(): number {
+        return this._usuarioId;
+    }
+
+    get cedula(): string {
+        return this._cedula;
+    }
+
+    get hojaDeVida(): string | null {
+        return this._hojaDeVida;
+    }
+
+    get categoriaTrabajo(): string {
+        return this._categoriaTrabajo;
     }
 }
+
+
+
 
 export { ContratanteDTO, ContratistaDTO };
