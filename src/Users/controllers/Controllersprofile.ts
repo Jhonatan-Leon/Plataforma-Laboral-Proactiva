@@ -4,14 +4,16 @@ import UserService from "../Services/UserServices";
 let profile = async (req: Request, res: Response) => {
   try {    
     const idUser = req.body.id;
+    const estado = req.body.estado_perfil;
     res.status(200).json(
-      { status: 'Get profile Ok', id: idUser }
+      { status: 'Get profile Ok', id: idUser, estado_perfil: estado }
     );
   } catch (error: any) {
     res.status(500).json({ errorInfo: "An unknown error has occurred" }
     );
   }
 }
+
 
 let deactivateUser = async (req: Request, res: Response) => {
     try {

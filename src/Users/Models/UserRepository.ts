@@ -48,21 +48,39 @@ class UserRepository {
 
 
     static async login(auth: Auth) {
-      const sql = 'SELECT id_usuario, password FROM usuarios WHERE email = ?';
-      const values = [auth.email];
-      const result: any = await db.execute(sql, values);
+      try {
+          const sql = 'SELECT id_usuario, estado_perfil, password FROM usuarios WHERE email = ?';
+          const values = [auth.email];
+          const rows: any = await db.execute(sql, values);
   
-      if (!result[0] || result[0].length === 0) {
-          return { logged: false, status: "Correo o Contraseña incorrectos" };
+          if (!rows || rows.length === 0) {
+              return { logged: false, status: "Correo o Contraseña incorrectos" };
+          }
+  
+          const user = rows[0][0];
+  
+          if (user.estado_perfil === "inactivo") {
+              return { logged: false, status: "Cuenta inactiva. Contacte al soporte." };
+          }
+  
+          const isPasswordValid = await bcrypt.compare(auth.password, user.password);
+          if (!isPasswordValid) {
+              return { logged: false, status: "Correo o Contraseña incorrectos" };
+          }
+  
+          return { 
+              logged: true, 
+              status: "Autenticación válida", 
+              id: user.id_usuario,  
+              estado_perfil: user.estado_perfil 
+          };
+  
+      } catch (error) {
+          console.error("Error en el login:", error);
+          return { logged: false, status: "Error interno del servidor" };
       }
-  
-      const isPasswordValid = await bcrypt.compare(auth.password, result[0][0].password);
-      if (isPasswordValid) {
-          return { logged: true, status: "Autenticación válida", id: result[0][0].id_usuario };
-      }
-  
-      return { logged: false, status: "Correo o Contraseña incorrectos" };
   }
+  
   
 
     static async getUserById(Id: string){
