@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const ControllersUser_1 = __importDefault(require("../controllers/ControllersUser"));
+const ValidaterUser_1 = require("../Middleware/ValidaterUser");
+const ValidaterOpcional_1 = require("../Middleware/ValidaterOpcional");
+const GetControllers_1 = require("../controllers/GetControllers");
+const updateControllers_1 = require("../controllers/updateControllers");
+const validatorupdate_1 = __importDefault(require("../Middleware/validatorupdate"));
+const Controllersdelete_1 = require("../controllers/Controllersdelete");
+const router = (0, express_1.Router)();
+router.post('/RegisterUser', ValidaterUser_1.ValidatorUser, ValidaterOpcional_1.ValidatorOpcional, ControllersUser_1.default);
+router.get('/getUser/:id', GetControllers_1.getUserById);
+router.get('/getRol/:tipo_usuario', GetControllers_1.getByRol);
+router.put('/updateUser/:email', validatorupdate_1.default.validatorEmail, validatorupdate_1.default.validateUpdateUser, updateControllers_1.updateUser);
+router.delete('/deleteUser/:email', Controllersdelete_1.deleteUserByEmail);
+exports.default = router;

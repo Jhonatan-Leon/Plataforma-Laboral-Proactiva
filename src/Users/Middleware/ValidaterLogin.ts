@@ -5,6 +5,8 @@ import { NextFunction, Request, Response } from "express";
 const validatorParams = async (req: Request, res: Response, next: NextFunction) => {
     const {email, password } = req.body;
 
+    console.log(email, password)
+
     if(!email || !password){
         res.status(400).json({ message: 'Todos los datos son requeridos' });
         return;

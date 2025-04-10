@@ -3,6 +3,7 @@ import User_Routes from './Users/Routes/User_Routes';
 import dotenv from "dotenv";
 import Login_Routes from "./Users/Routes/Login_Routes"
 import profileUser from "./Users/Routes/profileUser";
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -10,6 +11,7 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+app.use(cookieParser());
 app.use(express.json())
 
 app.use('/Users', User_Routes);

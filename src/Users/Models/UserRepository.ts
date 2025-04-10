@@ -49,7 +49,7 @@ class UserRepository {
 
     static async login(auth: Auth) {
       try {
-          const sql = 'SELECT id_usuario, estado_perfil, password FROM usuarios WHERE email = ?';
+          const sql = 'SELECT id_usuario, estado_perfil, tipo_usuario, password FROM usuarios WHERE email = ?';
           const values = [auth.email];
           const rows: any = await db.execute(sql, values);
   
@@ -72,7 +72,8 @@ class UserRepository {
               logged: true, 
               status: "Autenticación válida", 
               id: user.id_usuario,  
-              estado_perfil: user.estado_perfil 
+              estado_perfil: user.estado_perfil,
+              rol: user.tipo_usuario
           };
   
       } catch (error) {

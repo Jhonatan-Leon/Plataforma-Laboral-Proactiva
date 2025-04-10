@@ -19,23 +19,45 @@ let loginUser = async (req: Request, res: Response) => {
         }
 
         const secretKey = process.env.KEY_TOKEN;
-        if (!secretKey) {
-            throw new Error("KEY_TOKEN no está definido");
+        const refreshSecret = process.env.REFRESH_KEY_TOKEN;
+        if (!secretKey || !refreshSecret) {
+            throw new Error("Las claves KEY_TOKEN o REFRESH_KEY_TOKEN no están definidas");
         }
+
+        const accessToken = generateToken(
+            { id: login.id, estado_perfil: login.estado_perfil, rol: login.rol }, 
+            secretKey, 
+            5
+        );
+
+        // Refresh por 7 dias
+        const refreshToken = generateToken(
+             {id: login.id, estado_perfil: login.estado_perfil, rol: login.rol} , 
+            refreshSecret, 
+            7 * 24 * 60 
+        );
+
+        // Guardar refreshToken en cookie
+        res.cookie("refreshToken", refreshToken, { 
+            httpOnly: true,  
+            secure: false,    
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+           
+        });
+
+        console.log("NODE_ENV:", process.env.NODE_ENV)
 
         res.status(200).json({  
             status: login.status,
-            token: generateToken({ id: login.id, estado_perfil: login.estado_perfil }, secretKey, 5),
+            token: accessToken
         });
-        return;
 
     } catch (error: any) {
         console.error(error);
         res.status(500).json({ error: "Error en el servidor" });
-        return;
     }
 };
-
 
 
 
