@@ -2,20 +2,21 @@ import { Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import generateToken from "../Helpers/generateTokens";
 
-export const refreshToken = (req: Request, res: Response) => {
+const refreshToken = (req: Request, res: Response) => {
     try {
         const refreshSecret = process.env.REFRESH_KEY_TOKEN;
         if (!refreshSecret) {
             throw new Error("REFRESH_KEY_TOKEN no está definido");
         }
 
-        const refreshToken = req.cookies.refreshToken;
+        console.log("Cookies recibidas: ", req.cookies); 
 
-        console.log("Refresh Token desde la cookie:", req.cookies);
+        const refreshToken = req.cookies.refreshToken;
 
 
         if (!refreshToken) {
             res.status(403).json({ error: "No autorizado" });
+            return;
         }
 
         try {
@@ -32,6 +33,7 @@ export const refreshToken = (req: Request, res: Response) => {
             );
             
             res.status(200).json({ token: newAccessToken, cookie: req.cookies });
+            return;
         } catch (err) {
             res.status(403).json({ error: "Token inválido o expirado" });
         }

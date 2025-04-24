@@ -8,7 +8,7 @@ import verifyToken from "../Middleware/Verifytoken";
 const router = Router();
 
 router.post('/login_user', ValidaterLogin.validatorParams , ValidaterLogin.validator, loginUser)
-router.post('/refresh', verifyToken , refreshToken)
+router.post('/refresh',  refreshToken)
 
 
 export default router;

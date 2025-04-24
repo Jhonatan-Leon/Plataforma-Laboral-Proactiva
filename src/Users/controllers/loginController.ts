@@ -27,7 +27,7 @@ let loginUser = async (req: Request, res: Response) => {
         const accessToken = generateToken(
             { id: login.id, estado_perfil: login.estado_perfil, rol: login.rol }, 
             secretKey, 
-            5
+            1
         );
 
         // Refresh por 7 dias
@@ -43,6 +43,8 @@ let loginUser = async (req: Request, res: Response) => {
             secure: false,    
             sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000,
+            domain: "localhost",
+            path: '/refresh'
            
         });
 
