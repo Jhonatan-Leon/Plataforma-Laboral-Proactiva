@@ -4,7 +4,7 @@ Se encontró que muchas personas se enfrentan con dificultades para encontrar op
 
 Para enfrentar esta necesidad, se propone desarrollar un software que funcione como plataforma integral para la búsqueda de empleos y la realización de tareas importantes pero no prioritarias para las personas. El software actuará como un intermediario entre trabajadores independientes con empleadores que necesiten servicios específicos, y al mismo tiempo ofreciendo una solución para las tareas que a menudo se pasan por alto.
 
-## Estructura de las carpetas a manejar MVC
+## Estructura de las carpetas a manejar
 ## Dentro de src/:
   - ### Nombre modulo
     - Controllers
