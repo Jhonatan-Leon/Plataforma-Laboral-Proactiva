@@ -32,18 +32,50 @@ class UserRepository {
     } 
 
     static async addContratante(User: ContratanteDTO) {
-      const sql = `INSERT INTO Contratantes (id_contratate, NIT) VALUES (?, ?)`;
-      const values = [User.usuarioId, User.NIT];
-      console.log(values);
 
-      return await db.execute(sql, values);
+      if(User.estadoPerfil == "activo"){
+        const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, password, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
+        const [rows]: any = await db.execute(sql, values)
+        if(rows.affectedRows > 0){
+          try{
+            let Id = rows.insertId;
+            const sql = `INSERT INTO Contratantes (id_contratate, NIT) VALUES (?, ?)`;
+            const values = [Id, User.NIT];
+            console.log(values);
+            return await db.execute(sql, values);
+          }catch(err){
+            console.log("Error al ingresar usuario contratante ", err)
+            throw err;
+          }
+        } else {
+           console.log("No se realizo ningun cambio")
+        }
+      }
     }
 
     static async addContratista(User: ContratistaDTO) {
-      const sql = `INSERT INTO Contratistas (id_contratista, cedula, categoria_trabajo, hoja_vida) VALUES (?, ?, ?, ?)`;
-      const values = [User.usuarioId, User.cedula, User.categoriaTrabajo, User.hojaDeVida];
 
-      return await db.execute(sql, values);
+      if(User.estadoPerfil == "activo"){
+        const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, password, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
+        const [rows]: any = await db.execute(sql, values)
+        if(rows.affectedRows > 0){
+          try{
+            const Id = rows.insertId;
+            const sql = `INSERT INTO Contratistas (id_contratista, cedula, categoria_trabajo, hoja_vida) VALUES (?, ?, ?, ?)`;
+            const values = [Id, User.cedula, User.categoriaTrabajo, User.hojaDeVida];
+            return await db.execute(sql, values);
+          }catch(err) {
+            console.log("Error al ingresar usuario Contratista", err)
+            throw err;
+          }
+          
+        } else {
+           console.log("No se realizo ningun cambio")
+        }
+      }
+    
     }
 
 
@@ -190,7 +222,7 @@ class UserRepository {
   static async updateContratante(dataUpdate: ContratanteDTO){
     try{
       const put = `UPDATE contratantes SET NIT = COALESCE(?, NIT) WHERE id_contratante = ?;`
-      const values = [dataUpdate.NIT, dataUpdate.usuarioId];
+      const values = [dataUpdate.NIT, dataUpdate.id];
 
       const [rows]: any = await db.execute(put, values);
       return rows
@@ -204,7 +236,7 @@ class UserRepository {
     try{
       const put = `UPDATE contratistas SET cedula = COALESCE(?, cedula), categoria_trabajo = COALESCE(?, categoria_trabajo), hoja_vida = COALESCE(?, hoja_vida) WHERE id_contratista = ?;;`
       
-      const values = [dataUpdate.cedula, dataUpdate.categoriaTrabajo, dataUpdate.hojaDeVida, dataUpdate.usuarioId];
+      const values = [dataUpdate.cedula, dataUpdate.categoriaTrabajo, dataUpdate.hojaDeVida, dataUpdate.id];
 
       const [rows]: any = await db.execute(put, values);
       return rows
@@ -219,6 +251,14 @@ class UserRepository {
     const values = [email];
 
     return await db.execute(userdelete, values);
+  }
+
+  // Proximo integración con coockies
+  static async deleUser(id: Number){
+    const userDelete = `Delete From usuarios where id = ?`;
+    const values = [id];
+
+    return await db.execute(userDelete, values)
   }
 
   static async desactivarUser(idUser: string){

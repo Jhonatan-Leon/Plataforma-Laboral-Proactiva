@@ -1,15 +1,15 @@
 
 
-class Usuario {
-    private _Id?: Number;
-    private _nombreCompleto: string;
-    private _email: string;
-    private _telefono: string;
-    private _password: string;
-    private _descripcion: string;
-    private _fotoPerfil: string | null;
-    private _estadoPerfil: "activo" | "inactivo" = "activo";
-    private _tipoUsuario: "Contratante" | "Contratista";
+abstract class Usuario {
+    protected _Id?: Number;
+    protected _nombreCompleto: string;
+    protected _email: string;
+    protected _telefono: string;
+    protected _password: string;
+    protected _descripcion: string;
+    protected _fotoPerfil: string | null;
+    protected _estadoPerfil: "activo" | "inactivo" = "activo";
+    protected _tipoUsuario: "Contratante" | "Contratista";
 
     constructor( nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | null, estadoPerfil: "activo" | "inactivo",  tipoUsuario: "Contratante" | "Contratista", id?: number) { 
         this._Id = id;

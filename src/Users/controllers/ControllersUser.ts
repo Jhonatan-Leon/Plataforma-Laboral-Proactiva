@@ -24,18 +24,16 @@ let register = async (req: Request, res: Response) => {
         console.log(`Variables recibidas: Id: ${id} nombre: ${nombreCompleto}, email: ${email}, telefono: ${telefono}, password: ${password} ,
             descripcion: ${descripcion}, fotoPerfil: ${fotoPerfil}, tipo_usuario: ${tipo_usuario}, NIT: ${NIT}, cedula: ${cedula}, categoriaTrabajo: ${categoria_trabajo}, hojaDeVida: ${hojaDeVida}`);
         
-            const User = await  UserService.registerUser(new Usuario( nombreCompleto, email, telefono, password,descripcion, fotoPerfil, estadoPerfil, tipo_usuario));
-
-        console.log("id: ",User)
+            //const User = await  UserService.registerUser(new Usuario( nombreCompleto, email, telefono, password,descripcion, fotoPerfil, estadoPerfil, tipo_usuario));
 
         let usuarioFinal: ContratanteDTO | ContratistaDTO;
 
         if (tipo_usuario === "Contratante" && NIT) {
-           usuarioFinal = new ContratanteDTO(User, NIT);
+           usuarioFinal = new ContratanteDTO(NIT, nombreCompleto, email, telefono, password,descripcion, fotoPerfil, estadoPerfil, tipo_usuario);
            await UserService.registerContratante(usuarioFinal);
         } 
         else if (tipo_usuario === "Contratista" && cedula && categoria_trabajo) {
-            usuarioFinal = new ContratistaDTO(User, cedula, categoria_trabajo, hojaDeVida);
+            usuarioFinal = new ContratistaDTO(cedula, categoria_trabajo, hojaDeVida, nombreCompleto, email, telefono, password,descripcion, fotoPerfil, estadoPerfil, tipo_usuario);
              await UserService.registerContratista(usuarioFinal);
         } 
         else {

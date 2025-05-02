@@ -47,11 +47,11 @@ let updateUser = async (req: Request, res: Response) => {
         let usuarioFinal: ContratanteDTO | ContratistaDTO | null = null;
         
         if (tipo_usuario === "Contratante" && NIT) {
-            usuarioFinal = new ContratanteDTO(user.id_usuario, NIT ?? user.NIT);
+            usuarioFinal = new ContratanteDTO( NIT ?? user.NIT, user.nombre_usuario, user.email, user.telefono, user.password, user.descripcion, user.fotoPerfil, user.estadoPerfil, user.tipo_usuario, user.id);
             await UserService.updateContratante(usuarioFinal);
         } 
         else if (tipo_usuario === "Contratista" && (cedula || categoria_trabajo || hojaDeVida)) {
-            usuarioFinal = new ContratistaDTO(user.id_usuario, cedula ?? user.cedula, categoria_trabajo ?? user.categoria_trabajo, hojaDeVida ?? user.hojaDeVida);
+            usuarioFinal = new ContratistaDTO(cedula ?? user.cedula, categoria_trabajo ?? user.categoria_trabajo, hojaDeVida ?? user.hojaDeVida, user.nombre_usuario, user.email, user.telefono, user.password, user.descripcion, user.fotoPerfil, user.estadoPerfil, user.tipo_usuario, user.id);
             await UserService.updateContratista(usuarioFinal);
         }
         

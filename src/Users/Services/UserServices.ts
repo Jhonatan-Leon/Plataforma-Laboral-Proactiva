@@ -6,10 +6,12 @@ import Auth from "../DTO/AuthDTO";
 
 class UserService {
 
+    /*
     static async registerUser(user: Usuario) {
         user.password = await generateHash(user.password);
         return await UserRepository.add(user);
     }
+    */
 
 
     static async registerContratante (User: ContratanteDTO){
