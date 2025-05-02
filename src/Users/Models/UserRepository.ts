@@ -7,7 +7,7 @@ import Auth from "../DTO/AuthDTO";
 class UserRepository {
 
 
-    // Agregar usuario
+    /*
     static async add(User: Usuario){
 
       if (!User.estadoPerfil) {
@@ -30,7 +30,7 @@ class UserRepository {
       }
   
     } 
-
+    */
     static async addContratante(User: ContratanteDTO) {
 
       if(User.estadoPerfil == "activo"){

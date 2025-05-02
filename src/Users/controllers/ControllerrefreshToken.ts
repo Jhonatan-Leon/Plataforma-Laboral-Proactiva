@@ -2,46 +2,46 @@ import { Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import generateToken from "../Helpers/generateTokens";
 
-const refreshToken = (req: Request, res: Response) => {
+const refreshToken = async (req: Request, res: Response) => {
+    const token = req.cookies.refreshToken;
     try {
         const refreshSecret = process.env.REFRESH_KEY_TOKEN;
-        if (!refreshSecret) {
-            throw new Error("REFRESH_KEY_TOKEN no está definido");
+        const accessSecret = process.env.KEY_TOKEN;
+
+        if (!refreshSecret || !accessSecret) {
+            throw new Error("Claves JWT no definidas");
         }
 
-        console.log("Cookies recibidas: ", req.cookies); 
-
-        const refreshToken = req.cookies.refreshToken;
-
-
-        if (!refreshToken) {
-            res.status(403).json({ error: "No autorizado" });
-            return;
+        if (!token) {
+            return res.status(403).json({ error: "No autorizado: refresh token no encontrado" });
         }
 
-        try {
-            const decoded = jwt.verify(refreshToken, refreshSecret) as  JwtPayload ;
-            const secretKey = process.env.KEY_TOKEN;
-            if (!secretKey) {
-                throw new Error("KEY_TOKEN no está definido");
-            }
-            
-            const newAccessToken = generateToken(
-                { id: decoded.data.id, estado_perfil: decoded.data.estado_perfil, rol: decoded.data.rol }, 
-                secretKey, 
-                5
-            );
-            
-            res.status(200).json({ token: newAccessToken, cookie: req.cookies });
-            return;
-        } catch (err) {
-            res.status(403).json({ error: "Token inválido o expirado" });
-        }
+        // Verificar token
+        const decoded = jwt.verify(token, refreshSecret) as JwtPayload;
+        
+        // Forma de firma
+        const payload = (decoded as any).data ?? decoded;
+
+        const newAccessToken = generateToken(
+            {
+                id: payload.id,
+                estado_perfil: payload.estado_perfil,
+                rol: payload.rol
+            },
+            accessSecret,
+            15 
+        );
+
+        return res.status(200).json({ token: newAccessToken });
+
     } catch (error: any) {
-        console.error(error);
-            res.status(500).json({ error: "Error en el servidor" });
+        console.error("Error en refreshToken:", error);
+        return res.status(403).json({ error: "Token inválido o expirado" });
     }
 };
+
+
+
 
 export default refreshToken;
 
