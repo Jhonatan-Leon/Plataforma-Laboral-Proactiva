@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev":"ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,10 +13,16 @@
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "gridfs-stream": "^1.1.1",
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.14.1",
+    "multer": "^1.4.4",
+    "multer-gridfs-storage": "^5.0.2",
     "ts-node-dev": "^2.0.0"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0",
+    "@types/express": "^5.0.1",
+    "@types/multer": "^1.4.12",
     "@types/node": "^22.13.10",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
