@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import Login_Routes from "./Users/Routes/Login_Routes"
 import profileUser from "./Users/Routes/profileUser";
 import cookieParser from 'cookie-parser';
+import RegisterComent from "../src/Comentarios/Routes/RegisterComent"
 
 
 dotenv.config();
@@ -21,7 +22,7 @@ app.use('/Users', User_Routes);
 app.use('/login', Login_Routes);
 app.use('/Profile', profileUser);
 app.use('/vacant', Register)
-
+app.use('/coment', RegisterComent)
 
 app.listen(PORT, () => {
   console.log(`Servidor ejecutándose en: http://localhost:${PORT}`);
