@@ -1,4 +1,4 @@
-import db from "../config/config-db";
+import db from "../../Config/config-db";
 import Comentario from "../Dto/ComentarioDto";
 import codDto from "../Dto/IdDto";
 

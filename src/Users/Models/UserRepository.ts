@@ -1,5 +1,5 @@
 import Usuario from "../DTO/UserDto";
-import db from "../Config/config-db";
+import db from "../../Config/config-db";
 import { ContratanteDTO, ContratistaDTO } from "../DTO/tiposUsuario";
 import bcrypt from 'bcryptjs'
 import Auth from "../DTO/AuthDTO";
@@ -36,14 +36,14 @@ class UserRepository {
       if(User.estadoPerfil == "activo"){
         const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, password, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
         const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
-        const [rows]: any = await db.execute(sql, values)
+        const [rows]: any = await db.query(sql, values)
         if(rows.affectedRows > 0){
           try{
             let Id = rows.insertId;
             const sql = `INSERT INTO Contratantes (id_contratate, NIT) VALUES (?, ?)`;
             const values = [Id, User.NIT];
             console.log(values);
-            return await db.execute(sql, values);
+            return await db.query(sql, values);
           }catch(err){
             console.log("Error al ingresar usuario contratante ", err)
             throw err;
@@ -59,13 +59,13 @@ class UserRepository {
       if(User.estadoPerfil == "activo"){
         const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, password, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
         const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
-        const [rows]: any = await db.execute(sql, values)
+        const [rows]: any = await db.query(sql, values)
         if(rows.affectedRows > 0){
           try{
             const Id = rows.insertId;
             const sql = `INSERT INTO Contratistas (id_contratista, cedula, categoria_trabajo, hoja_vida) VALUES (?, ?, ?, ?)`;
             const values = [Id, User.cedula, User.categoriaTrabajo, User.hojaDeVida];
-            return await db.execute(sql, values);
+            return await db.query(sql, values);
           }catch(err) {
             console.log("Error al ingresar usuario Contratista", err)
             throw err;
@@ -83,7 +83,7 @@ class UserRepository {
       try {
           const sql = 'SELECT id_usuario, estado_perfil, tipo_usuario, password FROM usuarios WHERE email = ?';
           const values = [auth.email];
-          const rows: any = await db.execute(sql, values);
+          const rows: any = await db.query(sql, values);
   
           if (!rows || rows.length === 0) {
               return { logged: false, status: "Correo o Contraseña incorrectos" };
@@ -122,7 +122,7 @@ class UserRepository {
           LEFT JOIN contratantes c ON u.id_usuario = c.id_contratante AND u.tipo_usuario = 'contratante' LEFT JOIN contratistas t ON u.id_usuario = t.id_contratista AND u.tipo_usuario = 'contratista'
           WHERE u.id_usuario = ?;`;
 
-        const [rows]: any = await db.execute(query, [Id]);
+        const [rows]: any = await db.query(query, [Id]);
 
         if (rows.length === 0) return null;
 
@@ -155,7 +155,7 @@ class UserRepository {
       
         console.log(values)
 
-        const [rows]: any = await db.execute(query, values);
+        const [rows]: any = await db.query(query, values);
 
         if(rows.length === 0) return null
 
@@ -186,7 +186,7 @@ class UserRepository {
                 t.cedula AS contratista_cedula, t.categoria_trabajo, t.hoja_vida FROM usuarios u LEFT JOIN contratantes c ON u.id_usuario = c.id_contratante LEFT JOIN contratistas t ON u.id_usuario = t.id_contratista
                 WHERE u.email = ?;`;
   
-          const [rows]: any = await db.execute(query, [email]);
+          const [rows]: any = await db.query(query, [email]);
   
           if (rows.length === 0) return null;
   
@@ -206,7 +206,7 @@ class UserRepository {
       const put = `UPDATE usuarios SET nombre_usuario = COALESCE(?, nombre_usuario), telefono = COALESCE(?, telefono), password = COALESCE(?, password), descripcion_usuario = COALESCE(?, descripcion_usuario),
             foto_perfil = COALESCE(?, foto_perfil), estado_perfil = COALESCE(?, estado_perfil), tipo_usuario = COALESCE(?, tipo_usuario) WHERE email = ?;`
       const values = [user.nombre_usuario, user.telefono, user.password, user.descripcion_usuario, user.foto_perfil, user.estado_perfil, user.tipo_usuario, email]
-       const [rows]: any = await db.execute(put, values)
+       const [rows]: any = await db.query(put, values)
        if (rows.affectedRows === 0) {
         return { message: "No se realizaron cambios o el usuario no existe." };
       }
@@ -224,7 +224,7 @@ class UserRepository {
       const put = `UPDATE contratantes SET NIT = COALESCE(?, NIT) WHERE id_contratante = ?;`
       const values = [dataUpdate.NIT, dataUpdate.id];
 
-      const [rows]: any = await db.execute(put, values);
+      const [rows]: any = await db.query(put, values);
       return rows
     }catch(err: any){
       console.error("Error al actualizar datos: ",err)
@@ -238,7 +238,7 @@ class UserRepository {
       
       const values = [dataUpdate.cedula, dataUpdate.categoriaTrabajo, dataUpdate.hojaDeVida, dataUpdate.id];
 
-      const [rows]: any = await db.execute(put, values);
+      const [rows]: any = await db.query(put, values);
       return rows
     }catch(err: any){
       console.error("Error al actualizar datos: ",err)
@@ -250,7 +250,7 @@ class UserRepository {
     const userdelete = `DELETE FROM usuarios WHERE email = ?`;
     const values = [email];
 
-    return await db.execute(userdelete, values);
+    return await db.query(userdelete, values);
   }
 
   // Proximo integración con coockies
@@ -258,14 +258,14 @@ class UserRepository {
     const userDelete = `Delete From usuarios where id = ?`;
     const values = [id];
 
-    return await db.execute(userDelete, values)
+    return await db.query(userDelete, values)
   }
 
   static async desactivarUser(idUser: string){
     const userdesactivar = `UPDATE usuarios SET estado_perfil = 'inactivo' WHERE id_usuario = ? AND estado_perfil != 'inactivo'`;
     const values = [idUser]
 
-    const [rows]:any = await db.execute(userdesactivar, values);
+    const [rows]:any = await db.query(userdesactivar, values);
 
     return rows.affectedRows > 0
   }

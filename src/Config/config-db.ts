@@ -10,6 +10,10 @@ dotenv.config();
         database: process.env.DB_DATABASE,
         port: Number(process.env.DB_PORT) || 5432,
         max: 10,
+        // conexiones sin certificado verificado
+        ssl: {
+            rejectUnauthorized: false 
+          }
     })
 
 

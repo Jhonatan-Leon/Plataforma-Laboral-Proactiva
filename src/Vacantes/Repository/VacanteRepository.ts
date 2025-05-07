@@ -1,5 +1,4 @@
-import { query } from "express";
-import db from "../Config/config-db"
+import db from "../../Config/config-db"
 import VacanteDto from "../Dto/VacanteDto";
 import  { categoriaDto, codDto } from "../Dto/ConsultaDto"
 
