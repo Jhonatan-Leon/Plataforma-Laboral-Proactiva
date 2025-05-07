@@ -10,6 +10,7 @@ router.get('/consultarVacante/:cod_vacante',buscarVacante)
 router.get('/consultarVacante',buscarVacante2)
 router.put('/update/:cod_vacante',EditarVacante)
 router.delete('/delete/:cod_vacante',EliminarVacante)
+
 export default router;
 
 
