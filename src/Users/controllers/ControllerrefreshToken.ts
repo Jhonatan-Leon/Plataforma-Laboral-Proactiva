@@ -13,7 +13,8 @@ const refreshToken = async (req: Request, res: Response) => {
         }
 
         if (!token) {
-            return res.status(403).json({ error: "No autorizado: refresh token no encontrado" });
+            res.status(403).json({ error: "No autorizado: refresh token no encontrado" });
+            return;
         }
 
         // Verificar token
@@ -32,11 +33,13 @@ const refreshToken = async (req: Request, res: Response) => {
             15 
         );
 
-        return res.status(200).json({ token: newAccessToken });
+        res.status(200).json({ token: newAccessToken });
+        return;
 
     } catch (error: any) {
         console.error("Error en refreshToken:", error);
-        return res.status(403).json({ error: "Token inválido o expirado" });
+        res.status(403).json({ error: "Token inválido o expirado" });
+        return;
     }
 };
 

@@ -1,31 +1,36 @@
-import { NextFunction, Request, Response  } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 
-// Extendemos el request para incluir data
-interface AuthenticatedRequest extends Request {
-    data?: any;
+export interface AuthenticatedRequest extends Request {
+  data?: any;
 }
 
 const validatorCookies = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const authCookie = req.cookies ['AuthCookies'];
+  const authCookie = req.cookies['AuthCookies'];
 
-    // Si no hay cookie devuelve error
-    if (!authCookie){
-        return res.status(401);
-    }
-        try{
-            // si hay cookie verifica la contraseña del Token
-            jwt.verify(authCookie, process.env.AccesTokenSectret, (err, user) => {
-                if(err){
-                    return res.status(403)
-                }
+  if (!authCookie) {
+    res.status(401).json({ message: "No se encontró la cookie de autenticación" });
+    return;
+  }
 
-                req.data = user;
-                next();
-            })
-        }catch(err: any){
-            res.status(403).json({err: err.message})
-        }
-}
+  const secret = process.env.KEY_TOKEN;
+  if (!secret) {
+    throw new Error("KEY_TOKEN no está definida en las variables de entorno");
+  }
+
+  try {
+    jwt.verify(authCookie, secret, (err: any, user: any) => {
+      if (err) {
+        res.status(403).json({ message: "Token inválido o expirado" });
+        return;
+      }
+
+      req.data = user;
+      next();
+    });
+  } catch (err: any) {
+    res.status(403).json({ message: err.message });
+  }
+};
 
 export default validatorCookies;

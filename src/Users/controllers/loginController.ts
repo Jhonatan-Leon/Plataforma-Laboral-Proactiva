@@ -44,7 +44,7 @@ let loginUser = async (req: Request, res: Response) => {
             sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000,
             domain: "localhost",
-            path: '/refresh'
+            path: '/Users/refresh'
            
         });
 
