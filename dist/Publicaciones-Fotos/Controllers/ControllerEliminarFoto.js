@@ -12,20 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const Config_db_1 = __importDefault(require("./Publicaciones-Fotos/Config/Config-db"));
-const SubirFotoRoute_1 = __importDefault(require("./Publicaciones-Fotos/Routes/SubirFotoRoute"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, Config_db_1.default)();
-}))();
-const app = (0, express_1.default)();
-const PORT = process.env.PORT || 5000;
-app.use(express_1.default.json());
-app.use('/fotes', SubirFotoRoute_1.default);
-app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en: http://localhost:${PORT}`);
-}).on("error", (error) => {
-    throw new Error(error.message);
+const FotoRepository_1 = __importDefault(require("../Repository/FotoRepository"));
+const EliminarFoto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { fileId } = req.params;
+        // Si no se proporciona un `fileId`, respondemos con un error
+        if (!fileId) {
+            res.status(400).json({ message: "Se debe proporcionar un ID de archivo" });
+            return;
+        }
+        // Llamamos al repositorio para eliminar la foto usando el fileId
+        const message = yield FotoRepository_1.default.eliminarFoto(fileId);
+        res.status(200).json({
+            message,
+        });
+    }
+    catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ message: "Error interno" });
+    }
 });
+exports.default = EliminarFoto;

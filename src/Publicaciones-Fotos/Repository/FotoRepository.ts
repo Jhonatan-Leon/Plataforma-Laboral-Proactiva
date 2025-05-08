@@ -1,4 +1,4 @@
-import { GridFSBucket } from "mongodb";
+import { GridFSBucket, ObjectId } from "mongodb";
 import  connectToDatabase  from "../Config/Config-db";
 import streamifier from "streamifier";
 
@@ -27,6 +27,29 @@ class FotoRepository {
         .on("finish", () => resolve(uploadStream.id.toString()));
     });
   }
+  static async eliminarFoto(fileId: string): Promise<string> {
+    try {
+      const bucket = await this.getBucket();
+      
+      // Convertimos el id de archivo a ObjectId
+      const fileObjectId = new ObjectId(fileId);
+
+      // Intentamos eliminar el archivo de GridFS
+      await bucket.delete(fileObjectId);
+
+      // Si no hubo errores, el archivo fue eliminado
+      return `Archivo con ID ${fileId} eliminado exitosamente.`;
+    } catch (error: any) {
+      // Si el archivo no existe, el error será capturado aquí.
+      if (error.message.includes('no such file')) {
+        return `No se encontró un archivo con el ID ${fileId}.`;
+      }
+      
+      console.error("Error al eliminar el archivo:", error);
+      throw new Error("Hubo un problema al intentar eliminar el archivo.");
+    }
+  }
+
 }
 
 export default FotoRepository

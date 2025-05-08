@@ -12,29 +12,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Config_db_1 = __importDefault(require("../Config/Config-db"));
-let Subirfoto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const FotoRepository_1 = __importDefault(require("../Repository/FotoRepository"));
+const Subirfoto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { bucket } = yield (0, Config_db_1.default)();
         if (!req.file) {
-            return res.status(400).json({ message: "No se subio ninguna imagen" });
+            res.status(400).json({ message: "No se subió ningún archivo" });
+            return;
         }
-        const readableStream = require("streamifier").createReadStream(req.file.buffer);
-        const uploadStream = bucket.openUploadStream(req.file.originalname, {
-            contentType: req.file.mimetype,
-        });
-        readableStream.pipe(uploadStream)
-            .on("error", (error) => {
-            console.log("Error subiendo la imagen", error);
-            res.status(500).json({ message: "Error al subir la imagen" });
-        })
-            .on("finish", () => {
-            res.status(201).json({ message: "imagen subida", id: uploadStream.id });
+        const fileId = yield FotoRepository_1.default.uploadFoto(req.file);
+        res.status(201).json({
+            message: "Foto subida",
+            fileId,
         });
     }
     catch (error) {
-        console.log("Error en subir foto", error);
-        res.status(500).json({ message: "Error interno del servidor" });
+        console.error("Error:", error);
+        res.status(500).json({ message: "Error interno" });
     }
 });
 exports.default = Subirfoto;
