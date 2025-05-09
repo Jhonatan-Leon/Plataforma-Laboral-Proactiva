@@ -49,6 +49,31 @@ class FotoRepository {
       throw new Error("Hubo un problema al intentar eliminar el archivo.");
     }
   }
+    static async GetFoto(fileId: string): Promise<any> {
+  try {
+    const bucket = await this.getBucket();
+    const fileObjectId = new ObjectId(fileId);
+
+    const filesCursor = bucket.find({ _id: fileObjectId });
+    const file = await filesCursor.next();
+
+    if (!file) {
+      return `No se encontró un archivo con el ID ${fileId}.`;
+    }
+
+    return {
+      id: file._id.toHexString(),
+      filename: file.filename,
+      length: file.length,
+      contentType: file.contentType || file.metadata?.contentType || 'desconocido',
+      uploadDate: file.uploadDate,
+      metadata: file.metadata || null
+    };
+  } catch (error: any) {
+    console.error("Error al consultar el archivo:", error);
+    throw new Error("Hubo un problema al consultar la foto.");
+  }
+}
 
 }
 
