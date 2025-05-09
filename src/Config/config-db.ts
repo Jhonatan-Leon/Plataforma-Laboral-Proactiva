@@ -21,7 +21,7 @@ dotenv.config();
 
 db.connect()
     .then((client) => {
-        console.log("Connected to PostgreSQL database!");
+        console.log("Connected to PostgreSQL");
         client.release(); 
     })
     .catch((err: Error) => {

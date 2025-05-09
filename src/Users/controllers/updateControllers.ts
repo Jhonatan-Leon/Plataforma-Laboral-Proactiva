@@ -41,8 +41,8 @@ let updateUser = async (req: Request, res: Response) => {
         }
 
 
-        // Guardar cambios en la base de datos
-        await UserService.updateUser(user, email);
+        /*  Guardar cambios en la base de datos
+        await UserService.updateUser(user, email); */
         
         let usuarioFinal: ContratanteDTO | ContratistaDTO | null = null;
         

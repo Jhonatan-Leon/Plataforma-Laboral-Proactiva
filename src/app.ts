@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cookieParser());
 app.use(express.json())
 
-app.use('/Users', authorizeRole(['Contratista','Contratante']), User_Routes);
+app.use('/Users', User_Routes);
 app.use('/login', Login_Routes);
 app.use('/Profile',  authorizeRole(['Contratista','Contratante']), profileUser);
 app.use('/vacant',  authorizeRole(['Contratista','Contratante']), Register)

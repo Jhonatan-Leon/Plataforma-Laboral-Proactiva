@@ -19,7 +19,9 @@ class UserService {
     }
 
     static async registerContratista(User: ContratistaDTO){
-    return await UserRepository.addContratista(User)
+        User.password = await generateHash(User.password)
+        console.log(User)
+        return await UserRepository.addContratista(User)
     }
 
     static async login(auth: Auth) {
@@ -37,11 +39,12 @@ class UserService {
     static async getUserByEmail(email: string){
         return await UserRepository.getUserByEmail(email)
     }
+    /*
 
     static async updateUser(user: any, email: string){
         return await UserRepository.updateUser(user, email);
     }
-
+    */
     static async updateContratante(updateUser: ContratanteDTO){
         return await UserRepository.updateContratante(updateUser);
     }

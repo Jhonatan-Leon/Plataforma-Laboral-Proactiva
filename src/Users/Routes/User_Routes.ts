@@ -6,14 +6,14 @@ import {getUserById, getByRol} from "../controllers/GetControllers";
 import { updateUser } from "../controllers/updateControllers";
 import validatorupdate from "../Middleware/validatorupdate"
 import { deleteUserByEmail } from "../controllers/Controllersdelete";
-
+import authorizeRole from "../Middleware/AuthorizeRole";
 
 const router = Router();
 
 router.post('/RegisterUser', ValidatorUser, ValidatorOpcional, register);
-router.get('/getUser/:id',  getUserById);
+router.get('/getUser/:id', authorizeRole(['Contratista','Contratante']), getUserById);
 router.get('/getRol/:tipo_usuario', getByRol)
-router.put('/updateUser/:email',  validatorupdate.validatorEmail, validatorupdate.validateUpdateUser, updateUser)
-router.delete('/deleteUser/:email', deleteUserByEmail );
+router.put('/updateUser/:email', authorizeRole(['Contratista','Contratante']), validatorupdate.validatorEmail, validatorupdate.validateUpdateUser, updateUser)
+router.delete('/deleteUser/:email', authorizeRole(['Contratista','Contratante']), deleteUserByEmail );
 
 export default router;

@@ -1,4 +1,3 @@
-import Usuario from "../DTO/UserDto";
 import db from "../../Config/config-db";
 import { ContratanteDTO, ContratistaDTO } from "../DTO/tiposUsuario";
 import bcrypt from 'bcryptjs'
@@ -6,41 +5,15 @@ import Auth from "../DTO/AuthDTO";
 
 class UserRepository {
 
-
-    /*
-    static async add(User: Usuario){
-
-      if (!User.estadoPerfil) {
-        User.estadoPerfil = "activo";
-      }
-    
-      console.log("Estado del perfil antes de insertar:", User.estadoPerfil);
-
-      console.log(User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.estadoPerfil, User.fotoPerfil ?? null, User.tipoUsuario)
-      const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, password, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-      const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
-        console.log("Consulta: ", sql)
-        console.log("Variables Repository: ",values)
-        try {
-          const [result]: any = await db.execute(sql, values);
-          return result.insertId;
-      } catch (error) {
-          console.error("Error al insertar usuario:", error);
-          throw error;
-      }
   
-    } 
-    */
     static async addContratante(User: ContratanteDTO) {
-
-      if(User.estadoPerfil == "activo"){
-        const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, password, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, contraseña, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id_usuario`;
         const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
-        const [rows]: any = await db.query(sql, values)
-        if(rows.affectedRows > 0){
+        const result: any = await db.query(sql, values)
+        if(result.rowCount > 0){
           try{
-            let Id = rows.insertId;
-            const sql = `INSERT INTO Contratantes (id_contratate, NIT) VALUES (?, ?)`;
+            let Id = result.rows[0].id_usuario;
+            const sql = `INSERT INTO Contratantes (id_usuario, NIT) VALUES (?, ?)`;
             const values = [Id, User.NIT];
             console.log(values);
             return await db.query(sql, values);
@@ -51,21 +24,21 @@ class UserRepository {
         } else {
            console.log("No se realizo ningun cambio")
         }
-      }
     }
 
     static async addContratista(User: ContratistaDTO) {
-
-      if(User.estadoPerfil == "activo"){
-        const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, password, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, contraseña, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id_usuario`;
         const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
-        const [rows]: any = await db.query(sql, values)
-        if(rows.affectedRows > 0){
+        const result: any = await db.query(sql, values)
+        console.log(result)
+        if(result.rowCount > 0){
           try{
-            const Id = rows.insertId;
-            const sql = `INSERT INTO Contratistas (id_contratista, cedula, categoria_trabajo, hoja_vida) VALUES (?, ?, ?, ?)`;
+            const Id = result.rows[0].id_usuario;
+            const sql = `INSERT INTO Contratista (id_usuario, cedula, categoria_trabajo, hoja_vida) VALUES ($1, $2, $3, $4)`;
             const values = [Id, User.cedula, User.categoriaTrabajo, User.hojaDeVida];
-            return await db.query(sql, values);
+            const rows : any = await db.query(sql, values);
+            console.log(rows)
+            return rows
           }catch(err) {
             console.log("Error al ingresar usuario Contratista", err)
             throw err;
@@ -74,14 +47,12 @@ class UserRepository {
         } else {
            console.log("No se realizo ningun cambio")
         }
-      }
-    
     }
 
 
     static async login(auth: Auth) {
       try {
-          const sql = 'SELECT id_usuario, estado_perfil, tipo_usuario, password FROM usuarios WHERE email = ?';
+          const sql = 'SELECT id_usuario, estado_perfil, tipo_usuario, contraseña FROM usuarios WHERE email = $1';
           const values = [auth.email];
           const rows: any = await db.query(sql, values);
   
@@ -119,14 +90,13 @@ class UserRepository {
     static async getUserById(Id: string){
       try {
         const query = `SELECT u.id_usuario, u.nombre_usuario, u.email, u.telefono, u.password, u.descripcion_usuario, u.foto_perfil, u.estado_perfil, u.tipo_usuario, c.NIT AS contratante_NIT, t.cedula AS contratista_cedula, t.categoria_trabajo, t.hoja_vida FROM usuarios u
-          LEFT JOIN contratantes c ON u.id_usuario = c.id_contratante AND u.tipo_usuario = 'contratante' LEFT JOIN contratistas t ON u.id_usuario = t.id_contratista AND u.tipo_usuario = 'contratista'
-          WHERE u.id_usuario = ?;`;
+        LEFT JOIN contratantes c ON u.id_usuario = c.id_contratante AND u.tipo_usuario = 'contratante' LEFT JOIN contratistas t ON u.id_usuario = t.id_contratista AND u.tipo_usuario = 'contratista' WHERE u.id_usuario = $1`;
 
-        const [rows]: any = await db.query(query, [Id]);
+        const result: any = await db.query(query, [Id]);
 
-        if (rows.length === 0) return null;
+        if (result.rowCount === 0) return null;
 
-        let user = rows[0];
+        let user = result[0];
         console.log(user)
 
         // Recorrer objeto y eliminar variables con parametros null
@@ -147,19 +117,19 @@ class UserRepository {
     
     static async getByRol(tipo_usuario: "Contratista" | "Contratante"){
       try {
-        const query = `SELECT u.id_usuario, u.nombre_usuario, u.email, u.telefono, u.password, u.descripcion_usuario, u.foto_perfil, u.estado_perfil, u.tipo_usuario, c.NIT AS contratante_NIT, t.cedula AS contratista_cedula, t.categoria_trabajo, t.hoja_vida FROM usuarios u
-          LEFT JOIN contratantes c ON u.id_usuario = c.id_contratante AND u.tipo_usuario = 'contratante' LEFT JOIN contratistas t ON u.id_usuario = t.id_contratista AND u.tipo_usuario = 'contratista'
-          WHERE u.tipo_usuario = ?;`;
+        const query = `SELECT u.id_usuario, u.nombre_usuario, u.email, u.telefono, u.contraseña, u.descripcion_usuario, u.foto_perfil, u.estado_perfil, u.tipo_usuario, c.nit AS contratante_nit, t.cedula AS contratista_cedula, t.categoria_trabajo, t.hoja_vida FROM usuarios u
+        LEFT JOIN contratante c ON u.id_usuario = c.id_usuario AND u.tipo_usuario = 'contratante' LEFT JOIN contratista t 
+        ON u.id_usuario = t.id_usuario AND u.tipo_usuario = 'contratista' WHERE u.tipo_usuario = $1;`;
       
         const values = [tipo_usuario]
       
         console.log(values)
 
-        const [rows]: any = await db.query(query, values);
+        const result: any = await db.query(query, values);
 
-        if(rows.length === 0) return null
+        if(result.length === 0) return null
 
-        let list = rows.map((user: any) => {
+        let list = result.rows.map((user: any) => {
           Object.keys(user).forEach((key) => {
             if(user[key] === null){
               delete user[key]
@@ -186,11 +156,11 @@ class UserRepository {
                 t.cedula AS contratista_cedula, t.categoria_trabajo, t.hoja_vida FROM usuarios u LEFT JOIN contratantes c ON u.id_usuario = c.id_contratante LEFT JOIN contratistas t ON u.id_usuario = t.id_contratista
                 WHERE u.email = ?;`;
   
-          const [rows]: any = await db.query(query, [email]);
+          const result : any = await db.query(query, [email]);
   
-          if (rows.length === 0) return null;
+          if (result.length === 0) return null;
   
-          let user = rows[0];
+          let user = result[0];
           console.log("Usuario obtenido:", user);
   
           return user;
@@ -201,31 +171,42 @@ class UserRepository {
       }
   }
   
+  /*
   static async updateUser(user: any, email: string){
     try{
-      const put = `UPDATE usuarios SET nombre_usuario = COALESCE(?, nombre_usuario), telefono = COALESCE(?, telefono), password = COALESCE(?, password), descripcion_usuario = COALESCE(?, descripcion_usuario),
-            foto_perfil = COALESCE(?, foto_perfil), estado_perfil = COALESCE(?, estado_perfil), tipo_usuario = COALESCE(?, tipo_usuario) WHERE email = ?;`
+      const put = `UPDATE usuarios SET nombre_usuario = COALESCE(?, nombre_usuario), telefono = COALESCE(?, telefono), contraseña = COALESCE(?, constraseña), descripcion_usuario = COALESCE(?, descripcion_usuario),
+            foto_perfil = COALESCE(?, foto_perfil), estado_perfil = COALESCE(?, estado_perfil), tipo_usuario = COALESCE(?, tipo_usuario) WHERE email = ?;`;
       const values = [user.nombre_usuario, user.telefono, user.password, user.descripcion_usuario, user.foto_perfil, user.estado_perfil, user.tipo_usuario, email]
-       const [rows]: any = await db.query(put, values)
-       if (rows.affectedRows === 0) {
+       const result : any = await db.query(put, values)
+       if (result.rowCount === 0) {
         return { message: "No se realizaron cambios o el usuario no existe." };
       }
 
-      return { message: "Usuario actualizado con éxito", affectedRows: rows.affectedRows };
+      return { message: "Usuario actualizado con éxito", affectedRows: result.rowCount };
     }catch(err: any){
       console.error("Error registro usuarios: ", err)
       throw err;
     }
   }
-
+  */
 
   static async updateContratante(dataUpdate: ContratanteDTO){
     try{
+      const updateUserQuery = `UPDATE usuarios SET nombre_usuario = COALESCE($1, nombre_usuario), telefono = COALESCE($2, telefono), contraseña = COALESCE($3, contraseña), descripcion_usuario = COALESCE($4, descripcion_usuario), foto_perfil = COALESCE($5, foto_perfil), estado_perfil = COALESCE($6, estado_perfil), tipo_usuario = COALESCE($7, tipo_usuario) WHERE id_usuario = $8;`;
+
+      const userValues = [dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.password, dataUpdate.descripcion, dataUpdate.fotoPerfil, dataUpdate.estadoPerfil, dataUpdate.tipoUsuario, dataUpdate.email];
+
+      const userResult = await db.query(updateUserQuery, userValues)
+
+      if(userResult.rowCount === 0){
+        return {message: 'No se logro actualizar el usuario'}
+      }
+
       const put = `UPDATE contratantes SET NIT = COALESCE(?, NIT) WHERE id_contratante = ?;`
       const values = [dataUpdate.NIT, dataUpdate.id];
 
-      const [rows]: any = await db.query(put, values);
-      return rows
+      const result: any = await db.query(put, values);
+      return {message: "Uusario actualizado exitosamente", result}
     }catch(err: any){
       console.error("Error al actualizar datos: ",err)
       throw err;
@@ -233,21 +214,33 @@ class UserRepository {
   }
 
   static async updateContratista(dataUpdate: ContratistaDTO){
-    try{
-      const put = `UPDATE contratistas SET cedula = COALESCE(?, cedula), categoria_trabajo = COALESCE(?, categoria_trabajo), hoja_vida = COALESCE(?, hoja_vida) WHERE id_contratista = ?;;`
-      
-      const values = [dataUpdate.cedula, dataUpdate.categoriaTrabajo, dataUpdate.hojaDeVida, dataUpdate.id];
+    
+  try {
+    const updateUserQuery = `UPDATE usuarios SET nombre_usuario = COALESCE($1, nombre_usuario), telefono = COALESCE($2, telefono), contraseña = COALESCE($3, contraseña), descripcion_usuario = COALESCE($4, descripcion_usuario), foto_perfil = COALESCE($5, foto_perfil), estado_perfil = COALESCE($6, estado_perfil), tipo_usuario = COALESCE($7, tipo_usuario) WHERE id_usuario = $8;`;
 
-      const [rows]: any = await db.query(put, values);
-      return rows
-    }catch(err: any){
-      console.error("Error al actualizar datos: ",err)
+    const userValues = [dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.password, dataUpdate.descripcion, dataUpdate.fotoPerfil, dataUpdate.estadoPerfil, dataUpdate.tipoUsuario, dataUpdate.email];
+
+    const userResult = await db.query(updateUserQuery, userValues)
+
+    if (userResult.rowCount === 0) {
+      return { message: 'No se encontró el usuario para actualizar.' };
+    }
+    const updateContratistaQuery = `UPDATE contratista SET cedula = COALESCE($1, cedula), categoria_trabajo = COALESCE($2, categoria_trabajo), hoja_vida = COALESCE($3, hoja_vida) WHERE id_contratista = $4;`;
+
+    const contratistaValues = [dataUpdate.cedula, dataUpdate.categoriaTrabajo, dataUpdate.hojaDeVida, dataUpdate.id];
+
+    const result = await db.query(updateContratistaQuery, contratistaValues);
+
+    return {message: 'Usuario actualizado correctamente', result}
+    } catch (err) {
+      console.error('Error al actualizar usuario contratista:', err);
       throw err;
     }
+
   }
 
   static async deleteUser(email: string){
-    const userdelete = `DELETE FROM usuarios WHERE email = ?`;
+    const userdelete = `DELETE FROM usuarios WHERE email = $1`;
     const values = [email];
 
     return await db.query(userdelete, values);
@@ -255,14 +248,14 @@ class UserRepository {
 
   // Proximo integración con coockies
   static async deleUser(id: Number){
-    const userDelete = `Delete From usuarios where id = ?`;
+    const userDelete = `Delete From usuarios where id = $1`;
     const values = [id];
 
     return await db.query(userDelete, values)
   }
 
   static async desactivarUser(idUser: string){
-    const userdesactivar = `UPDATE usuarios SET estado_perfil = 'inactivo' WHERE id_usuario = ? AND estado_perfil != 'inactivo'`;
+    const userdesactivar = `UPDATE usuarios SET estado_perfil = 'inactivo' WHERE id_usuario = $1 AND estado_perfil != 'inactivo'`;
     const values = [idUser]
 
     const [rows]:any = await db.query(userdesactivar, values);
