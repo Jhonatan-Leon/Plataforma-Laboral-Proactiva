@@ -1,4 +1,4 @@
-import { GridFSBucket } from "mongodb";
+import { GridFSBucket, ObjectId } from "mongodb";
 import connectToDatabase from "../Config/Config-db";
 import streamifier from "streamifier";
 
@@ -35,6 +35,35 @@ class VideoRepository {
         .on("error", reject)
         .on("finish", () => resolve(uploadStream.id.toString()));
     });
+  }
+  static async eliminarVideo(fileId: string): Promise<string> {
+    try {
+      const bucket = await this.getBucket();
+      const objectId = new ObjectId(fileId);
+      await bucket.delete(objectId);
+      return `Video con ID ${fileId} eliminado correctamente.`;
+    } catch (error: any) {
+      if (error.message.includes('no such file')) {
+        return `No se encontró un video con el ID ${fileId}.`;
+      }
+
+      console.error('Error al eliminar el video:', error);
+      throw new Error('Hubo un problema al intentar eliminar el video.');
+    }
+  }
+  static async ObtenerVideo(fileId:string): Promise<string>{
+    try{
+      const bucket = await this.getBucket();
+      const objectId = new ObjectId(fileId);
+      await bucket.find({ _id: objectId });
+      return `Video con ID ${fileId} obtenido correctamente`
+    }catch(error:any){
+      if(error.message.includes('no usch file')){
+        return `No se encontró un video con el ID ${fileId}.`
+      }
+      console.error('Error al obtener el video:', error);
+      throw new Error('Hubo un problema al intentar obtener el video.');
+    }
   }
 }
 

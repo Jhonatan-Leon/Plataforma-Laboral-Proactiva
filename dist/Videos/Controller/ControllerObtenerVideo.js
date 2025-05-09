@@ -12,20 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const Config_db_1 = __importDefault(require("./Videos/Config/Config-db"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const RoutesVideo_1 = __importDefault(require("../src/Videos/Routes/RoutesVideo"));
-dotenv_1.default.config();
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, Config_db_1.default)();
-}))();
-const app = (0, express_1.default)();
-const PORT = process.env.PORT || 3000;
-app.use(express_1.default.json());
-app.use('/videos', RoutesVideo_1.default);
-app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en: http://localhost:${PORT}`);
-}).on("error", (error) => {
-    throw new Error(error.message);
+const RepositoryVideo_1 = __importDefault(require("../Repository/RepositoryVideo"));
+const obtenervideo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { fileId } = req.params;
+        if (!fileId) {
+            res.status(400).json({ error: "Se requiere un id del video" });
+            return;
+        }
+        const mensaje = yield RepositoryVideo_1.default.ObtenerVideo(fileId);
+        res.status(200).json({ message: mensaje });
+    }
+    catch (error) {
+        console.log("Error al obtener video", error);
+        res.status(500).json({ error: "Error al obtener video" });
+    }
 });
+exports.default = obtenervideo;

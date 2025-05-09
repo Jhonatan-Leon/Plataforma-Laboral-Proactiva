@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const mongodb_1 = require("mongodb");
 const Config_db_1 = __importDefault(require("../Config/Config-db"));
 const streamifier_1 = __importDefault(require("streamifier"));
 class VideoRepository {
@@ -45,6 +46,40 @@ class VideoRepository {
                     .on("error", reject)
                     .on("finish", () => resolve(uploadStream.id.toString()));
             });
+        });
+    }
+    static eliminarVideo(fileId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const bucket = yield this.getBucket();
+                const objectId = new mongodb_1.ObjectId(fileId);
+                yield bucket.delete(objectId);
+                return `Video con ID ${fileId} eliminado correctamente.`;
+            }
+            catch (error) {
+                if (error.message.includes('no such file')) {
+                    return `No se encontró un video con el ID ${fileId}.`;
+                }
+                console.error('Error al eliminar el video:', error);
+                throw new Error('Hubo un problema al intentar eliminar el video.');
+            }
+        });
+    }
+    static ObtenerVideo(fileId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const bucket = yield this.getBucket();
+                const objectId = new mongodb_1.ObjectId(fileId);
+                yield bucket.find({ _id: objectId });
+                return `Video con ID ${fileId} obtenido correctamente`;
+            }
+            catch (error) {
+                if (error.message.includes('no usch file')) {
+                    return `No se encontró un video con el ID ${fileId}.`;
+                }
+                console.error('Error al obtener el video:', error);
+                throw new Error('Hubo un problema al intentar obtener el video.');
+            }
         });
     }
 }
