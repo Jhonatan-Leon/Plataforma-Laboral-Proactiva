@@ -34,11 +34,14 @@ class UserRepository {
         if(result.rowCount > 0){
           try{
             const Id = result.rows[0].id_usuario;
-            const sql = `INSERT INTO Contratista (id_usuario, cedula, categoria_trabajo, hoja_vida) VALUES ($1, $2, $3, $4)`;
+            const sql = `INSERT INTO Contratista (id_usuario, cedula, categoria_trabajo, hoja_vida) VALUES ($1, $2, $3, $4) RETURNING id_usuario`;
             const values = [Id, User.cedula, User.categoriaTrabajo, User.hojaDeVida];
-            const rows : any = await db.query(sql, values);
-            console.log(rows)
-            return rows
+            const resultId : any = await db.query(sql, values);
+            const idUser = resultId.rows[0].id_usuario;
+            console.log(idUser)
+            return {
+              idUser
+            }
           }catch(err) {
             console.log("Error al ingresar usuario Contratista", err)
             throw err;
@@ -54,19 +57,20 @@ class UserRepository {
       try {
           const sql = 'SELECT id_usuario, estado_perfil, tipo_usuario, contraseña FROM usuarios WHERE email = $1';
           const values = [auth.email];
-          const rows: any = await db.query(sql, values);
+          const result: any = await db.query(sql, values);
   
-          if (!rows || rows.length === 0) {
+          if (!result || result.rowCount === 0) {
               return { logged: false, status: "Correo o Contraseña incorrectos" };
           }
   
-          const user = rows[0][0];
-  
+          const user = result.rows[0];
+          
+          console.log(user)
           if (user.estado_perfil === "inactivo") {
               return { logged: false, status: "Cuenta inactiva. Contacte al soporte." };
           }
-  
-          const isPasswordValid = await bcrypt.compare(auth.password, user.password);
+        
+          const isPasswordValid = await bcrypt.compare(auth.password, user.contraseña);
           if (!isPasswordValid) {
               return { logged: false, status: "Correo o Contraseña incorrectos" };
           }
@@ -258,9 +262,9 @@ class UserRepository {
     const userdesactivar = `UPDATE usuarios SET estado_perfil = 'inactivo' WHERE id_usuario = $1 AND estado_perfil != 'inactivo'`;
     const values = [idUser]
 
-    const [rows]:any = await db.query(userdesactivar, values);
+    const result :any = await db.query(userdesactivar, values);
 
-    return rows.affectedRows > 0
+    return result.rowCount > 0
   }
 
 }

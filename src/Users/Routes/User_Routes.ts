@@ -11,9 +11,9 @@ import authorizeRole from "../Middleware/AuthorizeRole";
 const router = Router();
 
 router.post('/RegisterUser', ValidatorUser, ValidatorOpcional, register);
-router.get('/getUser/:id', authorizeRole(['Contratista','Contratante']), getUserById);
+router.get('/getUser/:id',getUserById);
 router.get('/getRol/:tipo_usuario', getByRol)
-router.put('/updateUser/:email', authorizeRole(['Contratista','Contratante']), validatorupdate.validatorEmail, validatorupdate.validateUpdateUser, updateUser)
-router.delete('/deleteUser/:email', authorizeRole(['Contratista','Contratante']), deleteUserByEmail );
+router.put('/updateUser/:email', validatorupdate.validatorEmail, validatorupdate.validateUpdateUser, updateUser)
+router.delete('/deleteUser/:email',  deleteUserByEmail );
 
 export default router;

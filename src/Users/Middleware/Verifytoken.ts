@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
-import refreshToken from '../controllers/ControllerrefreshToken';
 
 dotenv.config();
 

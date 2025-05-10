@@ -1,19 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 
-export interface AuthenticatedRequest extends Request {
-  data?: any;
-}
-
-const validatorCookies = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  const authCookie = req.cookies['AuthCookies'];
-
+const validatorCookies = async (req: Request, res: Response, next: NextFunction) => {
+  const authCookie = req.cookies.refreshToken;
+  console.log(authCookie);
   if (!authCookie) {
     res.status(401).json({ message: "No se encontró la cookie de autenticación" });
     return;
   }
 
-  const secret = process.env.KEY_TOKEN;
+  const secret = process.env.REFRESH_KEY_TOKEN;
   if (!secret) {
     throw new Error("KEY_TOKEN no está definida en las variables de entorno");
   }
@@ -25,7 +21,7 @@ const validatorCookies = async (req: AuthenticatedRequest, res: Response, next: 
         return;
       }
 
-      req.data = user;
+      req.body = user;
       next();
     });
   } catch (err: any) {
