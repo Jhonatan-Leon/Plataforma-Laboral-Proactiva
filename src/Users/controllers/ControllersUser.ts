@@ -3,6 +3,7 @@ import UserService from "../Services/UserServices";
 import { ContratanteDTO, ContratistaDTO } from "../DTO/tiposUsuario";
 import generateToken from "../Helpers/generateTokens";
 import { subirFotoPerfil } from "../Helpers/BlobServices";
+import { stringToBytes } from "uuid/dist/cjs/v35";
 
 let register = async (req: Request, res: Response) => {
     try {
@@ -19,18 +20,14 @@ let register = async (req: Request, res: Response) => {
             NIT,
             cedula,
             categoria_trabajo,
-            hojaDeVida
+            hojaDeVida  
         } = req.body;
 
-        console.log(`Variables recibidas: Id: ${id} nombre: ${nombreCompleto}, email: ${email}, telefono: ${telefono}, password: ${password} ,
-            descripcion: ${descripcion}, fotoPerfil: ${fotoPerfil}, tipo_usuario: ${tipo_usuario}, NIT: ${NIT}, cedula: ${cedula}, categoriaTrabajo: ${categoria_trabajo}, hojaDeVida: ${hojaDeVida}`);
+       // console.log(`Variables recibidas: Id: ${id} nombre: ${nombreCompleto}, email: ${email}, telefono: ${telefono}, password: ${password} ,
+          //  descripcion: ${descripcion}, fotoPerfil: ${fotoPerfil}, tipo_usuario: ${tipo_usuario}, NIT: ${NIT}, cedula: ${cedula}, categoriaTrabajo: ${categoria_trabajo}, hojaDeVida: ${hojaDeVida}`);
 
         let usuarioFinal: ContratanteDTO | ContratistaDTO;
         let ID: any;
-
-        if(fotoPerfil){
-            const foto = await subirFotoPerfil(fotoPerfil)
-        }
 
         if (tipo_usuario === "Contratante" && NIT) {
            usuarioFinal = new ContratanteDTO(NIT, nombreCompleto, email, telefono, password,descripcion, fotoPerfil , estadoPerfil, tipo_usuario);

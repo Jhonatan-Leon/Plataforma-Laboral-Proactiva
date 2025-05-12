@@ -1,4 +1,3 @@
-import { SrvRecord } from "dns";
 import Usuario from "../DTO/UserDto";
 
 class ContratanteDTO extends Usuario {
@@ -38,11 +37,12 @@ class ContratistaDTO extends Usuario {
         this._cedula = Value;
     }
 
+
     get hojaDeVida(): string | null {
         return this._hojaDeVida;
     }
 
-    set SetHojaVida(value: string | null){
+    set hojaDeVida(value: string | null){
         this._hojaDeVida = value;
     }
 

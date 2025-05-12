@@ -9,10 +9,11 @@ import { deleteUserByEmail } from "../controllers/Controllersdelete";
 import authorizeRole from "../Middleware/AuthorizeRole";
 import validatorCookies from "../Middleware/ValidaterCookie";
 import verifyToken from "../Middleware/Verifytoken";
+import upload from "../Helpers/Upload";
 
 const router = Router();
 
-router.post('/RegisterUser', ValidatorUser, ValidatorOpcional, register);
+router.post('/RegisterUser', upload.fields([{name: 'fotoPerfil', maxCount: 1},  {name: 'hojaDeVida', maxCount: 1}]), ValidatorUser, ValidatorOpcional,  register);
 router.get('/getUser/:id',getUserById);
 router.get('/getRol/:tipo_usuario', getByRol)
 router.put('/updateUser/:email', verifyToken, validatorCookies, authorizeRole(['Contratista','Contratante']), validatorupdate.validatorEmail, validatorupdate.validateUpdateUser, updateUser)
