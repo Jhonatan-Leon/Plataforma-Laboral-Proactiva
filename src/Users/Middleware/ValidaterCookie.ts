@@ -21,7 +21,7 @@ const validatorCookies = async (req: Request, res: Response, next: NextFunction)
         return;
       }
 
-      req.body = user;
+      req.user = user;
       next();
     });
   } catch (err: any) {

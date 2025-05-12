@@ -1,9 +1,10 @@
+import { SrvRecord } from "dns";
 import Usuario from "../DTO/UserDto";
 
 class ContratanteDTO extends Usuario {
     private _NIT: string;
 
-    constructor(NIT: string, nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | null, estadoPerfil: "activo" | "inactivo",  tipoUsuario: "Contratante" | "Contratista", id?: number ) {
+    constructor(NIT: string, nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, estadoPerfil: "activo" | "inactivo",  tipoUsuario: "Contratante" | "Contratista", id?: number ) {
         super(nombreCompleto, email, telefono, password, descripcion, fotoPerfil, estadoPerfil, tipoUsuario, id)
         this._NIT = NIT;
     }
@@ -22,7 +23,7 @@ class ContratistaDTO extends Usuario {
     private _hojaDeVida: string | null;
     private _categoriaTrabajo: string;
 
-    constructor(cedula: string, categoriaTrabajo: string, hojaDeVida: string | null, nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | null, estadoPerfil: "activo" | "inactivo",  tipoUsuario: "Contratante" | "Contratista", id?: number )  {
+    constructor(cedula: string, categoriaTrabajo: string, hojaDeVida: string | null, nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, estadoPerfil: "activo" | "inactivo",  tipoUsuario: "Contratante" | "Contratista", id?: number )  {
         super(nombreCompleto, email, telefono, password, descripcion, fotoPerfil, estadoPerfil, tipoUsuario, id)
         this._cedula = cedula;
         this._hojaDeVida = hojaDeVida;

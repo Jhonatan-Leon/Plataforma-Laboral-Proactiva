@@ -7,11 +7,11 @@ abstract class Usuario {
     protected _telefono: string;
     protected _password: string;
     protected _descripcion: string;
-    protected _fotoPerfil: string | null;
+    protected _fotoPerfil: string | File | null;
     protected _estadoPerfil: "activo" | "inactivo" = "activo";
     protected _tipoUsuario: "Contratante" | "Contratista";
 
-    constructor( nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | null, estadoPerfil: "activo" | "inactivo",  tipoUsuario: "Contratante" | "Contratista", id?: number) { 
+    constructor( nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, estadoPerfil: "activo" | "inactivo",  tipoUsuario: "Contratante" | "Contratista", id?: number) { 
         this._Id = id;
         this._nombreCompleto = nombreCompleto;
         this._email = email;
@@ -47,7 +47,7 @@ abstract class Usuario {
         return this._descripcion;
     }
 
-    get fotoPerfil(): string | null {
+    get fotoPerfil(): string | File | null {
         return this._fotoPerfil;
     }
 
@@ -80,7 +80,7 @@ abstract class Usuario {
         this._descripcion = value;
     }
 
-    set fotoPerfil(value: string | null) {
+    set fotoPerfil(value: string | File | null) {
         this._fotoPerfil = value ?? null;
     }
 

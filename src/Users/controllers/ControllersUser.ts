@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import UserService from "../Services/UserServices";
 import { ContratanteDTO, ContratistaDTO } from "../DTO/tiposUsuario";
 import generateToken from "../Helpers/generateTokens";
+import { subirFotoPerfil } from "../Helpers/BlobServices";
 
 let register = async (req: Request, res: Response) => {
     try {
@@ -27,8 +28,12 @@ let register = async (req: Request, res: Response) => {
         let usuarioFinal: ContratanteDTO | ContratistaDTO;
         let ID: any;
 
+        if(fotoPerfil){
+            const foto = await subirFotoPerfil(fotoPerfil)
+        }
+
         if (tipo_usuario === "Contratante" && NIT) {
-           usuarioFinal = new ContratanteDTO(NIT, nombreCompleto, email, telefono, password,descripcion, fotoPerfil, estadoPerfil, tipo_usuario);
+           usuarioFinal = new ContratanteDTO(NIT, nombreCompleto, email, telefono, password,descripcion, fotoPerfil , estadoPerfil, tipo_usuario);
            const IdContratante = await UserService.registerContratante(usuarioFinal);
         } 
         else if (tipo_usuario === "Contratista" && cedula && categoria_trabajo) {

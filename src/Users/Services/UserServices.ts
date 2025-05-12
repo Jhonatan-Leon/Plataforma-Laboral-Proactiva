@@ -1,8 +1,8 @@
-import Usuario from "../DTO/UserDto";
 import generateHash from "../Helpers/generateHash";
 import UserRepository from "../Models/UserRepository";
 import { ContratanteDTO, ContratistaDTO } from "../DTO/tiposUsuario";
 import Auth from "../DTO/AuthDTO";
+import { subirFotoPerfil } from "../Helpers/BlobServices";
 
 class UserService {
 
@@ -15,11 +15,17 @@ class UserService {
 
 
     static async registerContratante (User: ContratanteDTO){
+        User.password = await generateHash(User.password)
         return await UserRepository.addContratante(User)
     }
 
     static async registerContratista(User: ContratistaDTO){
         User.password = await generateHash(User.password)
+        const foto = User.fotoPerfil;
+        if(foto && foto instanceof File){
+            User.fotoPerfil = await subirFotoPerfil(foto);
+        }
+
         console.log(User)
         return await UserRepository.addContratista(User)
     }

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 
 const authorizeRole = (allowedRoles: string[]) => {
    return (req: Request, res: Response, next: NextFunction) => {
-   const user = req.body;
+   const user = req.user;
 
    try {
         console.log("rol", user)
