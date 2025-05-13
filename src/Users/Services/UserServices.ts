@@ -27,12 +27,11 @@ class UserService {
         if (foto && typeof foto === 'string' && foto.startsWith('data:image')) {
             User.fotoPerfil = await subirFotoPerfil(foto); 
         }
-    
-        if (hoja && typeof hoja === 'string' && hoja.startsWith('data: image')){
+      
+        if (hoja && typeof hoja === 'string'){
             User.hojaDeVida = await subirHojaVida(hoja)
         }
         
-        console.log(User)
         return await UserRepository.addContratista(User)
     }
 

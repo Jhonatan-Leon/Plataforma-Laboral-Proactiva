@@ -7,18 +7,28 @@ import fs from 'fs';
 
 dotenv.config();
 
-const AZURE_STORAGE_CONNECTION = process.env.AZURE_STORAGE_CONNECTION_STRING || "";
-const CONTAINER = process.env.CONTAINER_NAME || ''; 
+const AZURE_STORAGE_CONNECTION = process.env.AZURE_STORAGE_CONNECTION_STRING || '';
+const CONTAINER = process.env.CONTAINER_NAME || '';
 const CONTENT = process.env.CONTENT_HOJA || '';
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION);
 const containerClient = blobServiceClient.getContainerClient(CONTAINER);
+const containerHojaVida = blobServiceClient.getContainerClient(CONTENT);
 
+// Limite de tamaño de archivo (10MB)
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
+// Función para subir foto de perfil
 export const subirFotoPerfil = async (file: any): Promise<string> => {
   let fileBuffer: Buffer;
   let mimetype = 'application/octet-stream';
   let extension = '.png'; // default
   let nombre = 'archivo.png'; // default
+
+  // Verificar el tamaño del archivo antes de procesarlo
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error('El archivo es demasiado grande. El tamaño máximo permitido es de 10 MB.');
+  }
 
   // Si es un objeto tipo Multer (buffer en memoria)
   if (file && typeof file === 'object' && 'buffer' in file && 'originalname' in file) {
@@ -51,7 +61,8 @@ export const subirFotoPerfil = async (file: any): Promise<string> => {
       fileBuffer = fs.readFileSync(file);
       extension = path.extname(file);
     } catch (error) {
-      throw new Error("Error al leer el archivo desde el sistema de archivos");
+      console.error('Error al leer el archivo local:', error);
+      throw new Error('Error al leer el archivo desde el sistema de archivos');
     }
   }
 
@@ -59,40 +70,56 @@ export const subirFotoPerfil = async (file: any): Promise<string> => {
     throw new Error("Archivo inválido o tipo de archivo no soportado");
   }
 
+  // Validar si es un archivo de imagen permitido
+  const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+  if (!validImageTypes.includes(mimetype)) {
+    throw new Error('Formato de imagen no soportado. Solo se permiten JPG, PNG y GIF.');
+  }
+
   const blobName = `${uuidv4()}${extension}`;
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-  await blockBlobClient.uploadData(fileBuffer, {
-    blobHTTPHeaders: {
-      blobContentType: mimetype,
-    },
-  });
+  try {
+    await blockBlobClient.uploadData(fileBuffer, {
+      blobHTTPHeaders: {
+        blobContentType: mimetype,
+      },
+    });
+  } catch (error) {
+    console.error('Error al subir archivo:', error);
+    throw new Error('Hubo un error al subir el archivo a Azure Blob Storage');
+  }
 
   return blockBlobClient.url;
 };
 
-const containerHojaVida = blobServiceClient.getContainerClient(CONTENT)
-
+// Función para subir hoja de vida
 export const subirHojaVida = async (file: any): Promise<string> => {
   let fileBuffer: Buffer;
-  let mimetype = 'application/octet-stream'; // Tipo por defecto
+  let mimetype = 'application/octet-stream';
   let extension = '.pdf'; // Extensión por defecto
   let nombre = 'documento.pdf'; // Nombre por defecto
 
+  // Verificar el tamaño del archivo antes de procesarlo
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error('El archivo es demasiado grande. El tamaño máximo permitido es de 10 MB.');
+  }
+
   // Si es un objeto tipo Multer (buffer en memoria)
   if (file && typeof file === 'object' && 'buffer' in file && 'originalname' in file) {
-    fileBuffer = file.buffer; // Asignar el buffer del archivo
-    mimetype = file.mimetype; // Asignar el tipo MIME
-    extension = path.extname(file.originalname); // Obtener la extensión del archivo
-    nombre = file.originalname; // Obtener el nombre original del archivo
+    fileBuffer = file.buffer;
+    mimetype = file.mimetype;
+    extension = path.extname(file.originalname);
+    nombre = file.originalname;
   }
+
   // Si es una cadena base64
   else if (typeof file === 'string' && file.startsWith('data:')) {
     const matches = file.match(/^data:(.+);base64,(.+)$/);
     if (!matches) throw new Error('Formato base64 inválido');
 
     mimetype = matches[1];
-    fileBuffer = Buffer.from(matches[2], 'base64'); // Convertir la cadena base64 en un buffer
+    fileBuffer = Buffer.from(matches[2], 'base64');
 
     // Derivar la extensión según el tipo MIME
     const extMap: Record<string, string> = {
@@ -100,19 +127,20 @@ export const subirHojaVida = async (file: any): Promise<string> => {
       'application/msword': '.doc',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
     };
-    extension = extMap[mimetype] || '.bin'; // Asignar extensión predeterminada si el MIME no coincide
+    extension = extMap[mimetype] || '.bin';
   }
 
   // Si es una ruta de archivo local
   else if (typeof file === 'string') {
     try {
-      fileBuffer = fs.readFileSync(file); // Leer el archivo desde el sistema de archivos
-      extension = path.extname(file); // Obtener la extensión del archivo
+      fileBuffer = fs.readFileSync(file);
+      extension = path.extname(file);
     } catch (error) {
-      throw new Error("Error al leer el archivo desde el sistema de archivos");
+      console.error('Error al leer el archivo local:', error);
+      throw new Error('Error al leer el archivo desde el sistema de archivos');
     }
   }
-  // Si el archivo no es válido
+
   else {
     throw new Error("Archivo inválido o tipo de archivo no soportado");
   }
@@ -123,17 +151,19 @@ export const subirHojaVida = async (file: any): Promise<string> => {
     throw new Error('Formato de archivo no soportado. Solo se permiten PDFs y documentos de Word.');
   }
 
-  // Generar nombre único para el archivo en Azure Blob Storage
   const blobName = `${uuidv4()}${extension}`;
   const blockBlobClient = containerHojaVida.getBlockBlobClient(blobName);
 
-  // Subir el archivo a Azure Blob Storage
-  await blockBlobClient.uploadData(fileBuffer, {
-    blobHTTPHeaders: {
-      blobContentType: mimetype, 
-    },
-  });
+  try {
+    await blockBlobClient.uploadData(fileBuffer, {
+      blobHTTPHeaders: {
+        blobContentType: mimetype,
+      },
+    });
+  } catch (error) {
+    console.error('Error al subir archivo:', error);
+    throw new Error('Hubo un error al subir el archivo a Azure Blob Storage');
+  }
 
-  // Retornar la URL 
   return blockBlobClient.url;
 };

@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node dist/app.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +16,7 @@
     "axios": "^1.8.4",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
@@ -26,12 +29,14 @@
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.18",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.13.10",
     "@types/pg": "^8.11.11",
     "nodemon": "^3.1.9",
+    "save": "^2.9.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
   },

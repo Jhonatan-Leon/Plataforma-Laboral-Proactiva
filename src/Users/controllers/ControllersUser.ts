@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import UserService from "../Services/UserServices";
 import { ContratanteDTO, ContratistaDTO } from "../DTO/tiposUsuario";
 import generateToken from "../Helpers/generateTokens";
-import { subirFotoPerfil } from "../Helpers/BlobServices";
-import { stringToBytes } from "uuid/dist/cjs/v35";
 
 let register = async (req: Request, res: Response) => {
     try {
@@ -23,8 +21,8 @@ let register = async (req: Request, res: Response) => {
             hojaDeVida  
         } = req.body;
 
-       // console.log(`Variables recibidas: Id: ${id} nombre: ${nombreCompleto}, email: ${email}, telefono: ${telefono}, password: ${password} ,
-          //  descripcion: ${descripcion}, fotoPerfil: ${fotoPerfil}, tipo_usuario: ${tipo_usuario}, NIT: ${NIT}, cedula: ${cedula}, categoriaTrabajo: ${categoria_trabajo}, hojaDeVida: ${hojaDeVida}`);
+       console.log(`Variables recibidas: Id: ${id} nombre: ${nombreCompleto}, email: ${email}, telefono: ${telefono}, password: ${password} ,
+          descripcion: ${descripcion}, fotoPerfil: ${fotoPerfil}, tipo_usuario: ${tipo_usuario}, NIT: ${NIT}, cedula: ${cedula}, categoriaTrabajo: ${categoria_trabajo}, hojaDeVida: ${hojaDeVida}`);
 
         let usuarioFinal: ContratanteDTO | ContratistaDTO;
         let ID: any;
@@ -33,7 +31,7 @@ let register = async (req: Request, res: Response) => {
            usuarioFinal = new ContratanteDTO(NIT, nombreCompleto, email, telefono, password,descripcion, fotoPerfil , estadoPerfil, tipo_usuario);
            const IdContratante = await UserService.registerContratante(usuarioFinal);
         } 
-        else if (tipo_usuario === "Contratista" && cedula && categoria_trabajo) {
+        else if (tipo_usuario === "Contratista" && cedula && categoria_trabajo && hojaDeVida) {
             usuarioFinal = new ContratistaDTO(cedula, categoria_trabajo, hojaDeVida, nombreCompleto, email, telefono, password,descripcion, fotoPerfil, estadoPerfil, tipo_usuario);
             const result: any = await UserService.registerContratista(usuarioFinal);
             ID = result.idUser;
@@ -48,6 +46,7 @@ let register = async (req: Request, res: Response) => {
 
         if (!ID) {
             throw new Error("El ID del contratista no se obtuvo correctamente.");
+           
         }
 
         const accessToken = generateToken(

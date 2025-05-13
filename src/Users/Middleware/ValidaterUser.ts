@@ -29,7 +29,6 @@ export const ValidatorUser = (req: Request, res: Response, next: NextFunction): 
     } else {
         req.body.fotoPerfil = null;
     } 
-    console.log("foto: ", req.body.fotoPerfil)
 
 
     // Validación básica de email
