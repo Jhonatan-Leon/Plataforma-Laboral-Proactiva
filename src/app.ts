@@ -13,10 +13,20 @@ import cors from 'cors';
 dotenv.config();
 
 const app = express().use(bodyParser.json());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://plp-plataforma-laboral-pro-git-ffe16c-jasmins-projects-d7313758.vercel.app'
+];
 const corsOptions = {
-  origin: (origin: any, callback: any) => {
-    callback(null, true);
+  origin: function (origin: any, callback: any) {
+    console.log('Origin:', origin);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // permitir origen
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
   },
+
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true, // permitir cookies
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -25,6 +35,7 @@ const corsOptions = {
 const PORT = process.env.PORT || 5000;
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json())
 
