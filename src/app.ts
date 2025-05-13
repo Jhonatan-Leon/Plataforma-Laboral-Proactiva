@@ -14,7 +14,9 @@ dotenv.config();
 
 const app = express().use(bodyParser.json());
 const corsOptions = {
-  origin: 'http://localhost:5173', // Ruta de frontend
+  origin: (origin: any, callback: any) => {
+    callback(null, true);
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true, // permitir cookies
   allowedHeaders: ['Content-Type', 'Authorization'],
