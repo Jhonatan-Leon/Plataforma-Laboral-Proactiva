@@ -3,7 +3,7 @@ name: Build and deploy Node.js app to Azure Web App - plataformalp
 on:
   push:
     branches:
-      - develop
+      - dev
   workflow_dispatch:
 
 jobs:
