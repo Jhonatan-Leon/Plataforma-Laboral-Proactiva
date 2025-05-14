@@ -26,7 +26,10 @@ jobs:
 
       # Paso 3: Instalar dependencias
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm install --save-dev ts-node-dev  # Instalar ts-node-dev
+          npm install express  # Instalar express
+          npm ci  # Asegúrate de que las dependencias están instaladas correctamente
 
       # Paso 4: Limpiar la carpeta de despliegue anterior
       - name: Clean deploy folder before build
@@ -80,7 +83,7 @@ jobs:
       - name: Move deploy content to root
         run: |
           shopt -s dotglob
-          mv deploy/* .  # Mueve los archivos a la raíz
+          mv deploy/* .
           rmdir deploy
 
       # Paso 4: Instalar las dependencias de producción
@@ -107,3 +110,18 @@ jobs:
           app-name: 'plataformalp'
           slot-name: 'Production'
           package: .
+
+      # Paso 8: Verificar si el puerto 8181 está ocupado
+      - name: Check if port 8181 is in use
+        run: |
+          lsof -i :8181 || true  # Verificar si el puerto está ocupado sin detener el proceso
+
+      # Paso 9: Liberar el puerto 8181 si está en uso
+      - name: Kill process on port 8181
+        run: |
+          PID=$(lsof -t -i :8181) && kill -9 $PID || echo "Port 8181 is not in use"  # Matar el proceso si está utilizando el puerto 8181
+
+      # Paso 10: Verificar el despliegue
+      - name: Verify deployment
+        run: |
+          curl -f http://localhost:8181 || echo "App not running"
