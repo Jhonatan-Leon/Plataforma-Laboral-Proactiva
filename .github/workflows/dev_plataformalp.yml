@@ -3,8 +3,8 @@ name: Build and deploy Node.js app to Azure Web App - plataformalp
 on:
   push:
     branches:
-      - dev
-  workflow_dispatch:
+      - dev  # Puedes ajustar la rama de despliegue
+  workflow_dispatch:  # Habilita el inicio manual desde GitHub
 
 jobs:
   build:
@@ -13,31 +13,39 @@ jobs:
       contents: read
 
     steps:
+      # Paso 1: Checkout del código
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Paso 2: Configurar Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
-          cache: 'npm'
+          node-version: '20.x'  # Utiliza la versión de Node.js deseada
+          cache: 'npm'  # Habilitar caché de dependencias
 
+      # Paso 3: Instalar dependencias
       - name: Install dependencies
         run: npm ci
 
+      # Paso 4: Limpiar la carpeta de despliegue anterior
       - name: Clean deploy folder before build
         run: rm -rf deploy
 
+      # Paso 5: Construir el proyecto TypeScript
       - name: Build TypeScript
         run: npm run build
 
-      - name: Copy files for deployment
+      # Paso 6: Copiar los archivos necesarios para el despliegue
+      - name: Prepare deploy folder
         run: |
           mkdir -p deploy
           cp -r dist deploy/
           cp package.json deploy/
           cp package-lock.json deploy/
+          cp .env* deploy/ 2>/dev/null || true  # Copiar .env si existe
 
+      # Paso 7: Subir los archivos del artefacto
       - name: Upload deploy content as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -56,38 +64,42 @@ jobs:
       contents: read
 
     steps:
+      # Paso 1: Descargar el artefacto de la build
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: node-app
           path: deploy
 
+      # Paso 2: Limpiar archivos antiguos antes del despliegue
       - name: Clean old files before deploy
         run: |
           find . -mindepth 1 ! -regex '^./deploy\(/.*\)?' -delete
 
+      # Paso 3: Mover los archivos de deploy a la raíz del proyecto
       - name: Move deploy content to root
         run: |
           shopt -s dotglob
           mv deploy/* .
           rmdir deploy
 
+      # Paso 4: Instalar las dependencias de producción
       - name: Install production dependencies
-        run: |
-          npm ci --only=production
+        run: npm ci --only=production
 
-      - name: Verify deploy folder
-        run: |
-          ls -la
-          ls -la dist
+      # Paso 5: Verificar la existencia de los archivos de la carpeta dist
+      - name: Verify dist folder exists
+        run: ls -la dist
 
+      # Paso 6: Iniciar sesión en Azure
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_1232B454165E480197B21FBE29520F1C }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B1FF9C571D9E409A9222E6220EFFA6E9 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_BEBA291622794387AE9CB31625E34A74 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
+      # Paso 7: Desplegar a Azure Web App
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
