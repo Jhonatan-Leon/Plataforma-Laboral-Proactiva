@@ -3,7 +3,7 @@ name: Build and deploy Node.js app to Azure Web App - plataformalp
 on:
   push:
     branches:
-      - dev  # Puedes ajustar la rama de despliegue
+      - dev  # Ajusta la rama de despliegue según tu flujo de trabajo
   workflow_dispatch:  # Habilita el inicio manual desde GitHub
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
       - name: Build TypeScript
         run: npm run build
 
-      # Paso 6: Copiar los archivos necesarios para el despliegue
+      # Paso 6: Preparar la carpeta de despliegue
       - name: Prepare deploy folder
         run: |
           mkdir -p deploy
@@ -80,14 +80,14 @@ jobs:
       - name: Move deploy content to root
         run: |
           shopt -s dotglob
-          mv deploy/* .
+          mv deploy/* .  # Mueve todos los archivos de deploy a la raíz
           rmdir deploy
 
-      # Paso 4: Instalar las dependencias de producción
+      # Paso 4: Instalar dependencias de producción
       - name: Install production dependencies
         run: npm ci --only=production
 
-      # Paso 5: Verificar la existencia de los archivos de la carpeta dist
+      # Paso 5: Verificar la existencia de la carpeta dist
       - name: Verify dist folder exists
         run: ls -la dist
 
