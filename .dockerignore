@@ -1,0 +1,8 @@
+node_modules/
+.git/
+dist/
+.env                 # ¡Crucial! No quieres que tus variables de entorno locales se copien en la imagen
+*.env                # Cualquier archivo con extensión .env (ej. .env.production)
+npm-debug.log        # Logs de depuración de npm
+yarn-error.log       # Logs de error de yarn (si usas yarn)
+logs/                # Si tu aplicación genera un directorio de logs
