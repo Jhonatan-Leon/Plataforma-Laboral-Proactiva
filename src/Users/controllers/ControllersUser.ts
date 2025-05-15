@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import UserService from "../Services/UserServices";
-import { ContratanteDTO, ContratistaDTO } from "../DTO/tiposUsuario";
+import { ContratanteDTO, ContratistaDTO } from "../DTO/TipoUser";
 import generateToken from "../Helpers/generateTokens";
 
 let register = async (req: Request, res: Response) => {

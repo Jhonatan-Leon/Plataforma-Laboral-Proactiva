@@ -8,10 +8,15 @@ abstract class Usuario {
     protected _password: string;
     protected _descripcion: string;
     protected _fotoPerfil: string | File | null;
-    protected _estadoPerfil: "activo" | "inactivo" = "activo";
-    protected _tipoUsuario: "Contratante" | "Contratista";
+    protected _municipio: string;
+    protected _tipoDocumento: TipoDocumento;
+    protected _NumeroCedula: Number;
+    protected _genero: TipoGenero;
+    protected _estadoPerfil: EstadoUser;
+    protected _tipoUsuario: TipoUsuario;
 
-    constructor( nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, estadoPerfil: "activo" | "inactivo",  tipoUsuario: "Contratante" | "Contratista", id?: number) { 
+    constructor( nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento: TipoDocumento, NumeroCedula: Number, genero: TipoGenero,
+        estadoPerfil: EstadoUser,  tipoUsuario: TipoUsuario, id?: number) { 
         this._Id = id;
         this._nombreCompleto = nombreCompleto;
         this._email = email;
@@ -21,13 +26,17 @@ abstract class Usuario {
         this._fotoPerfil = fotoPerfil ?? null;
         this._estadoPerfil = estadoPerfil;
         this._tipoUsuario = tipoUsuario;
+        this._genero = genero;
+        this._municipio = municipio;
+        this._tipoDocumento = tipoDocumento;
+        this._NumeroCedula = NumeroCedula;
     }
 
     get id():Number | undefined {
         return this._Id;
     }
 
-    get estadoPerfil(): "activo" | "inactivo" {
+    get estadoPerfil(): EstadoUser {
         return this._estadoPerfil;
     }
 
@@ -55,12 +64,43 @@ abstract class Usuario {
         return this._password;
     }
 
-    get tipoUsuario(): "Contratante" | "Contratista" {
+    get tipoUsuario():  TipoUsuario {
         return this._tipoUsuario;
     }
-    
 
-    set estadoPerfil(value: "activo" | "inactivo") {
+    get municipio(): string {
+        return this._municipio;
+    }
+    
+    get genero(): TipoGenero {
+        return this._genero;
+    }
+
+    get NumeroCedula(): Number {
+        return this._NumeroCedula;
+    }
+
+    get tipoDocumento(): TipoDocumento {
+        return this._tipoDocumento;
+    }
+
+    set NumeroCedula(value: Number){
+        this._NumeroCedula = value;
+    }
+
+    set tipoDocumento(value: TipoDocumento){
+        this._tipoDocumento = value;
+    }
+
+    set genero(value: TipoGenero){
+        this._genero = value;
+    }
+
+    set municipio(value: string){
+        this._municipio = value;
+    }
+
+    set estadoPerfil(value:EstadoUser) {
         this._estadoPerfil = value;
     }
 
@@ -88,7 +128,7 @@ abstract class Usuario {
         this._password = value;
     }
 
-    set tipoUsuario(value: "Contratante" | "Contratista") {
+    set tipoUsuario(value: TipoUsuario) {
         this._tipoUsuario = value;
     }
 }

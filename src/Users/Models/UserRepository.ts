@@ -1,5 +1,5 @@
 import db from "../../Config/config-db";
-import { ContratanteDTO, ContratistaDTO } from "../DTO/tiposUsuario";
+import { ContratanteDTO, ContratistaDTO } from "../DTO/TipoUser";
 import bcrypt from 'bcryptjs'
 import Auth from "../DTO/AuthDTO";
 
@@ -35,7 +35,7 @@ class UserRepository {
           try{
             const Id = result.rows[0].id_usuario;
             const sql = `INSERT INTO Contratista (id_usuario, cedula, categoria_trabajo, hoja_vida) VALUES ($1, $2, $3, $4) RETURNING id_usuario`;
-            const values = [Id, User.cedula, User.categoriaTrabajo, User.hojaDeVida];
+            const values = [Id, User.cedula, User.categoriaTrabajo];
             const resultId : any = await db.query(sql, values);
             const idUser = resultId.rows[0].id_usuario;
             console.log(idUser)
@@ -231,7 +231,7 @@ class UserRepository {
     }
     const updateContratistaQuery = `UPDATE contratista SET cedula = COALESCE($1, cedula), categoria_trabajo = COALESCE($2, categoria_trabajo), hoja_vida = COALESCE($3, hoja_vida) WHERE id_contratista = $4;`;
 
-    const contratistaValues = [dataUpdate.cedula, dataUpdate.categoriaTrabajo, dataUpdate.hojaDeVida, dataUpdate.id];
+    const contratistaValues = [dataUpdate.cedula, dataUpdate.categoriaTrabajo,  dataUpdate.id];
 
     const result = await db.query(updateContratistaQuery, contratistaValues);
 

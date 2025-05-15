@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import generateHash from "../Helpers/generateHash";
-import { ContratanteDTO, ContratistaDTO } from "../DTO/tiposUsuario";
+import { ContratanteDTO, ContratistaDTO } from "../DTO/TipoUser";
 import UserService from "../Services/UserServices";
 
 
