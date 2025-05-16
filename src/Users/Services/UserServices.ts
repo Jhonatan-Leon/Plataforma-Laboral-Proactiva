@@ -1,21 +1,23 @@
 import generateHash from "../Helpers/generateHash";
 import UserRepository from "../Models/UserRepository";
-import { ContratanteDTO, ContratistaDTO } from "../DTO/TipoUser";
+import { ContratanteDTO, ContratistaDTO, InformalDTO } from "../DTO/TipoUser";
 import Auth from "../DTO/AuthDTO";
 import { subirFotoPerfil, subirHojaVida } from "../Helpers/BlobServices";
 
 class UserService {
 
-    /*
-    static async registerUser(user: Usuario) {
+    
+    static async registerContratanteInformal(user: InformalDTO) {
         user.password = await generateHash(user.password);
-        return await UserRepository.add(user);
+        return await UserRepository.addContratanteInformal(user);
     }
-    */
-
 
     static async registerContratante (User: ContratanteDTO){
         User.password = await generateHash(User.password)
+        const foto = User.fotoPerfil;
+        if(foto && typeof foto === 'string' && foto.startsWith('data:image')) {
+            User.fotoPerfil = await subirFotoPerfil(foto); 
+        }
         return await UserRepository.addContratante(User)
     }
 

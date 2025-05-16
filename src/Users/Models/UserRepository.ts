@@ -1,13 +1,20 @@
 import db from "../../Config/config-db";
-import { ContratanteDTO, ContratistaDTO } from "../DTO/TipoUser";
+import { ContratanteDTO, ContratistaDTO, InformalDTO } from "../DTO/TipoUser";
 import bcrypt from 'bcryptjs'
 import Auth from "../DTO/AuthDTO";
 
 class UserRepository {
 
+    static async addContratanteInformal(User: InformalDTO) {
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto_perfil, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
+        const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];
+        const result: any = await db.query(sql, values)
+        const id = result.rows[0].id_usuario;
+        return id;
+      }
   
     static async addContratante(User: ContratanteDTO) {
-        const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, contraseña, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id_usuario`;
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto_perfil, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
         const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
         const result: any = await db.query(sql, values)
         if(result.rowCount > 0){
@@ -27,15 +34,15 @@ class UserRepository {
     }
 
     static async addContratista(User: ContratistaDTO) {
-        const sql = `INSERT INTO usuarios (nombre_usuario, email, telefono, contraseña, descripcion_usuario, foto_perfil, estado_perfil, tipo_usuario) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id_usuario`;
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto_perfil, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
         const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
         const result: any = await db.query(sql, values)
         console.log(result)
         if(result.rowCount > 0){
           try{
             const Id = result.rows[0].id_usuario;
-            const sql = `INSERT INTO Contratista (id_usuario, cedula, categoria_trabajo, hoja_vida) VALUES ($1, $2, $3, $4) RETURNING id_usuario`;
-            const values = [Id, User.cedula, User.categoriaTrabajo];
+            const sql = `INSERT INTO Contratista (id_usuario, categoria_trabajo, hoja_vida) VALUES ($1, $2, $3, $4) RETURNING id_usuario`;
+            const values = [Id,  User.categoriaTrabajo];
             const resultId : any = await db.query(sql, values);
             const idUser = resultId.rows[0].id_usuario;
             console.log(idUser)
@@ -231,7 +238,7 @@ class UserRepository {
     }
     const updateContratistaQuery = `UPDATE contratista SET cedula = COALESCE($1, cedula), categoria_trabajo = COALESCE($2, categoria_trabajo), hoja_vida = COALESCE($3, hoja_vida) WHERE id_contratista = $4;`;
 
-    const contratistaValues = [dataUpdate.cedula, dataUpdate.categoriaTrabajo,  dataUpdate.id];
+    const contratistaValues = [ dataUpdate.categoriaTrabajo,  dataUpdate.id];
 
     const result = await db.query(updateContratistaQuery, contratistaValues);
 
