@@ -13,10 +13,19 @@ let register = async (req: Request, res: Response) => {
             password,
             descripcion,
             fotoPerfil,
+            municipio,
+            tipoDocumento,
+            NumeroCedula,
+            genero,
+            sector,
             estadoPerfil,
             tipo_usuario,
             NIT,
             cedula,
+            HabilidadesTecnicas,
+            HabilidadesSociales,
+            EstudiosComplementario,
+            experiencia,
             categoria_trabajo,
             hojaDeVida  
         } = req.body;
@@ -28,11 +37,11 @@ let register = async (req: Request, res: Response) => {
         let ID: any;
 
         if (tipo_usuario === "Contratante" && NIT) {
-           usuarioFinal = new ContratanteDTO(NIT, nombreCompleto, email, telefono, password,descripcion, fotoPerfil , estadoPerfil, tipo_usuario);
+           usuarioFinal = new ContratanteDTO(NIT, nombreCompleto, email, telefono, password,descripcion, fotoPerfil , municipio, tipoDocumento,NumeroCedula,genero,sector, estadoPerfil, tipo_usuario);
            const IdContratante = await UserService.registerContratante(usuarioFinal);
         } 
         else if (tipo_usuario === "Contratista" && cedula && categoria_trabajo && hojaDeVida) {
-            usuarioFinal = new ContratistaDTO(cedula, categoria_trabajo, hojaDeVida, nombreCompleto, email, telefono, password,descripcion, fotoPerfil, estadoPerfil, tipo_usuario);
+            usuarioFinal = new ContratistaDTO(cedula,HabilidadesTecnicas, HabilidadesSociales,EstudiosComplementario,experiencia, categoria_trabajo, hojaDeVida, nombreCompleto, email, telefono, password,descripcion, fotoPerfil,municipio,tipoDocumento,NumeroCedula,genero, estadoPerfil, tipo_usuario);
             const result: any = await UserService.registerContratista(usuarioFinal);
             ID = result.idUser;
         } 

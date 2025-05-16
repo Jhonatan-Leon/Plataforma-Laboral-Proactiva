@@ -28,11 +28,11 @@ class ContratistaDTO extends Usuario {
     private _Experencia: string;
     private _categoriaTrabajo: string;
 
-    constructor(cedula: string, HabilidadesTecnica: string,  HabilidadesSociales: string, EstudiosComplementario: string, experencia: string, categoriaTrabajo: string, nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,  
+    constructor(cedula: string, HabilidadesTecnicas: string,  HabilidadesSociales: string, EstudiosComplementario: string, experencia: string, categoriaTrabajo: string, nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,  
         sector: string, tipoUsuario: TipoUsuario, id?: number )  {
         super(nombreCompleto, email, telefono, password, descripcion, fotoPerfil, municipio, tipoDocumento, NumeroCedula, genero, estadoPerfil, tipoUsuario, id)
         this._cedula = cedula;
-        this._HabilidadesTecnicas = HabilidadesTecnica;
+        this._HabilidadesTecnicas = HabilidadesTecnicas;
         this._HabilidadesSociales = HabilidadesSociales;
         this._EstudioComplementario = EstudiosComplementario;
         this._Experencia = experencia;

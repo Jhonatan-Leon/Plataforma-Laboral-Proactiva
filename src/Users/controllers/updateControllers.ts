@@ -15,10 +15,19 @@ let updateUser = async (req: Request, res: Response) => {
             fotoPerfil,
             estadoPerfil,
             tipo_usuario,
+            municipio,
+            tipoDocumento,
+            NumeroCedula,
+            genero,
+            sector,
             NIT,
             cedula,
+            HabilidadesTecnicas,
+            HabilidadesSociales,
+            EstudiosComplementario,
+            experiencia,
             categoria_trabajo,
-            hojaDeVida
+            hojaDeVida 
         } = req.body;
 
         console.log(`Actualizando usuario con email: ${email}`);
@@ -47,11 +56,11 @@ let updateUser = async (req: Request, res: Response) => {
         let usuarioFinal: ContratanteDTO | ContratistaDTO | null = null;
         
         if (tipo_usuario === "Contratante" && NIT) {
-            usuarioFinal = new ContratanteDTO( NIT ?? user.NIT, user.nombre_usuario, user.email, user.telefono, user.password, user.descripcion, user.fotoPerfil, user.estadoPerfil, user.tipo_usuario, user.id);
+            usuarioFinal = new ContratanteDTO( NIT ?? user.NIT, user.nombreCompleto, user.email, user.telefono,user.password,user.descripcion, user.fotoPerfil , user.municipio, user.tipoDocumento,user.NumeroCedula,user.genero,user.sector, user.estadoPerfil, user.tipo_usuario,user.id);
             await UserService.updateContratante(usuarioFinal);
         } 
         else if (tipo_usuario === "Contratista" && (cedula || categoria_trabajo || hojaDeVida)) {
-            usuarioFinal = new ContratistaDTO(cedula ?? user.cedula, categoria_trabajo ?? user.categoria_trabajo, hojaDeVida ?? user.hojaDeVida, user.nombre_usuario, user.email, user.telefono, user.password, user.descripcion, user.fotoPerfil, user.estadoPerfil, user.tipo_usuario, user.id);
+            usuarioFinal = new ContratistaDTO(cedula ?? user.cedula, user.HabilidadesTecnicas, user.HabilidadesSociales,user.EstudiosComplementario,user.experiencia,user.categoria_trabajo ?? user.categoria_trabajo,  user.hojaDeVida ?? user.hojaDeVida, user.nombreCompleto, user.email, user.telefono, user.password,user.descripcion, user.fotoPerfil,user.municipio,user.tipoDocumento,user.NumeroCedula,user.genero, user.estadoPerfil, user.tipo_usuario);
             await UserService.updateContratista(usuarioFinal);
         }
         

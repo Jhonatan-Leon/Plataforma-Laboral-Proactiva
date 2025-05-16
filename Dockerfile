@@ -7,9 +7,11 @@ WORKDIR /app
 # Paso 3: Copiar los archivos de definición de dependencias
 # Esto permite que Docker cachee la capa de npm install si package.json no cambia
 COPY package.json package-lock.json ./
+COPY .env .env
 
 # Paso 4: Instalar las dependencias de producción
-RUN npm install --only=production
+RUN npm install
+
 
 # Paso 5: Copiar el resto del código de la aplicación (incluyendo los archivos TypeScript)
 COPY . .
@@ -24,4 +26,4 @@ EXPOSE 5432
 
 # Paso 8: Comando para iniciar la aplicación compilada cuando el contenedor se ejecute
 # Ejecuta el archivo JavaScript compilado (normalmente en el directorio 'dist')
-CMD ["node", "dist/app.js"] 
+CMD ["node", "dist/app.js"]
