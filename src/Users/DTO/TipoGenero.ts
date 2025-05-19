@@ -1,5 +1,5 @@
 enum TipoGenero {
-    F,
-    M,
-    Otro
+    F = "Femenino",
+    M = "Masculino",
+    Otro = "Otro"
 }

@@ -6,14 +6,14 @@ import{validationResult} from 'express-validator'
 export const ValidatorUser = (req: Request, res: Response, next: NextFunction): void => {
     
     const error = validationResult(req);
-    const { nombreCompleto, telefono, estadoPerfil, email, password, descripcion, tipo_usuario} = req.body;
+    const { nombreCompleto, email, telefono, telefono2, password, descripcion, fotoPerfil, municipio, tipoDocumento, numeroCedula, genero, estado_perfil, tipo_usuario} = req.body;
+        console.log("Datos de entrada: ", req.body);
+    const fotoP = req.file;
 
-    const file = req.files as {[key: string]: Express.Multer.File[]};
-
-    if (!nombreCompleto || !telefono || !email || !password  || !descripcion) {
+    if (!nombreCompleto || !telefono || !email || !password  || !descripcion || !municipio || !tipoDocumento || !numeroCedula || !genero  || !tipo_usuario) {
         res.status(400).json({ message: 'Todos los datos son requeridos' });
         return;
-    }else if (tipo_usuario && !['Contratista', "Contratante"].includes(tipo_usuario)){
+    }else if (tipo_usuario && !['contratista', "contratante"].includes(tipo_usuario)){
         res.status(400).json({message: "Tipo de usuario debe ser: Contratista o Contratante" })
     }
 
@@ -23,12 +23,11 @@ export const ValidatorUser = (req: Request, res: Response, next: NextFunction): 
         return;
     }
 
-    const fotoP = file.fotoPerfil?.[0]
     if (fotoP) {
         req.body.fotoPerfil = `data:${fotoP.mimetype};base64,${fotoP.buffer.toString('base64')}`;
     } else {
         req.body.fotoPerfil = null;
-    } 
+    }
 
 
     // Validación básica de email

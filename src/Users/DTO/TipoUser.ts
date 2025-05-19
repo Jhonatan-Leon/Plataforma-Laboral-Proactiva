@@ -4,9 +4,9 @@ class ContratanteDTO extends Usuario {
     private _NIT: string;
     private _sector: string;
 
-    constructor(NIT: string, sector: string, nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,  
+    constructor(NIT: string, sector: string, nombreCompleto: string, email: string, telefono: string, telefono2: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,  
          tipoUsuario: TipoUsuario, id?: number ) {
-        super(nombreCompleto, email, telefono, password, descripcion, fotoPerfil, municipio, tipoDocumento, NumeroCedula, genero, estadoPerfil, tipoUsuario, id)
+        super(nombreCompleto, email, telefono, telefono2, password, descripcion, fotoPerfil, municipio, tipoDocumento, NumeroCedula, genero, estadoPerfil, tipoUsuario, id)
         this._NIT = NIT;
         this._sector = sector;
     }
@@ -35,9 +35,9 @@ class ContratistaDTO extends Usuario {
     private _Experencia: string;
     private _categoriaTrabajo: string;
 
-    constructor( HabilidadesTecnicas: string,  HabilidadesSociales: string, EstudiosComplementario: string, experencia: string, categoriaTrabajo: string, nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,
+    constructor( HabilidadesTecnicas: string,  HabilidadesSociales: string, EstudiosComplementario: string, experencia: string, categoriaTrabajo: string, nombreCompleto: string, email: string, telefono: string, telefono2: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,
          tipoUsuario: TipoUsuario, id?: number )  {
-        super(nombreCompleto, email, telefono, password, descripcion, fotoPerfil, municipio, tipoDocumento, NumeroCedula, genero, estadoPerfil, tipoUsuario, id)
+        super(nombreCompleto, email, telefono, telefono2,password, descripcion, fotoPerfil, municipio, tipoDocumento, NumeroCedula, genero, estadoPerfil, tipoUsuario, id)
         this._HabilidadesTecnicas = HabilidadesTecnicas;
         this._HabilidadesSociales = HabilidadesSociales;
         this._EstudioComplementario = EstudiosComplementario;
@@ -89,12 +89,11 @@ class ContratistaDTO extends Usuario {
 }
 
 class InformalDTO extends Usuario {
-    constructor(nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,
+    constructor(nombreCompleto: string, email: string, telefono: string, telefono2: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,
             tipoUsuario: TipoUsuario, id?: number){
-        super(nombreCompleto, email, telefono, password, descripcion, fotoPerfil, municipio, tipoDocumento, NumeroCedula, genero, estadoPerfil, tipoUsuario, id)
+        super(nombreCompleto, email, telefono, telefono2, password, descripcion, fotoPerfil, municipio, tipoDocumento, NumeroCedula, genero, estadoPerfil, tipoUsuario, id)
     }  
 }
-
 
 
 

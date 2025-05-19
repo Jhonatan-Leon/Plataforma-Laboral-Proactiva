@@ -6,7 +6,7 @@ import Auth from "../DTO/AuthDTO";
 class UserRepository {
 
     static async addContratanteInformal(User: InformalDTO) {
-        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto_perfil, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 $12) RETURNING id_usuario`;
         const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];
         const result: any = await db.query(sql, values)
         const id = result.rows[0].id_usuario;
@@ -14,13 +14,13 @@ class UserRepository {
       }
   
     static async addContratante(User: ContratanteDTO) {
-        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto_perfil, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 $12) RETURNING id_usuario`;
         const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
         const result: any = await db.query(sql, values)
         if(result.rowCount > 0){
           try{
             let Id = result.rows[0].id_usuario;
-            const sql = `INSERT INTO Contratantes (id_usuario, NIT) VALUES (?, ?)`;
+            const sql = `INSERT INTO Contratantes (id_usuario, NIT, sector) VALUES ($1, $2, $3)`;
             const values = [Id, User.NIT];
             console.log(values);
             return await db.query(sql, values);
@@ -34,15 +34,15 @@ class UserRepository {
     }
 
     static async addContratista(User: ContratistaDTO) {
-        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto_perfil, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
-        const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
+        const values = [ User.tipoUsuario, User.password, User.nombreCompleto, User.telefono, User.telefono2 ?? null, User.email, User.municipio, User.genero, User.fotoPerfil ?? null, User.descripcion, User.estadoPerfil];        
         const result: any = await db.query(sql, values)
         console.log(result)
         if(result.rowCount > 0){
           try{
             const Id = result.rows[0].id_usuario;
-            const sql = `INSERT INTO Contratista (id_usuario, categoria_trabajo, hoja_vida) VALUES ($1, $2, $3, $4) RETURNING id_usuario`;
-            const values = [Id,  User.categoriaTrabajo];
+            const sql = `INSERT INTO Contratista (id_usuario, categoria_trabajo, habilidades_tecnicas, habilidades_sociales, estudio_complementario, experiencia, ocupacion ) VALUES ($1, $2, $3, $4, $5 , $6, $7) RETURNING id_usuario`;
+            const values = [Id,  User.categoriaTrabajo, User.HabilidadesTecnicas, User.HabilidadesSociales, User.EstudioComplementario, User.Experiencia, User.categoriaTrabajo];
             const resultId : any = await db.query(sql, values);
             const idUser = resultId.rows[0].id_usuario;
             console.log(idUser)
@@ -62,7 +62,7 @@ class UserRepository {
 
     static async login(auth: Auth) {
       try {
-          const sql = 'SELECT id_usuario, estado_perfil, tipo_usuario, contraseña FROM usuarios WHERE email = $1';
+          const sql = 'SELECT id_usuario, estado_perfil, rol, contraseña FROM usuarios WHERE correo_electronico = $1';
           const values = [auth.email];
           const result: any = await db.query(sql, values);
   

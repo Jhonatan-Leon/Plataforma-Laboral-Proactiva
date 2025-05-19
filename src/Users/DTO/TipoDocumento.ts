@@ -1,4 +1,5 @@
 enum TipoDocumento{
-    Cedula,
-    Pasaporte
+    CC = "CC",
+    Pasaporte = "Pasaporte",
+    NIT = "NIT",
 }

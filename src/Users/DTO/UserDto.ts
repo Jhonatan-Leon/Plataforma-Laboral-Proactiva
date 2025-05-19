@@ -5,6 +5,7 @@ abstract class Usuario {
     protected _nombreCompleto: string;
     protected _email: string;
     protected _telefono: string;
+    protected _telefono2?: string | null;
     protected _password: string;
     protected _descripcion: string;
     protected _fotoPerfil: string | File | null;
@@ -15,16 +16,17 @@ abstract class Usuario {
     protected _estadoPerfil: EstadoUser;
     protected _tipoUsuario: TipoUsuario;
 
-    constructor( nombreCompleto: string, email: string, telefono: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento: TipoDocumento, NumeroCedula: Number, genero: TipoGenero,
+    constructor( nombreCompleto: string, email: string, telefono: string, telefono2: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento: TipoDocumento, NumeroCedula: Number, genero: TipoGenero,
         estadoPerfil: EstadoUser,  tipoUsuario: TipoUsuario, id?: number) { 
         this._Id = id;
         this._nombreCompleto = nombreCompleto;
         this._email = email;
         this._telefono = telefono;
+        this._telefono2 = telefono2;
         this._password = password;
         this._descripcion = descripcion;
         this._fotoPerfil = fotoPerfil ?? null;
-        this._estadoPerfil = estadoPerfil;
+        this._estadoPerfil = estadoPerfil ?? EstadoUser.Activo;
         this._tipoUsuario = tipoUsuario;
         this._genero = genero;
         this._municipio = municipio;
@@ -46,6 +48,10 @@ abstract class Usuario {
 
     get telefono(): string {
         return this._telefono;
+    }
+
+    get telefono2(): string | null{
+        return this._telefono2 ?? null;
     }
 
     get nombreCompleto(): string {
@@ -99,6 +105,10 @@ abstract class Usuario {
     set municipio(value: string){
         this._municipio = value;
     }
+
+    set telefono2(value: string | null){
+        this._telefono2 = value ?? null;
+    }   
 
     set estadoPerfil(value:EstadoUser) {
         this._estadoPerfil = value;

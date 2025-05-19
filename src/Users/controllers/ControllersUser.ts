@@ -5,20 +5,26 @@ import generateToken from "../Helpers/generateTokens";
 
 let register = async (req: Request, res: Response) => {
     try {
+
+        if(!req.body.estado_perfil){
+            req.body.estado_perfil = "activo";
+        }
+
         const {
             id,
             nombreCompleto,
             email,
             telefono,
+            telefono2,
             password,
             descripcion,
             fotoPerfil,
             municipio,
             tipoDocumento,
-            NumeroCedula,
+            numeroCedula,
             genero,
             sector,
-            estadoPerfil,
+            estado_perfil,
             tipo_usuario,
             NIT,
             HabilidadesTecnicas,
@@ -28,22 +34,26 @@ let register = async (req: Request, res: Response) => {
             categoria_trabajo,
         } = req.body;
 
+
+
        //Datos de entrada:
-       console.log("Datos de entrada: ", req.body);
+       console.log(`Datos de entrada: , Nombre: ${nombreCompleto}, email: ${email}, telefono: ${telefono}, telefono2: ${telefono2}, password: ${password}, descripcion: ${descripcion}, municipio ${municipio}, 
+        tipoDocumento: ${tipoDocumento}, numeroCedula: ${numeroCedula}, genero: ${genero}, sector: ${sector}, estadoPerfil: ${estado_perfil}, tipo_usuario: ${tipo_usuario}, NIT, HabilidadesTecnicas: ${HabilidadesTecnicas}, HabilidadesSociales ${HabilidadesSociales}
+        , EstudiosComplementario: ${EstudiosComplementario}, experiencia: ${experiencia}, categoria_trabajo: ${categoria_trabajo}`);
 
         let usuarioFinal: any;
         let ID: any;
 
-        if (tipo_usuario === "Contratante" && NIT && sector ) {
-           usuarioFinal = new ContratanteDTO(NIT, sector, nombreCompleto, email, telefono, password,descripcion, fotoPerfil , municipio, tipoDocumento,NumeroCedula,genero,sector, estadoPerfil, tipo_usuario);
+        if (tipo_usuario === "contratante" && NIT && sector ) {
+           usuarioFinal = new ContratanteDTO(NIT, sector, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil , municipio, tipoDocumento,numeroCedula,genero,sector, estado_perfil, tipo_usuario);
            ID = await UserService.registerContratante(usuarioFinal);
         } 
-        else if (tipo_usuario === "Contratista" && categoria_trabajo && HabilidadesTecnicas && HabilidadesSociales && EstudiosComplementario && experiencia) {
-            usuarioFinal = new ContratistaDTO(HabilidadesTecnicas, HabilidadesSociales,EstudiosComplementario,experiencia, categoria_trabajo, nombreCompleto, email, telefono, password,descripcion, fotoPerfil,municipio,tipoDocumento,NumeroCedula,genero, estadoPerfil, tipo_usuario);
+        else if (tipo_usuario === "contratista" && categoria_trabajo && HabilidadesTecnicas && HabilidadesSociales ) {
+            usuarioFinal = new ContratistaDTO(HabilidadesTecnicas, HabilidadesSociales,EstudiosComplementario,experiencia, categoria_trabajo, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil,municipio,tipoDocumento,numeroCedula,genero, estado_perfil, tipo_usuario);
             const result: any = await UserService.registerContratista(usuarioFinal);
             ID = result.idUser;
         } else if(tipo_usuario === "informal" ) {
-            usuarioFinal = new InformalDTO(nombreCompleto, email, telefono, password,descripcion, fotoPerfil , municipio, tipoDocumento,NumeroCedula,genero,estadoPerfil,tipo_usuario);
+            usuarioFinal = new InformalDTO(nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil , municipio, tipoDocumento,numeroCedula,genero, estado_perfil,tipo_usuario);
             ID = await UserService.registerContratanteInformal(usuarioFinal);
         }else {
             throw new Error("Datos insuficientes para registrar un Contratante o Contratista");
