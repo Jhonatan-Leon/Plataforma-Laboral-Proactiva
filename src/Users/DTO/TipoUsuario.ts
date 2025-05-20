@@ -1,5 +1,5 @@
 enum TipoUsuario {
-    Contratista = "Contratista",
-    Contratante = "Contratante",
+    Contratista = "contratista",
+    Contratante = "contratante",
     ContratanteInformal = "informal"
 }

@@ -1,5 +1,5 @@
 enum EstadoUser {
-    Activo,
-    Inactivo,
-    Suspendido
+    Activo = "activo",
+    Inactivo = "inactivo",
+    Suspendido = "pendiente",
 }
