@@ -14,8 +14,8 @@ dotenv.config();
 
 const app = express().use(bodyParser.json());
 const allowedOrigins = [
-  'http://localhost:8000',
   'http://localhost:5173',
+  'http://localhost:8000',
   'https://plp-plataforma-laboral-proactiva.vercel.app'
 ];
 const corsOptions = {
