@@ -15,7 +15,7 @@ dotenv.config();
 const app = express().use(bodyParser.json());
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://plp-plataforma-laboral-pro-git-ffe16c-jasmins-projects-d7313758.vercel.app'
+  'https://plp-plataforma-laboral-proactiva.vercel.app'
 ];
 const corsOptions = {
   origin: function (origin: any, callback: any) {
