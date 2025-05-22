@@ -34,8 +34,9 @@ class ContratistaDTO extends Usuario {
     private _EstudioComplementario: string;
     private _Experencia: string;
     private _categoriaTrabajo: string;
+    private _Ocupacion : string;
 
-    constructor( HabilidadesTecnicas: string,  HabilidadesSociales: string, EstudiosComplementario: string, experencia: string, categoriaTrabajo: string, nombreCompleto: string, email: string, telefono: string, telefono2: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,
+    constructor( HabilidadesTecnicas: string,  HabilidadesSociales: string, EstudiosComplementario: string, experencia: string, categoriaTrabajo: string,   Ocupacion: string, nombreCompleto: string, email: string, telefono: string, telefono2: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,
          tipoUsuario: TipoUsuario, id?: number )  {
         super(nombreCompleto, email, telefono, telefono2,password, descripcion, fotoPerfil, municipio, tipoDocumento, NumeroCedula, genero, estadoPerfil, tipoUsuario, id)
         this._HabilidadesTecnicas = HabilidadesTecnicas;
@@ -43,6 +44,7 @@ class ContratistaDTO extends Usuario {
         this._EstudioComplementario = EstudiosComplementario;
         this._Experencia = experencia;
         this._categoriaTrabajo = categoriaTrabajo;
+        this._Ocupacion = Ocupacion;
     }
 
 
@@ -70,6 +72,9 @@ class ContratistaDTO extends Usuario {
     get Experiencia(): string {
         return this._Experencia;
     }
+    get Ocupacion(): string {
+        return this._Ocupacion;
+    }
 
     set HabilidadesSociales(value: string){
         this._HabilidadesSociales = value;
@@ -85,6 +90,9 @@ class ContratistaDTO extends Usuario {
 
     set Experiencia(value: string){
         this._Experencia = value;
+    }
+    set Ocupacion(value: string){
+        this._Ocupacion = value;
     }
 }
 

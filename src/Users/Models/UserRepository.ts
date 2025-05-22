@@ -20,7 +20,7 @@ class UserRepository {
         if(result.rowCount > 0){
           try{
             let Id = result.rows[0].id_usuario;
-            const sql = `INSERT INTO Contratantes (id_usuario, NIT, sector) VALUES ($1, $2, $3)`;
+            const sql = `INSERT INTO Contratantes (id_usuario, nit, sector) VALUES ($1, $2, $3)`;
             const values = [Id, User.NIT];
             console.log(values);
             return await db.query(sql, values);
@@ -98,12 +98,32 @@ class UserRepository {
   
   
 
-    static async getUserById(Id: string){
+    static async getUserById(id_usuario: string){
       try {
-        const query = `SELECT u.id_usuario, u.nombre_usuario, u.email, u.telefono, u.password, u.descripcion_usuario, u.foto_perfil, u.estado_perfil, u.rol, c.NIT AS contratante_NIT, t.cedula AS contratista_cedula, t.categoria_trabajo, t.hoja_vida FROM usuarios u
-        LEFT JOIN contratantes c ON u.id_usuario = c.id_contratante AND u.tipo_usuario = 'contratante' LEFT JOIN contratistas t ON u.id_usuario = t.id_contratista AND u.tipo_usuario = 'contratista' WHERE u.id_usuario = $1`;
+        const query = `SELECT 
+      u.id_usuario,
+      u.nombre_completo,
+      u.correo_electronico,
+      u.numero_de_telefono,
+      u.contraseña,
+      u.descripcion,
+      u.foto,
+      u.estado_perfil,
+      u.rol,
+      c.nit AS contratante_nit,
+      c.sector AS contratante_sector,
+      t.categoria_trabajo,
+      t.habilidades_tecnicas,
+      t.habilidades_sociales,
+      t.estudio_complementario,
+      t.experiencia,
+      t.ocupacion
+      FROM usuarios u
+      LEFT JOIN contratante c ON u.id_usuario = c.id_usuario
+      LEFT JOIN contratista t ON u.id_usuario = t.id_usuario
+      WHERE u.id_usuario = $1 `;
 
-        const result: any = await db.query(query, [Id]);
+        const result: any = await db.query(query, [id_usuario]);
 
         if (result.rowCount === 0) return null;
 
@@ -126,13 +146,32 @@ class UserRepository {
 
     }
     
-    static async getByRol(tipo_usuario: "Contratista" | "Contratante"){
+    static async getByRol(rol: "contratista" | "contratante"){
       try {
-        const query = `SELECT u.id_usuario, u.nombre_usuario, u.email, u.telefono, u.contraseña, u.descripcion_usuario, u.foto_perfil, u.estado_perfil, u.tipo_usuario, c.nit AS contratante_nit, t.cedula AS contratista_cedula, t.categoria_trabajo, t.hoja_vida FROM usuarios u
-        LEFT JOIN contratante c ON u.id_usuario = c.id_usuario AND u.tipo_usuario = 'contratante' LEFT JOIN contratista t 
-        ON u.id_usuario = t.id_usuario AND u.tipo_usuario = 'contratista' WHERE u.tipo_usuario = $1;`;
+        const query = `SELECT 
+          u.id_usuario,
+          u.nombre_completo,
+          u.correo_electronico,
+          u.numero_de_telefono,
+          u.contraseña,
+          u.descripcion,
+          u.foto,
+          u.estado_perfil,
+          u.rol,
+          c.nit AS contratante_nit,
+          c.sector AS contratante_sector,
+          t.categoria_trabajo,
+          t.habilidades_tecnicas,
+          t.habilidades_sociales,
+          t.estudio_complementario,
+          t.experiencia,
+          t.ocupacion
+        FROM usuarios u
+        LEFT JOIN contratante c ON u.id_usuario = c.id_usuario AND u.rol = 'contratante_formal'
+        LEFT JOIN contratista t ON u.id_usuario = t.id_usuario AND u.rol = 'contratista'
+        WHERE u.rol = $1;`;
       
-        const values = [tipo_usuario]
+        const values = [rol]
       
         console.log(values)
 
@@ -160,14 +199,33 @@ class UserRepository {
       }
     }
 
-    static async getUserByEmail(email: string) {
+    static async getUserByEmail(correo_electronico: string) {
       try {
           const query = `
-              SELECT u.id_usuario, u.nombre_usuario, u.email, u.telefono, u.password, u.descripcion_usuario, u.foto_perfil, u.estado_perfil, u.tipo_usuario, c.NIT AS contratante_NIT, 
-                t.cedula AS contratista_cedula, t.categoria_trabajo, t.hoja_vida FROM usuarios u LEFT JOIN contratantes c ON u.id_usuario = c.id_contratante LEFT JOIN contratistas t ON u.id_usuario = t.id_contratista
-                WHERE u.email = ?;`;
-  
-          const result : any = await db.query(query, [email]);
+                  SELECT 
+                u.id_usuario,
+                u.nombre_completo,
+                u.correo_electronico,
+                u.numero_de_telefono,
+                u.contraseña,
+                u.descripcion,
+                u.foto,
+                u.estado_perfil,
+                u.rol,
+                c.nit AS contratante_nit,
+                c.sector AS contratante_sector,
+                t.categoria_trabajo,
+                t.habilidades_tecnicas,
+                t.habilidades_sociales,
+                t.estudio_complementario,
+                t.experiencia,
+                t.ocupacion
+              FROM usuarios u
+              LEFT JOIN contratante c ON u.id_usuario = c.id_usuario
+              LEFT JOIN contratista t ON u.id_usuario = t.id_usuario
+              WHERE u.correo_electronico = $1`;
+                
+          const result : any = await db.query(query, [correo_electronico]);
   
           if (result.length === 0) return null;
   
@@ -201,57 +259,133 @@ class UserRepository {
   }
   */
 
-  static async updateContratante(dataUpdate: ContratanteDTO){
-    try{
-      const updateUserQuery = `UPDATE usuarios SET nombre_usuario = COALESCE($1, nombre_usuario), telefono = COALESCE($2, telefono), contraseña = COALESCE($3, contraseña), descripcion_usuario = COALESCE($4, descripcion_usuario), foto_perfil = COALESCE($5, foto_perfil), estado_perfil = COALESCE($6, estado_perfil), tipo_usuario = COALESCE($7, tipo_usuario) WHERE id_usuario = $8;`;
-
-      const userValues = [dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.password, dataUpdate.descripcion, dataUpdate.fotoPerfil, dataUpdate.estadoPerfil, dataUpdate.tipoUsuario, dataUpdate.email];
-
-      const userResult = await db.query(updateUserQuery, userValues)
-
-      if(userResult.rowCount === 0){
-        return {message: 'No se logro actualizar el usuario'}
-      }
-
-      const put = `UPDATE contratantes SET NIT = COALESCE(?, NIT) WHERE id_contratante = ?;`
-      const values = [dataUpdate.NIT, dataUpdate.id];
-
-      const result: any = await db.query(put, values);
-      return {message: "Uusario actualizado exitosamente", result}
-    }catch(err: any){
-      console.error("Error al actualizar datos: ",err)
-      throw err;
-    }
-  }
-
-  static async updateContratista(dataUpdate: ContratistaDTO){
-    
+  static async updateContratante(dataUpdate: ContratanteDTO) {
   try {
-    const updateUserQuery = `UPDATE usuarios SET nombre_usuario = COALESCE($1, nombre_usuario), telefono = COALESCE($2, telefono), contraseña = COALESCE($3, contraseña), descripcion_usuario = COALESCE($4, descripcion_usuario), foto_perfil = COALESCE($5, foto_perfil), estado_perfil = COALESCE($6, estado_perfil), tipo_usuario = COALESCE($7, tipo_usuario) WHERE id_usuario = $8;`;
+    const updateUserQuery = `
+      UPDATE usuarios SET
+        rol = COALESCE($1, rol),
+        contraseña = COALESCE($2, contraseña),
+        nombre_completo = COALESCE($3, nombre_completo),
+        numero_de_telefono = COALESCE($4, numero_de_telefono),
+        correo_electronico = COALESCE($5, correo_electronico),
+        foto = COALESCE($6, foto),
+        descripcion = COALESCE($7, descripcion),
+        estado_perfil = COALESCE($8, estado_perfil)
+      WHERE id_usuario = $9;
+    `;
 
-    const userValues = [dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.password, dataUpdate.descripcion, dataUpdate.fotoPerfil, dataUpdate.estadoPerfil, dataUpdate.tipoUsuario, dataUpdate.email];
+    const userValues = [
+      dataUpdate.tipoUsuario,
+      dataUpdate.password,
+      dataUpdate.nombreCompleto,
+      dataUpdate.telefono,
+      dataUpdate.email,
+      dataUpdate.fotoPerfil,
+      dataUpdate.descripcion,
+      dataUpdate.estadoPerfil,
+      dataUpdate.id
+    ];
 
-    const userResult = await db.query(updateUserQuery, userValues)
+    const userResult = await db.query(updateUserQuery, userValues);
 
+    if (userResult.rowCount === 0) {
+      return { message: 'No se logró actualizar el usuario' };
+    }
+
+    const updateContratanteQuery = `
+      UPDATE contratante SET
+        nit = COALESCE($1, nit),
+        sector = COALESCE($2, sector)
+      WHERE id_usuario = $3;
+    `;
+
+    const contratanteValues = [dataUpdate.NIT, dataUpdate.sector, dataUpdate.id];
+    const contratanteResult = await db.query(updateContratanteQuery, contratanteValues);
+
+    return {
+      message: "Usuario actualizado exitosamente",
+      result: { userUpdate: userResult.rowCount, contratanteUpdate: contratanteResult.rowCount }
+    };
+  } catch (err: any) {
+    console.error("Error al actualizar datos:", err);
+    throw err;
+  }
+}
+
+
+  static async updateContratista(dataUpdate: ContratistaDTO) {
+  try {
+    // Primero: actualizar los campos de la tabla usuarios
+    const updateUserQuery = `
+      UPDATE usuarios SET
+        rol = COALESCE($1, rol),
+        contraseña = COALESCE($2, contraseña),
+        nombre_completo = COALESCE($3, nombre_completo),
+        numero_de_telefono = COALESCE($4, numero_de_telefono),
+        correo_electronico = COALESCE($5, correo_electronico),
+        foto = COALESCE($6, foto),
+        descripcion = COALESCE($7, descripcion),
+        estado_perfil = COALESCE($8, estado_perfil)
+      WHERE id_usuario = $9;
+    `;
+
+    const userValues = [
+      dataUpdate.tipoUsuario,
+      dataUpdate.password,
+      dataUpdate.nombreCompleto,
+      dataUpdate.telefono,
+      dataUpdate.email,
+      dataUpdate.fotoPerfil,
+      dataUpdate.descripcion,
+      dataUpdate.estadoPerfil,
+      dataUpdate.id
+    ];
+
+    const userResult = await db.query(updateUserQuery, userValues);
     if (userResult.rowCount === 0) {
       return { message: 'No se encontró el usuario para actualizar.' };
     }
-    const updateContratistaQuery = `UPDATE contratista SET cedula = COALESCE($1, cedula), categoria_trabajo = COALESCE($2, categoria_trabajo), hoja_vida = COALESCE($3, hoja_vida) WHERE id_contratista = $4;`;
 
-    const contratistaValues = [ dataUpdate.categoriaTrabajo,  dataUpdate.id];
+    // Segundo: actualizar los campos de la tabla contratista
+    const updateContratistaQuery = `
+      UPDATE contratista SET
+        categoria_trabajo = COALESCE($1, categoria_trabajo),
+        habilidades_tecnicas = COALESCE($2, habilidades_tecnicas),
+        habilidades_sociales = COALESCE($3, habilidades_sociales),
+        estudio_complementario = COALESCE($4, estudio_complementario),
+        experiencia = COALESCE($5, experiencia),
+        ocupacion = COALESCE($6, ocupacion)
+      WHERE id_usuario = $7;
+    `;
 
-    const result = await db.query(updateContratistaQuery, contratistaValues);
+    const contratistaValues = [
+      dataUpdate.categoriaTrabajo,
+      dataUpdate.HabilidadesTecnicas,
+      dataUpdate.HabilidadesSociales,
+      dataUpdate.EstudioComplementario,
+      dataUpdate.Experiencia,
+      dataUpdate.Ocupacion,
+      dataUpdate.id
+    ];
 
-    return {message: 'Usuario actualizado correctamente', result}
-    } catch (err) {
-      console.error('Error al actualizar usuario contratista:', err);
-      throw err;
-    }
+    const contratistaResult = await db.query(updateContratistaQuery, contratistaValues);
 
+    return {
+      message: 'Usuario contratista actualizado correctamente',
+      result: {
+        usuario: userResult.rowCount,
+        contratista: contratistaResult.rowCount
+      }
+    };
+  } catch (err) {
+    console.error('Error al actualizar usuario contratista:', err);
+    throw err;
   }
+}
+
 
   static async deleteUser(email: string){
-    const userdelete = `DELETE FROM usuarios WHERE email = $1`;
+    const userdelete = `DELETE FROM usuarios WHERE correo_electronico = $1`;
     const values = [email];
 
     return await db.query(userdelete, values);
@@ -259,7 +393,7 @@ class UserRepository {
 
   // Proximo integración con coockies
   static async deleUser(id: Number){
-    const userDelete = `Delete From usuarios where id = $1`;
+    const userDelete = `Delete From usuarios where id_usuario = $1`;
     const values = [id];
 
     return await db.query(userDelete, values)
