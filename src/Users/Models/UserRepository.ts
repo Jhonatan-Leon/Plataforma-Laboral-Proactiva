@@ -384,6 +384,23 @@ class UserRepository {
 }
 
 
+  static async updateInformal(user: InformalDTO){
+    try {
+      const put = `UPDATE usuarios SET nombre_usuario = COALESCE(?, nombre_usuario), telefono = COALESCE(?, telefono), contraseña = COALESCE(?, constraseña), descripcion_usuario = COALESCE(?, descripcion_usuario),
+            foto_perfil = COALESCE(?, foto_perfil), estado_perfil = COALESCE(?, estado_perfil), tipo_usuario = COALESCE(?, tipo_usuario) WHERE email = ?;`;
+      const values = [user.nombreCompleto, user.telefono, user.telefono2, user.NumeroCedula, user.tipoDocumento, user.genero,  user.descripcion, user.fotoPerfil, user.estadoPerfil, user.tipoUsuario, user.email]
+       const result : any = await db.query(put, values)
+       if (result.rowCount === 0) {
+        return { message: "No se realizaron cambios o el usuario no existe." };
+      }
+
+      return { message: "Usuario actualizado con éxito", affectedRows: result.rowCount };
+    }catch(err: any){
+      console.error("Error registro usuarios: ", err)
+      throw err;
+    }
+  }
+
   static async deleteUser(email: string){
     const userdelete = `DELETE FROM usuarios WHERE correo_electronico = $1`;
     const values = [email];

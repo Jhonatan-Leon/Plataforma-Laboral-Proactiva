@@ -62,6 +62,10 @@ class UserService {
         return await UserRepository.updateContratista(updateUser);
     }
 
+    static async updateInformal(updateUser: InformalDTO){
+        return await UserRepository.updateInformal(updateUser);
+    }
+
     static async deleteUserByEmail(email: string){
         return await UserRepository.deleteUser(email);
     }
