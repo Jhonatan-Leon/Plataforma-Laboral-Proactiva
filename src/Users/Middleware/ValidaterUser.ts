@@ -7,14 +7,18 @@ export const ValidatorUser = (req: Request, res: Response, next: NextFunction): 
     
     const error = validationResult(req);
     const { nombreCompleto, email, telefono, telefono2, password, descripcion, fotoPerfil, municipio, tipoDocumento, numeroCedula, genero, estado_perfil, tipo_usuario} = req.body;
-        console.log("Datos de entrada: ", req.body);
+    console.log("Datos de entrada: ", req.body);
     const fotoP = req.file;
 
-    if (!nombreCompleto || !telefono || !email || !password  || !descripcion || !municipio || !tipoDocumento || !numeroCedula || !genero  || !tipo_usuario) {
+    if (!nombreCompleto || !telefono || !email || !password  || !descripcion || !municipio || !tipoDocumento   || !tipo_usuario) {
         res.status(400).json({ message: 'Todos los datos son requeridos' });
         return;
-    }else if (tipo_usuario && !['contratista', "contratante"].includes(tipo_usuario)){
+    }else if (tipo_usuario && !['contratista', "contratante_formal"].includes(tipo_usuario)){
         res.status(400).json({message: "Tipo de usuario debe ser: Contratista o Contratante" })
+    }
+
+    if (tipo_usuario === "contratista" && (!numeroCedula || !genero)) {
+        res.status(400).json({ message: 'Faltan campos obligatorios para contratista (cedula o genero)' });
     }
 
 

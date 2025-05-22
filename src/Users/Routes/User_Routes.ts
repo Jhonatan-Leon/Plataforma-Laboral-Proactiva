@@ -13,10 +13,10 @@ import upload from "../Helpers/Upload";
 
 const router = Router();
 
-router.post('/RegisterUser', upload.single('fotoPerfil'), ValidatorUser, ValidatorOpcional,  register);
+router.post('/RegisterUser', upload.single('fotoPerfil'), ValidatorUser, register);
 router.get('/getUser/:id',getUserById);
 router.get('/getRol/:tipo_usuario', getByRol)
-router.put('/updateUser/:email', verifyToken, validatorCookies, authorizeRole(['Contratista','Contratante']), validatorupdate.validatorEmail, validatorupdate.validateUpdateUser, updateUser)
+router.put('/updateUser/:email', verifyToken, validatorCookies, authorizeRole(['contratista','contratante']), validatorupdate.validatorEmail, validatorupdate.validateUpdateUser, updateUser)
 router.delete('/deleteUser/:email',  verifyToken, validatorCookies, authorizeRole(['Contratista', 'Contratante']), deleteUser );
 
 export default router;

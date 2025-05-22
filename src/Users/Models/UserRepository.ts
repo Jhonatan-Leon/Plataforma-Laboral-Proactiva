@@ -6,22 +6,22 @@ import Auth from "../DTO/AuthDTO";
 class UserRepository {
 
     static async addContratanteInformal(User: InformalDTO) {
-        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 $12) RETURNING id_usuario`;
-        const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 ) RETURNING id_usuario`;
+        const values = [ User.tipoUsuario, User.password, User.nombreCompleto, User.telefono, User.telefono2 ?? null, User.email, User.municipio, User.genero, User.fotoPerfil ?? null, User.descripcion, User.estadoPerfil];
         const result: any = await db.query(sql, values)
         const id = result.rows[0].id_usuario;
         return id;
       }
   
     static async addContratante(User: ContratanteDTO) {
-        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 $12) RETURNING id_usuario`;
-        const values = [ User.nombreCompleto, User.email, User.telefono, User.password, User.descripcion, User.fotoPerfil ?? null, User.estadoPerfil, User.tipoUsuario];        
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
+        const values = [ User.tipoUsuario, User.password, User.nombreCompleto, User.telefono, User.telefono2 ?? null, User.email, User.municipio, User.genero, User.fotoPerfil ?? null, User.descripcion, User.estadoPerfil];        
         const result: any = await db.query(sql, values)
         if(result.rowCount > 0){
           try{
             let Id = result.rows[0].id_usuario;
-            const sql = `INSERT INTO Contratantes (id_usuario, nit, sector) VALUES ($1, $2, $3)`;
-            const values = [Id, User.NIT];
+            const sql = `INSERT INTO contratante (id_usuario, nit, sector) VALUES ($1, $2, $3)`;
+            const values = [Id, User.NIT, User.sector];
             console.log(values);
             return await db.query(sql, values);
           }catch(err){

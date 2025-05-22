@@ -6,7 +6,7 @@ import{validationResult} from 'express-validator'
 export const ValidatorOpcional = (req: Request, res: Response, next: NextFunction): void => {
 
     const error = validationResult(req);
-    const { id ,NIT, numeroCedula, categoria_trabajo, HabilidadesTecnicas, HabilidadesSociales, EstudioComplementario } = req.body;
+    const { id ,NIT, numeroCedula, categoria_trabajo, HabilidadesTecnicas, HabilidadesSociales, EstudioComplementario, sector } = req.body;
 
 
     /*

@@ -59,11 +59,6 @@ const validateUpdateUser = [
         .isString()
         .withMessage("La categoría de trabajo debe ser un texto válido"),
 
-    check("hojaDeVida")
-        .optional()
-        .isURL()
-        .withMessage("La hoja de vida debe ser una URL válida")
-
 
 ];
 

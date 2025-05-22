@@ -23,7 +23,8 @@ let deactivateUser = async (req: Request, res: Response) => {
   try {
       // 1. Verificación de autenticación
       if (!req.user) {
-        return res.status(401).json({ error: "Unauthorized" });
+        res.status(401).json({ error: "Unauthorized" });
+        return;
       }
 
       // 2. Obtención consistente del ID
@@ -47,7 +48,8 @@ let deactivateUser = async (req: Request, res: Response) => {
       const result = await UserService.deactivateUser(userId);
         
       if (!result) {
-        return res.status(404).json({ error: "Operation failed" }); // Mensaje genérico
+        res.status(404).json({ error: "Operation failed" }); // Mensaje genérico
+        return;
       }
 
       // 4. Limpiar cookies si es necesario
