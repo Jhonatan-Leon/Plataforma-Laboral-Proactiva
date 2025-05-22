@@ -401,11 +401,14 @@ class UserRepository {
     }
   }
 
-  static async deleteUser(email: string){
-    const userdelete = `DELETE FROM usuarios WHERE correo_electronico = $1`;
-    const values = [email];
-
-    return await db.query(userdelete, values);
+  static async deleteUser(id: string){
+    const userdelete = `DELETE FROM usuarios WHERE id_usuario = $1`;
+    const values = [id];
+    const result: any = await db.query(userdelete, values);
+    if (result.rowCount === 0) {
+      return { message: "No se encontraron usuarios para eliminar." };
+    }
+    return { message: "Usuario eliminado con éxito", affectedRows: result.rowCount };
   }
 
   // Proximo integración con coockies

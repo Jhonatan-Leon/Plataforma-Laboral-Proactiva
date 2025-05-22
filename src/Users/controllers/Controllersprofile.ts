@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import UserService from "../Services/UserServices";
+import jwt from "jsonwebtoken";
 
 let profile = async (req: Request, res: Response) => {
   const user = req.user;
@@ -19,27 +20,45 @@ let profile = async (req: Request, res: Response) => {
 
 
 let deactivateUser = async (req: Request, res: Response) => {
-    const user = req.user;
+  try {
+      // 1. Verificación de autenticación
+      if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
 
-    try {
-        // Verifica que el usuario esté autenticado
-        const userId = user.data.id; 
-        console.log(userId)
+      // 2. Obtención consistente del ID
+      let userId: string;
+        
+      // Prioridad 1: ID del usuario autenticado (JWT)
+      if (req.user?.data?.id) {
+          userId = req.user.data.id;
+      } 
+        
+      // Prioridad 2: Token de refresco (fallback)
+      else {
+        const token = req.cookies?.refreshToken || req.headers.authorization?.split(' ')[1];
+        if (!token) throw new Error("Missing authentication token");
+            
+        const decoded = jwt.verify(token, process.env.REFRESH_KEY_TOKEN!) as { id: string };
+        userId = decoded.id;
+      }
 
-        if (!userId) {
-            res.status(401).json({ status: "Unauthorized" });
-            return;
-        }
+      // 3. Desactivación
+      const result = await UserService.deactivateUser(userId);
+        
+      if (!result) {
+        return res.status(404).json({ error: "Operation failed" }); // Mensaje genérico
+      }
 
-        // cambiar el estado del usuario a 'inactivo'
-        const result = await UserService.deactivateUser(userId);
+      // 4. Limpiar cookies si es necesario
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production"
+      });
 
-        if (!result) {
-            res.status(404).json({ status: "User not found or already inactive" });
-        }
-
-        res.status(200).json({ status: "Account successfully deactivated" });
-        return;
+      res.status(200).json({ status: "Account deactivated successfully" });
+      return;
 
     } catch (error: any) {
         console.error(error);

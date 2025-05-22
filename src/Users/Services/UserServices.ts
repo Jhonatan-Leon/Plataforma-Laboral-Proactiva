@@ -66,8 +66,8 @@ class UserService {
         return await UserRepository.updateInformal(updateUser);
     }
 
-    static async deleteUserByEmail(email: string){
-        return await UserRepository.deleteUser(email);
+    static async deleteUser(id: string){
+        return await UserRepository.deleteUser(id);
     }
 
     static async deactivateUser(UserId: string){

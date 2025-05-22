@@ -5,7 +5,7 @@ import { ValidatorOpcional } from "../Middleware/ValidaterOpcional";
 import {getUserById, getByRol} from "../controllers/GetControllers";
 import { updateUser } from "../controllers/updateControllers";
 import validatorupdate from "../Middleware/validatorupdate"
-import { deleteUserByEmail } from "../controllers/Controllersdelete";
+import { deleteUser } from "../controllers/Controllersdelete";
 import authorizeRole from "../Middleware/AuthorizeRole";
 import validatorCookies from "../Middleware/ValidaterCookie";
 import verifyToken from "../Middleware/Verifytoken";
@@ -17,6 +17,6 @@ router.post('/RegisterUser', upload.single('fotoPerfil'), ValidatorUser, Validat
 router.get('/getUser/:id',getUserById);
 router.get('/getRol/:tipo_usuario', getByRol)
 router.put('/updateUser/:email', verifyToken, validatorCookies, authorizeRole(['Contratista','Contratante']), validatorupdate.validatorEmail, validatorupdate.validateUpdateUser, updateUser)
-router.delete('/deleteUser/:email',  verifyToken, validatorCookies, authorizeRole(['Contratista', 'Contratante']), deleteUserByEmail );
+router.delete('/deleteUser/:email',  verifyToken, validatorCookies, authorizeRole(['Contratista', 'Contratante']), deleteUser );
 
 export default router;
