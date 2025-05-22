@@ -12,7 +12,7 @@ let register = async (req: Request, res: Response) => {
         
         const {
             id,
-            nombreCompleto,
+            nombreCompleto, 
             email,
             telefono,
             telefono2,
@@ -32,6 +32,7 @@ let register = async (req: Request, res: Response) => {
             EstudiosComplementario,
             experiencia,
             categoria_trabajo,
+            Ocupacion
         } = req.body;
 
 
@@ -48,7 +49,7 @@ let register = async (req: Request, res: Response) => {
            usuarioFinal = new ContratanteDTO(NIT, sector, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil , municipio, tipoDocumento,numeroCedula,genero,sector, estado_perfil, tipo_usuario);
            ID = await UserService.registerContratante(usuarioFinal);
         } else if (tipo_usuario === "contratista" && categoria_trabajo && HabilidadesTecnicas && HabilidadesSociales ) {
-            usuarioFinal = new ContratistaDTO(HabilidadesTecnicas, HabilidadesSociales,EstudiosComplementario,experiencia, categoria_trabajo, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil,municipio,tipoDocumento,numeroCedula,genero, estado_perfil, tipo_usuario);
+            usuarioFinal = new ContratistaDTO(HabilidadesTecnicas, HabilidadesSociales,EstudiosComplementario,experiencia, categoria_trabajo, Ocupacion, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil,municipio,tipoDocumento,numeroCedula,genero, estado_perfil, tipo_usuario);
             const result: any = await UserService.registerContratista(usuarioFinal);
             ID = result.idUser;
         } else if(tipo_usuario === "informal" ) {

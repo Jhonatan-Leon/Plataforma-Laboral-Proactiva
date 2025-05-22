@@ -1,11 +1,24 @@
 import { Request, Response } from "express";
 import UserService from "../Services/UserServices";
-
+import  jwt  from "jsonwebtoken";
 
 
 const getUserById = async (req: Request, res: Response) => {
     try {
         const { id} = req.params;
+
+        const token = req.cookies?.refreshToken || req.headers.authorization?.split(' ')[1];
+
+        let userId: string | undefined;
+
+        // 1. Extraer ID del token (prioritario)
+
+        if (token) {
+            const decoded = jwt.verify(token, process.env.REFRESH_KEY_TOKEN!) as { id: string };
+            userId = decoded.id;
+        }        
+
+        
 
         console.log(`Buscando usuario con ID: ${id}`);
 
@@ -32,9 +45,11 @@ const getByRol = async (req: Request, res: Response) => {
 
         let tipo;
 
-        if(tipo_usuario == "Contratista"){
+        if(tipo_usuario == TipoUsuario.Contratista){
             tipo = await UserService.getByRol(tipo_usuario)
-        }else if(tipo_usuario == "Contratante"){
+        }else if(tipo_usuario == TipoUsuario.Contratante){
+            tipo = await UserService.getByRol(tipo_usuario)
+        }else if(tipo_usuario == TipoUsuario.ContratanteInformal){
             tipo = await UserService.getByRol(tipo_usuario)
         }
 

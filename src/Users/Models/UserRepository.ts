@@ -146,7 +146,7 @@ class UserRepository {
 
     }
     
-    static async getByRol(rol: "contratista" | "contratante"){
+    static async getByRol(rol: TipoUsuario){
       try {
         const query = `SELECT 
           u.id_usuario,

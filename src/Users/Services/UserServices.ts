@@ -41,7 +41,7 @@ class UserService {
         return await UserRepository.getUserById(id)
     }
 
-    static async getByRol(tipo_usuario: "Contratista" | "Contratante"){
+    static async getByRol(tipo_usuario: TipoUsuario){
         return await UserRepository.getByRol(tipo_usuario)
     }
 
