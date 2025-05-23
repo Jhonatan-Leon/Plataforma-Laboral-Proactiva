@@ -1,3 +1,4 @@
+import EstadoUser from "./EstadoUser";
 import Usuario from "./UserDto";
 
 class ContratanteDTO extends Usuario {

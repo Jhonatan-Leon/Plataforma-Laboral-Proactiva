@@ -1,4 +1,4 @@
-
+import EstadoUser from "../DTO/EstadoUser";
 
 abstract class Usuario {
     protected _Id?: Number;

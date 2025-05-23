@@ -39,6 +39,7 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/Users', User_Routes);
 app.use('/Users/login', Login_Routes);

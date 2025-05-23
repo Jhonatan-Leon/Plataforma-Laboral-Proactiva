@@ -3,11 +3,6 @@ import { Request, Response, NextFunction } from "express";
 
 const validateUpdateUser = [
 
-    check("email")
-        .notEmpty()
-        .isEmail()
-        .withMessage("El correo electrónico es obligatorio y debe ser válido"),
-
     check("nombreCompleto")
         .optional()
         .isLength({ min: 3 })

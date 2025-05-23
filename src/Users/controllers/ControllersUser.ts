@@ -52,7 +52,7 @@ let register = async (req: Request, res: Response) => {
             usuarioFinal = new ContratistaDTO(HabilidadesTecnicas, HabilidadesSociales,EstudiosComplementario,experiencia, categoria_trabajo, Ocupacion, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil,municipio,tipoDocumento,numeroCedula,genero, estado_perfil, tipo_usuario);
             const result: any = await UserService.registerContratista(usuarioFinal);
             ID = result.idUser;
-        } else if(tipo_usuario.toLowerCase() === "conttratante_informal") {
+        } else if(tipo_usuario.toLowerCase() === "contratante_informal") {
             usuarioFinal = new InformalDTO(nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil , municipio, tipoDocumento,numeroCedula,genero, estado_perfil,tipo_usuario);
             ID = await UserService.registerContratanteInformal(usuarioFinal);
         }else {

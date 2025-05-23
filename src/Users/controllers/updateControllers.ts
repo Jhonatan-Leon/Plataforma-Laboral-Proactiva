@@ -2,99 +2,126 @@ import { Request, Response } from "express";
 import generateHash from "../Helpers/generateHash";
 import { ContratanteDTO, ContratistaDTO, InformalDTO } from "../DTO/TipoUser";
 import UserService from "../Services/UserServices";
-import jwt from "jsonwebtoken";
+import { subirFotoPerfil } from "../Helpers/BlobServices";
+import eliminarFotoAnterior from "../Helpers/BlobDelete";
 
 const updateUser = async (req: Request, res: Response) => {
     try {
         const { email } = req.params;
-        const userData = req.body;
+        const tokenInfo = req.user;
 
-        // 1. Extraer ID del token (prioritario)
-        let userId: string | undefined;
-        const token = req.cookies?.refreshToken || req.headers.authorization?.split(' ')[1];
-        
-        if (token) {
-            const decoded = jwt.verify(token, process.env.REFRESH_KEY_TOKEN!) as { id: string };
-            userId = decoded.id;
+        const userId = tokenInfo?.data?.id;
+        const rol = tokenInfo?.data?.rol;
+
+        if (!userId || !rol) {
+            res.status(401).json({ error: "Token inválido o incompleto" });
+            return;
         }
 
-        let existingUser;   
-
-        // 2. Obtener usuario (por ID o email)
-        if (userId) {
-            existingUser = await UserService.getUserById(userId);
-        } else {
-            existingUser = await UserService.getUserByEmail(email);
-        }
-
+        const existingUser = await UserService.getUserById(userId);
         if (!existingUser) {
             res.status(404).json({ error: "Usuario no encontrado" });
             return;
         }
 
-        // 3. Filtrar solo campos válidos para actualización
-        const validFields = [
-            'nombreCompleto', 'email', 'telefono', 'telefono2', 'password', 'descripcion', 'fotoPerfil',
-            'municipio', 'tipoDocumento', 'numeroCedula', 'genero', 'estadoPerfil', 'tipo_usuario',
-            'HabilidadesTecnicas', 'HabilidadesSociales', 'EstudiosComplementario', 'experiencia', 'categoria_trabajo',
-            'Ocupacion','NIT', 'sector'
-        ];
+        const input = req.body;
+        console.log("Datos de entrada: ", input);
 
-        const updatePayload: any = {};
-        
-        // 4. Construir payload dinámicamente
-        validFields.forEach(field => {
-            if (userData[field] !== undefined && userData[field] !== null) {
-                updatePayload[field] = userData[field];
-            }
-        });
-
-        // 5. Manejo especial para contraseña
-        if (userData.password) {
-            updatePayload.password = await generateHash(userData.password);
+        // Encriptar la contraseña si se envía
+        if (input.password) {
+            input.password = await generateHash(input.password);
         }
 
-        // 6. Manejo específico por tipo de usuario (ejemplo para Contratante)
-        if (userData.tipo_usuario === "contratante") {
-            const contratanteData = {
-                NIT: userData.NIT || existingUser.NIT,
-                sector: userData.sector || existingUser.sector,
-                ...updatePayload
-            };
-            await UserService.updateContratante(new ContratanteDTO(contratanteData.NIT, contratanteData.sector, updatePayload.nombreCompleto, updatePayload.email, updatePayload.telefono, updatePayload.telefono2, updatePayload.password, updatePayload.descripcion,
-                updatePayload.fotoPerfil, updatePayload.municipio, updatePayload.tipoDocumento, updatePayload.numeroCedula, updatePayload.genero, updatePayload.estadoPerfil, userData.tipo_usuario));
-        }else if (userData.tipo_usuario === "contratista") {
-            const contratistaData = {
-                HabilidadesTecnicas: userData.HabilidadesTecnicas || existingUser.HabilidadesTecnicas,
-                HabilidadesSociales: userData.HabilidadesSociales || existingUser.HabilidadesSociales,
-                 EstudiosComplementario: userData.EstudiosComplementario || existingUser.EstudiosComplementario,
-                experiencia: userData.experiencia || existingUser.experiencia,
-                Ocupacion: userData.ocupacion || existingUser.Ocupacion,  ... updatePayload
-            };
-            await UserService.updateContratista(new ContratistaDTO(contratistaData.HabilidadesTecnicas, contratistaData.HabilidadesSociales, contratistaData.EstudiosComplementario, contratistaData.experiencia, contratistaData.Ocupacion, userData.categoria_trabajo || existingUser.categoria_trabajo, updatePayload.nombreCompleto, updatePayload.email, updatePayload.telefono, updatePayload.telefono2, updatePayload.password, updatePayload.descripcion,
-                updatePayload.fotoPerfil, updatePayload.municipio, updatePayload.tipoDocumento, new Number(updatePayload.numeroCedula), updatePayload.genero, updatePayload.estadoPerfil, userData.tipo_usuario
-            ));
-        }else if (userData.tipo_usuario === "informal") {
-            const informalData = {
-                ...updatePayload
-            };
-            await UserService.updateInformal(new InformalDTO(informalData.nombreCompleto, informalData.email, informalData.telefono, informalData.telefono2, informalData.password, informalData.descripcion,
-                informalData.fotoPerfil, informalData.municipio, informalData.tipoDocumento, informalData.numeroCedula, informalData.genero, informalData.estadoPerfil, userData.tipo_usuario
-            ));
+        if (input.fotoPerfil && typeof input.fotoPerfil === 'string' && input.fotoPerfil.trim().startsWith('data:image')) {
+        // Si hay una nueva foto en base64, elimina la anterior y sube la nueva
+        if (existingUser.fotoPerfil) {
+            await eliminarFotoAnterior(existingUser.fotoPerfil); // debes tener esta función
+        }
+            input.fotoPerfil = await subirFotoPerfil(input.fotoPerfil); // asume que devuelve la URL
+        } else {
+            // Si no se envía una nueva, mantener la actual
+            input.fotoPerfil = existingUser.fotoPerfil;
         }
 
-        res.status(200).json({ 
+        let result;
+
+        if (rol === "contratante_formal") {
+            const dto = new ContratanteDTO(
+                input.NIT ?? existingUser.NIT,
+                input.sector ?? existingUser.sector,
+                input.nombreCompleto ?? existingUser.nombreCompleto,
+                input.email ?? existingUser.email,
+                input.telefono ?? existingUser.telefono,
+                input.telefono2 ?? existingUser.telefono2,
+                input.password ?? existingUser.password,
+                input.descripcion ?? existingUser.descripcion,
+                input.fotoPerfil ?? existingUser.fotoPerfil,
+                input.municipio ?? existingUser.municipio,
+                input.tipoDocumento ?? existingUser.tipoDocumento,
+                input.numeroCedula ?? existingUser.numeroCedula,
+                input.genero ?? existingUser.genero,
+                input.estadoPerfil ?? existingUser.estadoPerfil,
+                input.tipo_usuario ?? existingUser.tipo_usuario,
+                userId
+            );
+            result = await UserService.updateContratante(dto);
+
+        } else if (rol === "contratista") {
+            const dto = new ContratistaDTO(
+                input.HabilidadesTecnicas ?? existingUser.HabilidadesTecnicas,
+                input.HabilidadesSociales ?? existingUser.HabilidadesSociales,
+                input.EstudiosComplementario ?? existingUser.EstudiosComplementario,
+                input.experiencia ?? existingUser.experiencia,
+                input.Ocupacion ?? existingUser.Ocupacion,
+                input.categoria_trabajo ?? existingUser.categoria_trabajo,
+                input.nombreCompleto ?? existingUser.nombreCompleto,
+                input.email ?? existingUser.email,
+                input.telefono ?? existingUser.telefono,
+                input.telefono2 ?? existingUser.telefono2,
+                input.password ?? existingUser.password,
+                input.descripcion ?? existingUser.descripcion,
+                input.fotoPerfil ?? existingUser.fotoPerfil,
+                input.municipio ?? existingUser.municipio,
+                input.tipoDocumento ?? existingUser.tipoDocumento,
+                input.numeroCedula ?? existingUser.numeroCedula,
+                input.genero ?? existingUser.genero,
+                input.estadoPerfil ?? existingUser.estadoPerfil,
+                input.tipo_usuario ?? existingUser.tipo_usuario,
+                userId
+            );
+            result = await UserService.updateContratista(dto);
+
+        } else if (rol === "contratante_informal") {
+            const dto = new InformalDTO(
+                input.nombreCompleto ?? existingUser.nombreCompleto,
+                input.email ?? existingUser.email,
+                input.telefono ?? existingUser.telefono,
+                input.telefono2 ?? existingUser.telefono2,
+                input.password ?? existingUser.password,
+                input.descripcion ?? existingUser.descripcion,
+                input.fotoPerfil ?? existingUser.fotoPerfil,
+                input.municipio ?? existingUser.municipio,
+                input.tipoDocumento ?? existingUser.tipoDocumento,
+                input.numeroCedula ?? existingUser.numeroCedula,
+                input.genero ?? existingUser.genero,
+                input.estadoPerfil ?? existingUser.estadoPerfil,
+                input.tipo_usuario ?? existingUser.tipo_usuario,
+                userId
+            );
+            result = await UserService.updateInformal(dto);
+        }
+
+        res.status(200).json({
             message: "Usuario actualizado con éxito",
-            updatedFields: Object.keys(updatePayload)
+            result
         });
 
     } catch (error: any) {
-        console.error(error);
+        console.error("Error actualizando usuario:", error);
         res.status(500).json({ error: error.message });
+        return;
     }
 };
-
-
 
 export {
     updateUser

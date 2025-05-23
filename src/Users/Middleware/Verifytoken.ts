@@ -12,7 +12,6 @@ interface JwtPayload {
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     let token = req.header("Authorization")?.split(" ")[1];
-
     if (!token) {
         res.status(403).json({ message: "No token provided" });
         return;
@@ -20,9 +19,12 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 
     try {
         const decoded = jwt.verify(token, process.env.KEY_TOKEN as string) as JwtPayload;
-        req.body.id = decoded.data.id;
-        req.body.estado_perfil = decoded.data.estado_perfil;
-        req.body.rol = decoded.data.rol;
+        req.tokenData = {
+            id: decoded.data.id,
+            estado_perfil: decoded.data.estado_perfil,
+            rol: decoded.data.rol
+        };
+        console.log("Decoded token data:", req.tokenData);
         return next();
     } catch (error: any) {
         if (error.name === "TokenExpiredError") {

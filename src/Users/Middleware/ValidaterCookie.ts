@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 
 const validatorCookies = async (req: Request, res: Response, next: NextFunction) => {
   const authCookie = req.cookies.refreshToken;
-  console.log(authCookie);
   if (!authCookie) {
     res.status(401).json({ message: "No se encontró la cookie de autenticación" });
     return;
@@ -22,6 +21,7 @@ const validatorCookies = async (req: Request, res: Response, next: NextFunction)
       }
 
       req.user = user;
+      console.log("Datos del usuario desde la cookie:", req.user);
       next();
     });
   } catch (err: any) {

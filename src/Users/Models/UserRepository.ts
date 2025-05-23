@@ -87,7 +87,7 @@ class UserRepository {
               status: "Autenticación válida", 
               id: user.id_usuario,  
               estado_perfil: user.estado_perfil,
-              rol: user.tipo_usuario
+              rol: user.rol
           };
   
       } catch (error) {
@@ -125,9 +125,9 @@ class UserRepository {
 
         const result: any = await db.query(query, [id_usuario]);
 
-        if (result.rowCount === 0) return null;
+        if (!result.rows || result.rows.length === 0) return null;
 
-        let user = result[0];
+        let user = result.rows[0];
         console.log(user)
 
         // Recorrer objeto y eliminar variables con parametros null
@@ -173,7 +173,6 @@ class UserRepository {
       
         const values = [rol]
       
-        console.log(values)
 
         const result: any = await db.query(query, values);
 
@@ -185,7 +184,7 @@ class UserRepository {
               delete user[key]
             }
           });
-
+       
           return user;
 
 
@@ -262,31 +261,13 @@ class UserRepository {
   static async updateContratante(dataUpdate: ContratanteDTO) {
   try {
     const updateUserQuery = `
-      UPDATE usuarios SET
-        rol = COALESCE($1, rol),
-        contraseña = COALESCE($2, contraseña),
-        nombre_completo = COALESCE($3, nombre_completo),
-        numero_de_telefono = COALESCE($4, numero_de_telefono),
-        correo_electronico = COALESCE($5, correo_electronico),
-        foto = COALESCE($6, foto),
-        descripcion = COALESCE($7, descripcion),
-        estado_perfil = COALESCE($8, estado_perfil)
-      WHERE id_usuario = $9;
-    `;
+      UPDATE usuarios SET rol = COALESCE($1, rol), contraseña = COALESCE($2, contraseña), nombre_completo = COALESCE($3, nombre_completo), numero_de_telefono = COALESCE($4, numero_de_telefono), numero_de_telefono_2 = COALESCE($5, numero_de_telefono_2),
+       correo_electronico = COALESCE($6, correo_electronico), foto = COALESCE($7, foto), descripcion = COALESCE($8, descripcion), estado_perfil = COALESCE($9, estado_perfil) WHERE id_usuario = $10 `;
 
-    const userValues = [
-      dataUpdate.tipoUsuario,
-      dataUpdate.password,
-      dataUpdate.nombreCompleto,
-      dataUpdate.telefono,
-      dataUpdate.email,
-      dataUpdate.fotoPerfil,
-      dataUpdate.descripcion,
-      dataUpdate.estadoPerfil,
-      dataUpdate.id
-    ];
+    const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.id]
 
-    const userResult = await db.query(updateUserQuery, userValues);
+
+    const userResult = await db.query(updateUserQuery, values);
 
     if (userResult.rowCount === 0) {
       return { message: 'No se logró actualizar el usuario' };
@@ -317,31 +298,12 @@ class UserRepository {
   try {
     // Primero: actualizar los campos de la tabla usuarios
     const updateUserQuery = `
-      UPDATE usuarios SET
-        rol = COALESCE($1, rol),
-        contraseña = COALESCE($2, contraseña),
-        nombre_completo = COALESCE($3, nombre_completo),
-        numero_de_telefono = COALESCE($4, numero_de_telefono),
-        correo_electronico = COALESCE($5, correo_electronico),
-        foto = COALESCE($6, foto),
-        descripcion = COALESCE($7, descripcion),
-        estado_perfil = COALESCE($8, estado_perfil)
-      WHERE id_usuario = $9;
-    `;
+      UPDATE usuarios SET rol = COALESCE($1, rol), contraseña = COALESCE($2, contraseña), nombre_completo = COALESCE($3, nombre_completo), numero_de_telefono = COALESCE($4, numero_de_telefono), numero_de_telefono_2 = COALESCE($5, numero_de_telefono_2),
+       correo_electronico = COALESCE($6, correo_electronico), foto = COALESCE($7, foto), descripcion = COALESCE($8, descripcion), estado_perfil = COALESCE($9, estado_perfil) WHERE id_usuario = $10`;
+    const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.id]
 
-    const userValues = [
-      dataUpdate.tipoUsuario,
-      dataUpdate.password,
-      dataUpdate.nombreCompleto,
-      dataUpdate.telefono,
-      dataUpdate.email,
-      dataUpdate.fotoPerfil,
-      dataUpdate.descripcion,
-      dataUpdate.estadoPerfil,
-      dataUpdate.id
-    ];
 
-    const userResult = await db.query(updateUserQuery, userValues);
+    const userResult = await db.query(updateUserQuery, values);
     if (userResult.rowCount === 0) {
       return { message: 'No se encontró el usuario para actualizar.' };
     }
@@ -386,9 +348,12 @@ class UserRepository {
 
   static async updateInformal(user: InformalDTO){
     try {
-      const put = `UPDATE usuarios SET nombre_usuario = COALESCE(?, nombre_usuario), telefono = COALESCE(?, telefono), contraseña = COALESCE(?, constraseña), descripcion_usuario = COALESCE(?, descripcion_usuario),
-            foto_perfil = COALESCE(?, foto_perfil), estado_perfil = COALESCE(?, estado_perfil), tipo_usuario = COALESCE(?, tipo_usuario) WHERE email = ?;`;
-      const values = [user.nombreCompleto, user.telefono, user.telefono2, user.NumeroCedula, user.tipoDocumento, user.genero,  user.descripcion, user.fotoPerfil, user.estadoPerfil, user.tipoUsuario, user.email]
+      console.log("DTO recibido:", user);
+
+
+      const put =  `UPDATE usuarios SET rol = COALESCE($1, rol), contraseña = COALESCE($2, contraseña), nombre_completo = COALESCE($3, nombre_completo), numero_de_telefono = COALESCE($4, numero_de_telefono), numero_de_telefono_2 = COALESCE($5, numero_de_telefono_2),
+       correo_electronico = COALESCE($6, correo_electronico), foto = COALESCE($7, foto), descripcion = COALESCE($8, descripcion), estado_perfil = COALESCE($9, estado_perfil) WHERE id_usuario = $10`;
+      const values = [user.tipoUsuario, user.password, user.nombreCompleto, user.telefono, user.telefono2 ?? null, user.email, user.fotoPerfil ?? null, user.descripcion, user.estadoPerfil, user.id]
        const result : any = await db.query(put, values)
        if (result.rowCount === 0) {
         return { message: "No se realizaron cambios o el usuario no existe." };

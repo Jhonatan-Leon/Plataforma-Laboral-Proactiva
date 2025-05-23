@@ -3,46 +3,41 @@ import UserService from "../Services/UserServices";
 import jwt from "jsonwebtoken";
 
 let profile = async (req: Request, res: Response) => {
-  const user = req.user;
-  try {  
-    const idUser = user.data.id;
-    const estado = user.data.rol;
-    res.status(200).json(
-      { status: 'Get profile Ok', id: idUser, estado_perfil: estado }
-    );
-    return;
+  try {
+    const user = req.user;
+
+    const idUser = user?.data?.id;
+    const estado = user?.data?.rol;
+
+    if (!idUser) {
+      res.status(400).json({ error: "ID de usuario no válido o faltante" });
+      return;
+    }
+
+    const userInfo = await UserService.getUserById(idUser);
+
+    if (!userInfo) {
+      res.status(404).json({ error: "Usuario no encontrado" });
+      return;
+    }
+
+    res.status(200).json({
+      status: "Perfil encontrado correctamente",
+      id: idUser,
+      estado_perfil: estado,
+      datos_usuario: userInfo
+    });
   } catch (error: any) {
-    res.status(500).json({ errorInfo: "An unknown error has occurred" }
-    );
-    return;
+    console.error("Error obteniendo el perfil:", error);
+    res.status(500).json({ error: "Ha ocurrido un error desconocido" });
   }
-}
+};
 
 
 let deactivateUser = async (req: Request, res: Response) => {
   try {
-      // 1. Verificación de autenticación
-      if (!req.user) {
-        res.status(401).json({ error: "Unauthorized" });
-        return;
-      }
-
-      // 2. Obtención consistente del ID
-      let userId: string;
-        
-      // Prioridad 1: ID del usuario autenticado (JWT)
-      if (req.user?.data?.id) {
-          userId = req.user.data.id;
-      } 
-        
-      // Prioridad 2: Token de refresco (fallback)
-      else {
-        const token = req.cookies?.refreshToken || req.headers.authorization?.split(' ')[1];
-        if (!token) throw new Error("Missing authentication token");
-            
-        const decoded = jwt.verify(token, process.env.REFRESH_KEY_TOKEN!) as { id: string };
-        userId = decoded.id;
-      }
+      const TokenData = req.user;
+      const userId = TokenData.data.id;
 
       // 3. Desactivación
       const result = await UserService.deactivateUser(userId);

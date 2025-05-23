@@ -9,6 +9,10 @@ class UserService {
     
     static async registerContratanteInformal(user: InformalDTO) {
         user.password = await generateHash(user.password);
+        const foto = user.fotoPerfil;
+        if (foto && typeof foto === 'string' && foto.startsWith('data:image')) {
+            user.fotoPerfil = await subirFotoPerfil(foto); 
+        }
         return await UserRepository.addContratanteInformal(user);
     }
 
@@ -55,14 +59,29 @@ class UserService {
     }
     */
     static async updateContratante(updateUser: ContratanteDTO){
+        const foto = updateUser.fotoPerfil;
+
+        if (foto && typeof foto === 'string' && foto.startsWith('data:image')) {
+            updateUser.fotoPerfil = await subirFotoPerfil(foto); 
+        }
         return await UserRepository.updateContratante(updateUser);
     }
 
     static async updateContratista(updateUser: ContratistaDTO){
+        const foto = updateUser.fotoPerfil;
+
+        if (foto && typeof foto === 'string' && foto.startsWith('data:image')) {
+            updateUser.fotoPerfil = await subirFotoPerfil(foto); 
+        }
         return await UserRepository.updateContratista(updateUser);
     }
 
     static async updateInformal(updateUser: InformalDTO){
+        const foto = updateUser.fotoPerfil;
+
+        if (foto && typeof foto === 'string' && foto.startsWith('data:image')) {
+            updateUser.fotoPerfil = await subirFotoPerfil(foto); 
+        }
         return await UserRepository.updateInformal(updateUser);
     }
 

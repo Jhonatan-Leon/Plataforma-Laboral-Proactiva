@@ -6,7 +6,6 @@ const authorizeRole = (allowedRoles: string[]) => {
    const user = req.user;
 
    try {
-        console.log("rol", user)
         console.log("roles", allowedRoles)
 
         const userRol = user.data.rol;
@@ -21,8 +20,7 @@ const authorizeRole = (allowedRoles: string[]) => {
          return;
         }
 
-        req.body = user;
-        console.log(req.body)
+       
         next();
     } catch (err) {
       console.log(err)
