@@ -67,7 +67,7 @@ class UserRepository {
           const result: any = await db.query(sql, values);
   
           if (!result || result.rowCount === 0) {
-              return { logged: false, status: "Correo o Contraseña incorrectos" };
+              return { logged: false, status: "Usuario no registrado", httpCode: 404 };
           }
   
           const user = result.rows[0];
