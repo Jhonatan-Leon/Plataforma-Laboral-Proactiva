@@ -30,7 +30,7 @@ const refreshToken = async (req: Request, res: Response) => {
                 rol: payload.rol
             },
             accessSecret,
-            15 
+            60  // 1 hora 
         );
 
         res.status(200).json({ token: newAccessToken });
