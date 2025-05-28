@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-interface JwtPayload {
+export interface JwtPayload {
     data: { id: number, estado_perfil: string, rol: string };
     exp: number;
     iat: number;

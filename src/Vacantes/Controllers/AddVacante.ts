@@ -7,16 +7,30 @@ import GestionVacantes from "../Services/VacanteService";
 
 let AñadirVacante = async (req: Request, res: Response) => {
     try {
+        const token = req.user;
+
         const {
             nombre_vacante,
-            descripcion_vacante,
-            estado,
+            personal_contacto,
+            numero_contacto,
+            correo_electronico,
+            municipio,
             ubicacion_vacante,
-            categoria_trabajo,
+            descripcion_vacante,
+            logo,
+            salario,
+            disponibilidad,
+            categoria_trabajo
         } = req.body;
 
+
+        const id = token?.data?.id;
+        if (!id) {
+            console.log("ID del usuario no encontrado en el token");
+        }
+
         const vacante = await GestionVacantes.Add_Vacante(
-            new RegistrarVacante(nombre_vacante, descripcion_vacante, estado, ubicacion_vacante, categoria_trabajo)
+            new RegistrarVacante(id, nombre_vacante, personal_contacto, numero_contacto, correo_electronico, municipio, ubicacion_vacante, descripcion_vacante, logo, salario, disponibilidad, categoria_trabajo),
         );
 
         console.log(vacante);

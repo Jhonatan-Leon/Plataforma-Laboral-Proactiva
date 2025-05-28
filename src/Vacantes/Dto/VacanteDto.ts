@@ -1,77 +1,122 @@
 class RegistrarVacante{
 
-    private _nombre_vacante:string;
-    private _descripcion_vacante:string;
-    private _estado:string;
-    //private _imagenes_vacante:Buffer;
-    private _ubicacion_vacante:string;
+    private _id_usuario: string;
+    private _nombre_vacante: string;
+    private _persona_contacto: string;
+    private _numero_contacto: string;
+    private _correo_electronico: string;
+    private _municipio: string;
+    private _direccion: string;
+    private _descripcion_vacante: string;
+    private _logo: string | File | null;
+    private _salario_vacante: string;
+    private _disponibilidad: string;
     private _categoria_trabajo: string;
-    //private _fecha_publicacion:Date;
 
-    constructor(
-        nombre_vacante: string, 
-        descripcion_vacante: string,
-        estado: string,
-        //imagenes_vacante: Buffer,
-        ubicacion_vacante: string,
-        categoria_trabajo: string,
-        //fecha_publicacion: Date
-    ){
+
+    constructor(id_usuario: string, nombre_vacante: string, personaContacto: string, numeroContacto: string, email: string, lugar: string, direccion: string, descripcion: string, logo: string | File | null, salario: string, disponibilidad: string, categoria : string) {
+        this._id_usuario = id_usuario;
         this._nombre_vacante = nombre_vacante;
-        this._descripcion_vacante = descripcion_vacante;
-        this._estado = estado;
-        //this._imagenes_vacante = imagenes_vacante;
-        this._ubicacion_vacante = ubicacion_vacante;
-        this._categoria_trabajo = categoria_trabajo;
-        //this._fecha_publicacion = fecha_publicacion;
+        this._persona_contacto = personaContacto;
+        this._numero_contacto = numeroContacto;
+        this._correo_electronico = email;
+        this._municipio = lugar;
+        this._direccion = direccion;
+        this._descripcion_vacante = descripcion;
+        this._logo = logo; 
+        this._salario_vacante = salario;
+        this._disponibilidad = disponibilidad;
+        this._categoria_trabajo = categoria;
     }
 
-    //Getters
+    get id_usuario(): string {
+        return this._id_usuario;
+    }
 
-    get nombre_vacante(): string{
-        return this._nombre_vacante
+    get nombre_vacante(): string {
+        return this._nombre_vacante;
     }
-    get descripcion_vacante(): string{
-        return this._descripcion_vacante
-    }
-    get estado(): string{
-        return this._estado
-    }
-    /*get imagenes_vacante(): Buffer{
-        return this._imagenes_vacante
-    }*/
-    get ubicacion_vacante():string{
-        return this._ubicacion_vacante
-    }
-    get categoria_trabajo():string{
-        return this._categoria_trabajo
-    }
-    /*get fecha_publicacion():Date{
-        return this._fecha_publicacion
-    }*/
 
-    //Setters
+    get persona_contacto(): string {
+        return this._persona_contacto;
+    }
 
-    set nombre_vacante(nombre_vacante:string){
-        this._nombre_vacante = nombre_vacante
+    get numero_contacto(): string {
+        return this._numero_contacto;
     }
-    set descripcion_vacante(descripcion_vacante:string){
-        this._descripcion_vacante = descripcion_vacante
+
+    get correo_electronico(): string {
+        return this._correo_electronico;
     }
-    set estado(estado:string){
-        this._estado = estado
+
+    get municipio(): string {
+        return this._municipio;
     }
-    /*set imagenes_vacante(imagenes_vacante:Buffer){
-        this._imagenes_vacante = imagenes_vacante
-    }*/
-    set ubicacion_vacante(ubicacion_vacante:string){
-        this._ubicacion_vacante = ubicacion_vacante
+
+    get direccion(): string {
+        return this._direccion;
     }
-    set categoria_trabajo(categoria_trabajo:string){
-        this._categoria_trabajo = categoria_trabajo
+
+    get logo(): string | File | null {
+        return this._logo;
     }
-    /*set fecha_publicacion(fecha_publicacion:Date){
-        this._fecha_publicacion = fecha_publicacion
-    }*/
+
+    get descripcion_vacante(): string {
+        return this._descripcion_vacante;  
+    }
+
+    get categoria_trabajo(): string {
+        return this._categoria_trabajo;
+    }
+
+    get salario_vacante(): string {
+        return this._salario_vacante;
+    }
+
+    get disponibilidad(): string {
+        return this._disponibilidad;
+    }
+
+    set id_usuario(id: string) {
+        this._id_usuario = id;
+    }
+
+    set nombre_vacante(nombre: string) {
+        this._nombre_vacante = nombre;
+    }
+
+    set persona_contacto(persona: string) {
+        this._persona_contacto = persona;
+    }
+
+    set numero_contacto(numero: string) {
+        this._numero_contacto = numero;
+    }
+
+    set correo_electronico(email: string) {
+        this._correo_electronico = email;
+    }
+
+    set municipio(lugar: string) {
+        this._municipio = lugar;
+    }
+
+    set direccion(direccion: string) {
+        this._direccion = direccion;
+    }
+
+    set logo(logo: string | File | null) {
+        this._logo = logo;
+    }
+
+    set salario_vacante(salario: string) {
+        this._salario_vacante = salario;
+    }
+
+    set disponibilidad(disponibilidad: string) {
+        this._disponibilidad = disponibilidad;
+    }
+
+
 }
 export default RegistrarVacante
