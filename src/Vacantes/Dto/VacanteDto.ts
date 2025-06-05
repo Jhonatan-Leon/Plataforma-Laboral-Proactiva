@@ -1,11 +1,10 @@
-class RegistrarVacante{
-
-    private _id_usuario: string;
+class RegistrarVacante {
+    // Propiedades
+    private _id_usuario: string | undefined;
     private _nombre_vacante: string;
     private _persona_contacto: string;
-    private _numero_contacto: string;
-    private _correo_electronico: string;
-    private _municipio: string;
+    private _numero_contacto: string | null;
+    private _correo_electronico: string | null;
     private _direccion: string;
     private _descripcion_vacante: string;
     private _logo: string | File | null;
@@ -13,23 +12,24 @@ class RegistrarVacante{
     private _disponibilidad: string;
     private _categoria_trabajo: string;
 
-
-    constructor(id_usuario: string, nombre_vacante: string, personaContacto: string, numeroContacto: string, email: string, lugar: string, direccion: string, descripcion: string, logo: string | File | null, salario: string, disponibilidad: string, categoria : string) {
+    // Constructor
+    constructor(
+        nombre_vacante: string, persona_contacto: string, numero_contacto: string | null, direccion: string, descripcion_vacante: string, logo: string | File | null, salario_vacante: string, disponibilidad: string, categoria_trabajo: string, id_usuario?: string, correo_electronico: string | null = null) {
         this._id_usuario = id_usuario;
         this._nombre_vacante = nombre_vacante;
-        this._persona_contacto = personaContacto;
-        this._numero_contacto = numeroContacto;
-        this._correo_electronico = email;
-        this._municipio = lugar;
+        this._persona_contacto = persona_contacto;
+        this._numero_contacto = numero_contacto;
+        this._correo_electronico = correo_electronico;
         this._direccion = direccion;
-        this._descripcion_vacante = descripcion;
-        this._logo = logo; 
-        this._salario_vacante = salario;
+        this._descripcion_vacante = descripcion_vacante;
+        this._logo = logo;
+        this._salario_vacante = salario_vacante;
         this._disponibilidad = disponibilidad;
-        this._categoria_trabajo = categoria;
+        this._categoria_trabajo = categoria_trabajo;
     }
 
-    get id_usuario(): string {
+
+    get id_usuario(): string | undefined {
         return this._id_usuario;
     }
 
@@ -41,32 +41,24 @@ class RegistrarVacante{
         return this._persona_contacto;
     }
 
-    get numero_contacto(): string {
+    get numero_contacto(): string | null {
         return this._numero_contacto;
     }
 
-    get correo_electronico(): string {
+    get correo_electronico(): string | null {
         return this._correo_electronico;
-    }
-
-    get municipio(): string {
-        return this._municipio;
     }
 
     get direccion(): string {
         return this._direccion;
     }
 
+    get descripcion_vacante(): string {
+        return this._descripcion_vacante;
+    }
+
     get logo(): string | File | null {
         return this._logo;
-    }
-
-    get descripcion_vacante(): string {
-        return this._descripcion_vacante;  
-    }
-
-    get categoria_trabajo(): string {
-        return this._categoria_trabajo;
     }
 
     get salario_vacante(): string {
@@ -77,7 +69,11 @@ class RegistrarVacante{
         return this._disponibilidad;
     }
 
-    set id_usuario(id: string) {
+    get categoria_trabajo(): string {
+        return this._categoria_trabajo;
+    }
+
+    set id_usuario(id: string | undefined) {
         this._id_usuario = id;
     }
 
@@ -89,20 +85,20 @@ class RegistrarVacante{
         this._persona_contacto = persona;
     }
 
-    set numero_contacto(numero: string) {
+    set numero_contacto(numero: string | null) {
         this._numero_contacto = numero;
     }
 
-    set correo_electronico(email: string) {
+    set correo_electronico(email: string | null) {
         this._correo_electronico = email;
-    }
-
-    set municipio(lugar: string) {
-        this._municipio = lugar;
     }
 
     set direccion(direccion: string) {
         this._direccion = direccion;
+    }
+
+    set descripcion_vacante(descripcion: string) {
+        this._descripcion_vacante = descripcion;
     }
 
     set logo(logo: string | File | null) {
@@ -117,6 +113,9 @@ class RegistrarVacante{
         this._disponibilidad = disponibilidad;
     }
 
-
+    set categoria_trabajo(categoria: string) {
+        this._categoria_trabajo = categoria;
+    }
 }
-export default RegistrarVacante
+
+export default RegistrarVacante;

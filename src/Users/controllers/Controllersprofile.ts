@@ -7,7 +7,7 @@ let profile = async (req: Request, res: Response) => {
     const user = req.user;
 
     const idUser = user?.data?.id;
-    const estado = user?.data?.rol;
+    const estado = user?.data?.rol; 
 
     if (!idUser) {
       res.status(400).json({ error: "ID de usuario no válido o faltante" });

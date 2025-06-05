@@ -1,32 +1,59 @@
-import { check } from "express-validator";
+import { Request, Response, NextFunction } from 'express'
 
+const validateCreationVacant = (req: Request, res: Response, next: NextFunction) => {
+  const {
+    nombre_vacante,
+    personal_contacto,
+    forma_contacto,
+    ubicacion_vacante,
+    descripcion_vacante,
+    logo,
+    salario,
+    disponibilidad,
+    categoria_trabajo
+  } = req.body
 
-const validateCreationVacant = [
-    check("nombre_vacante")
-        .notEmpty()
-        .isEmail()
-        .withMessage("El nombre debe de ser valido"),
+  const fotoP = req.file;
 
-    check("descripcion_vacante")
-        .optional()
-        .isLength({ min: 10 })
-        .withMessage("La descripcion debe contener min 10 caracteres"),
+  console.log(nombre_vacante, personal_contacto, forma_contacto, ubicacion_vacante, descripcion_vacante, logo, salario, disponibilidad, categoria_trabajo)
 
-    check("estado")
-        .optional()
-        .isString()
-        .isLength({ max : 20 })
-        .withMessage("Debes de poner un estado"),
+  // Validación de campos obligatorios
+  const requiredFields = [
+    'nombre_vacante',
+    'personal_contacto',
+    'forma_contacto',
+    'ubicacion_vacante',
+    'descripcion_vacante',
+    'salario',
+    'disponibilidad',
+    'categoria_trabajo',
+  ]
 
-    check("ubicacion_vacante")
-        .optional()
-        .isLength({ min: 40 })
-        .withMessage("La ubicacion debe contener min 40 caracteres"),
+  for (const field of requiredFields) {
+    if (!req.body[field]) {
+      res.status(400).json({ error: `El campo '${field}' es obligatorio.` })
+      return;
+    }
+  }
 
-    check("categoria_trabajo")
-        .optional()
-        .isLength({ min: 10 })
-        .withMessage("La categoria debe tener al menos 10 caracteres"),
+  if (fotoP) {
+        req.body.logo = `data:${fotoP.mimetype};base64,${fotoP.buffer.toString('base64')}`;
+    } else {
+        req.body.logo = null;
+    }
 
-];
+   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+   const phoneRegex = /^(3\d{9}|[1-9]\d{6})$/;
+
+  if (emailRegex.test(forma_contacto)) {
+    console.log('Es un correo válido');
+  } else if (phoneRegex.test(forma_contacto)) {
+    console.log('Es un número válido');
+  } else {
+    console.log('Formato no válido');
+  }
+
+  next()
+}
+
 export default validateCreationVacant

@@ -9,11 +9,11 @@ dotenv.config();
 
 const AZURE_STORAGE_CONNECTION = process.env.AZURE_STORAGE_CONNECTION_STRING || '';
 const CONTAINER = process.env.CONTAINER_NAME || '';
-const CONTENT = process.env.CONTENT_HOJA || '';
+const CONTENT = process.env.CONTENT_LOGO || '';
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION);
 const containerClient = blobServiceClient.getContainerClient(CONTAINER);
-const containerHojaVida = blobServiceClient.getContainerClient(CONTENT);
+const containerLogo = blobServiceClient.getContainerClient(CONTENT);
 
 // Limite de tamaño de archivo (10MB)
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -94,11 +94,11 @@ export const subirFotoPerfil = async (file: any): Promise<string> => {
 };
 
 // Función para subir hoja de vida
-export const subirHojaVida = async (file: any): Promise<string> => {
+export const subirlogoVacante = async (file: any): Promise<string> => {
   let fileBuffer: Buffer;
   let mimetype = 'application/octet-stream';
-  let extension = '.pdf'; // Extensión por defecto
-  let nombre = 'documento.pdf'; // Nombre por defecto
+  let extension = '.png'; // default
+  let nombre = 'archivo.png'; // default
 
   // Verificar el tamaño del archivo antes de procesarlo
   if (file.size > MAX_FILE_SIZE) {
@@ -121,11 +121,11 @@ export const subirHojaVida = async (file: any): Promise<string> => {
     mimetype = matches[1];
     fileBuffer = Buffer.from(matches[2], 'base64');
 
-    // Derivar la extensión según el tipo MIME
+    // Derivar extensión del mimetype
     const extMap: Record<string, string> = {
-      'application/pdf': '.pdf',
-      'application/msword': '.doc',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+      'image/jpeg': '.jpg',
+      'image/png': '.png',
+      'image/gif': '.gif',
     };
     extension = extMap[mimetype] || '.bin';
   }
@@ -145,14 +145,14 @@ export const subirHojaVida = async (file: any): Promise<string> => {
     throw new Error("Archivo inválido o tipo de archivo no soportado");
   }
 
-  // Validar si es un archivo aceptable (PDF, Word, etc.)
-  const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-  if (!validTypes.includes(mimetype)) {
-    throw new Error('Formato de archivo no soportado. Solo se permiten PDFs y documentos de Word.');
+  // Validar si es un archivo de imagen permitido
+  const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+  if (!validImageTypes.includes(mimetype)) {
+    throw new Error('Formato de imagen no soportado. Solo se permiten JPG, PNG y GIF.');
   }
 
   const blobName = `${uuidv4()}${extension}`;
-  const blockBlobClient = containerHojaVida.getBlockBlobClient(blobName);
+  const blockBlobClient = containerLogo.getBlockBlobClient(blobName);
 
   try {
     await blockBlobClient.uploadData(fileBuffer, {

@@ -6,7 +6,7 @@ import validatorCookies from "../Middleware/ValidaterCookie";
 
 const router = Router();
 
-router.post('/profile', verifyToken, validatorCookies, authorizeRole(['contratista','contratante_formal', 'contratante_informal']) ,  Controllersprofile.profile)
+router.get('/', verifyToken, validatorCookies, authorizeRole(['contratista','contratante_formal', 'contratante_informal']) ,  Controllersprofile.profile)
 router.post('/desactivarcuenta', verifyToken, validatorCookies, authorizeRole(['contratista','contratante_formal', 'contratante_informal']), Controllersprofile.deactivateUser)
 
 

@@ -2,7 +2,7 @@ import generateHash from "../Helpers/generateHash";
 import UserRepository from "../Models/UserRepository";
 import { ContratanteDTO, ContratistaDTO, InformalDTO } from "../DTO/TipoUser";
 import Auth from "../DTO/AuthDTO";
-import { subirFotoPerfil, subirHojaVida } from "../Helpers/BlobServices";
+import { subirFotoPerfil } from "../Helpers/BlobServices";
 
 class UserService {
 
@@ -42,11 +42,14 @@ class UserService {
     }
 
     static async getUserById(id: string){
-        return await UserRepository.getUserById(id)
+        const user = await UserRepository.getUserById(id)
+        const {id_usuario, contraseña, estado_perfil, ... rest} = user;
+        return rest;
     }
 
     static async getByRol(tipo_usuario: TipoUsuario){
-        return await UserRepository.getByRol(tipo_usuario)
+        const result = await UserRepository.getByRol(tipo_usuario)
+        return result;
     }
 
     static async getUserByEmail(email: string){

@@ -7,9 +7,8 @@ const authorizeRole = (allowedRoles: string[]) => {
 
    try {
         console.log("roles", allowedRoles)
-
+        console.log(user)
         const userRol = user.data.rol;
-        console.log(userRol)
         if(!allowedRoles || !userRol){
             res.status(403).json({message: "Acceso denegado: Sin información suficiente"})
             return;

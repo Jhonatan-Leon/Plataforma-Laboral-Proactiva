@@ -44,7 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/Users', User_Routes);
 app.use('/Users/login', Login_Routes);
 app.use('/Users/Profile',  profileUser);
-app.use('/Vacantes',  Register)
+app.use('/User/Vacantes',  Register)
 app.use('/comentarios',  RegisterComent)
 
 app.listen(PORT, () => {
