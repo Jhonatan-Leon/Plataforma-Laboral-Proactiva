@@ -47,7 +47,12 @@ class UserService {
         return rest;
     }
 
-    static async getByRol(tipo_usuario: TipoUsuario){
+    static async getUsers(){
+        const user = await UserRepository.getUser()
+        return user                                                                                                 ;
+    }
+
+    static async getByRol(tipo_usuario: string){
         const result = await UserRepository.getByRol(tipo_usuario)
         return result;
     }

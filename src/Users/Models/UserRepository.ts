@@ -98,7 +98,7 @@ class UserRepository {
   
   
 
-    static async getUserById(id_usuario: string){
+  static async getUserById(id_usuario: string){
       try {
         const query = `SELECT 
       u.id_usuario,
@@ -144,9 +144,9 @@ class UserRepository {
         throw error;
     }
 
-    }
+  }
     
-    static async getByRol(rol: TipoUsuario){
+  static async getByRol(rol: string){
       try {
         const query = `SELECT 
           u.id_usuario,
@@ -176,27 +176,60 @@ class UserRepository {
 
         const result: any = await db.query(query, values);
 
-        if(result.length === 0) return null
+        if (!result.rows || result.rows.length === 0) return null;
 
-        let list = result.rows.map((user: any) => {
-          Object.keys(user).forEach((key) => {
-            if(user[key] === null){
-              delete user[key]
-            }
-          });
-       
-          return user;
+        // Limpieza de cada usuario (eliminar claves con valor null)
+        const cleanedUsers = result.rows.map((user: any) => {
+        const cleaned: any = {};
+        for (const [key, value] of Object.entries(user)) {
+          if (value !== null && key !== 'contraseña') {
+          cleaned[key] = value === '[object Object]' ? '' : value;
+          }
+        }
+        return cleaned;
+      });
 
+      return cleanedUsers;
 
-        }) ;
-
-        return list;
-
-      }catch (err: any) {
-        console.error("Error al obtener al usuario: ", err)
-        throw err;
+      } catch (err) {
+        console.log("Error al obtener usuarios: ", err);
       }
     }
+
+
+    static async getUser(){
+      try {
+          const sql = `SELECT u.id_usuario, u.nombre_completo, u.correo_electronico, u.numero_de_telefono,
+          u.contraseña, u.descripcion, u.foto, u.estado_perfil, u.rol, 
+          c.nit AS contratante_nit, c.sector AS contratante_sector, 
+          t.categoria_trabajo, t.habilidades_tecnicas, t.habilidades_sociales,
+          t.estudio_complementario, t.experiencia, t.ocupacion 
+          FROM usuarios u 
+          LEFT JOIN contratante c ON u.id_usuario = c.id_usuario 
+          LEFT JOIN contratista t ON u.id_usuario = t.id_usuario;`
+
+        const result: any = await db.query(sql);
+        if (!result.rows || result.rows.length === 0) return null;
+
+        // Limpieza de cada usuario (eliminar claves con valor null)
+        const cleanedUsers = result.rows.map((user: any) => {
+        const cleaned: any = {};
+        for (const [key, value] of Object.entries(user)) {
+          if (value !== null && key !== 'contraseña') {
+          cleaned[key] = value === '[object Object]' ? '' : value;
+          }
+        }
+        return cleaned;
+      });
+
+      return cleanedUsers;
+
+      } catch (err) {
+        console.log("Error al obtener usuarios: ", err);
+      }
+    } 
+
+      
 
     static async getUserByEmail(correo_electronico: string) {
       try {

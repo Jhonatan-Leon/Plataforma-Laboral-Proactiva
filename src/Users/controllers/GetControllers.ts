@@ -45,11 +45,7 @@ const getByRol = async (req: Request, res: Response) => {
 
         let tipo;
 
-        if(tipo_usuario == TipoUsuario.Contratista){
-            tipo = await UserService.getByRol(tipo_usuario)
-        }else if(tipo_usuario == TipoUsuario.Contratante){
-            tipo = await UserService.getByRol(tipo_usuario)
-        }else if(tipo_usuario == TipoUsuario.ContratanteInformal){
+        if(tipo_usuario == "contratista"){
             tipo = await UserService.getByRol(tipo_usuario)
         }
 
@@ -57,7 +53,7 @@ const getByRol = async (req: Request, res: Response) => {
             res.status(404).json({ message: "Usuario no encontrados "})
         }
 
-        res.status(200).json({ message: `Usuarios tipo ${tipo_usuario} encontrados: `, tipo})
+        res.status(200).json(tipo)
     }catch(err: any){
         console.log(err);
         res.status(500).json({ err: err.message })

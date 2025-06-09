@@ -28,7 +28,6 @@ class RegistrarVacante {
         this._categoria_trabajo = categoria_trabajo;
     }
 
-
     get id_usuario(): string | undefined {
         return this._id_usuario;
     }
