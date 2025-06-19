@@ -41,6 +41,10 @@ class UserService {
         return await UserRepository.login(auth);
     }
 
+    static async loginWithGoogle(email: string) {
+        return await UserRepository.loginWithGoogle(email);
+    }
+
     static async getUserById(id: string){
         const user = await UserRepository.getUserById(id)
         const {id_usuario, contraseña, estado_perfil, ... rest} = user;

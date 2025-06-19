@@ -4,6 +4,7 @@ import ValidaterLogin from "../Middleware/ValidaterLogin";
 import refreshToken  from "../controllers/ControllerrefreshToken";
 import verifyToken from "../Middleware/Verifytoken";
 import validatorCookies from "../Middleware/ValidaterCookie";
+import { loginWithGoogle } from "../controllers/AuthController";
 
 
 const router = Router();
@@ -18,5 +19,6 @@ router.get('/auth/me', verifyToken, validatorCookies, (req, res) => {
 	);
 	
 });
+router.post('/auth/google', loginWithGoogle) ;
 
 export default router;

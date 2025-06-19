@@ -96,6 +96,35 @@ class UserRepository {
       }
   }
   
+  static async loginWithGoogle(email: string) {
+      try {
+          const sql = 'SELECT id_usuario, estado_perfil, rol FROM usuarios WHERE correo_electronico = $1';
+          const values = [email];
+          const result: any = await db.query(sql, values);
+
+          if (!result || result.rowCount === 0) {
+              return { logged: false, status: "Usuario no registrado", httpCode: 404 };
+          }
+
+          const user = result.rows[0];
+
+          if (user.estado_perfil === "inactivo") {
+              return { logged: false, status: "Cuenta inactiva. Contacte al soporte." };
+          }
+
+          return {
+              logged: true,
+              status: "Autenticación válida",
+              id: user.id_usuario,
+              estado_perfil: user.estado_perfil,
+              rol: user.rol
+          };
+
+      } catch (error) {
+          console.error("Error en el login con Google:", error);
+          return { logged: false, status: "Error interno del servidor" };
+      }
+    }
   
 
   static async getUserById(id_usuario: string){
@@ -108,6 +137,8 @@ class UserRepository {
       u.contraseña,
       u.descripcion,
       u.foto,
+      u.municipio,
+      u.notificaciones,
       u.estado_perfil,
       u.rol,
       c.nit AS contratante_nit,
@@ -156,6 +187,7 @@ class UserRepository {
           u.contraseña,
           u.descripcion,
           u.foto,
+          u.municipio,
           u.estado_perfil,
           u.rol,
           c.nit AS contratante_nit,

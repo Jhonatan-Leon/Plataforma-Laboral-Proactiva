@@ -12,7 +12,7 @@ import cors from 'cors';
 
 dotenv.config();
 
-const app = express().use(bodyParser.json());
+const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:8000',
@@ -23,17 +23,17 @@ const corsOptions = {
     console.log('Origin:', origin);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true); // permitir origen
-    } else {
+    } else {  
       callback(new Error('Not allowed by CORS')); //NO USAR PARA PETICIONES DE ORIGEN CRUZADO
     }
   },
 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  
   credentials: true, // permitir cookies
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8000;    
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
