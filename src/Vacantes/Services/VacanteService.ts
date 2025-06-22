@@ -10,6 +10,12 @@ class GestionVacantes{
         if(logo && typeof logo === 'string' && logo.startsWith('data:image')){
              register.logo = await subirlogoVacante(logo);
         }
+
+        const salario = register.salario_vacante;
+        const clean = salario.replace(/[.,]/g, '');
+
+        register.salario_vacante = String(Number(clean));
+
         return await VacanteRepository.AddVacante(register)
     }
     static async browse_vacant(vacant: codDto){
@@ -40,6 +46,9 @@ class GestionVacantes{
     }
 
     static async actualizarVacante(id: Number, value: RegistrarVacante ){
+        const salario = value.salario_vacante
+        const clean = salario.replace(/[.,]/g, '');
+        value.salario_vacante = String(Number(clean));
         const updateVacante = await VacanteRepository.updateVacante(id, value)
         const {id_usuario, logo , ...rest } = updateVacante;
         return updateVacante;

@@ -1,24 +1,24 @@
 class Auth {
-    private _email: string;
+    private _emailorPhone: string | number;
     private _password: string
     constructor(
-        email: string,
+        emailorPhone: string | number,
         password: string
     ) {
-        this._email = email;
+        this._emailorPhone = emailorPhone;
         this._password = password;
     }
 
-    get email(): string {
-        return this._email;
+    get emailorPhone(): string | number  {
+        return this._emailorPhone;
     }
 
     get password(): string {
         return this._password;
     }
 
-    set email(email: string) {
-        this._email = email;
+    set emailorPhone(emailorPhone: string | number) {
+        this._emailorPhone = emailorPhone;
     }
 
     set password(contraseña: string) {

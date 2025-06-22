@@ -6,12 +6,9 @@ import generateToken from "../Helpers/generateTokens";
 
 let loginUser = async (req: Request, res: Response) => {
     try {
-        const { email, password } = req.body;
+        const { emailOrPhone, password } = req.body;
 
-        console.log(email, password);
-
-        const login = await UserService.login(new Auth(email, password));
-        console.log(login);
+        const login = await UserService.login(new Auth(emailOrPhone, password));
 
         if (!login.logged) {
             res.status(401).json({ status: login.status });

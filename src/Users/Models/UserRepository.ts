@@ -62,8 +62,8 @@ class UserRepository {
 
     static async login(auth: Auth) {
       try {
-          const sql = 'SELECT id_usuario, estado_perfil, rol, contraseña FROM usuarios WHERE correo_electronico = $1';
-          const values = [auth.email];
+          const sql = 'SELECT id_usuario, estado_perfil, rol, contraseña FROM usuarios WHERE correo_electronico = $1  or numero_de_telefono = $1';
+          const values = [auth.emailorPhone];
           const result: any = await db.query(sql, values);
   
           if (!result || result.rowCount === 0) {

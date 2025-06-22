@@ -3,18 +3,20 @@ import { NextFunction, Request, Response } from "express";
 
 
 const validatorParams = async (req: Request, res: Response, next: NextFunction) => {
-    const {email, password } = req.body;
+    const {emailOrPhone, password } = req.body;
 
-    console.log(email, password)
+    console.log(emailOrPhone, password)
 
-    if(!email || !password){
+    if(!emailOrPhone || !password){
         res.status(400).json({ message: 'Todos los datos son requeridos' });
         return;
     }
 
     const emailValidator = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailValidator.test(email)) {
-        res.status(400).json({ message: 'Formato de email inválido' });
+    const phoneRegex = /^3\d{9}$/;
+
+    if (!emailValidator.test(emailOrPhone) && !phoneRegex.test(emailOrPhone)) {
+        res.status(400).json({ message: 'Formato de email o teléfono inválido' });
         return;
     }
 

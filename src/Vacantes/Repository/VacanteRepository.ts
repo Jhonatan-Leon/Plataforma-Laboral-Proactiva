@@ -35,14 +35,14 @@ class VacanteRepository{
     }
 
     static async ObtenerTodosVacantes() {
-    const sql = 'SELECT * FROM vacante';
-    try {
-        const result = await db.query(sql);
-        return result.rows; // devuelve solo los datos
-    } catch (error) {
-        console.error('Error al obtener todas las vacantes:', error);
-        throw error;
-    }
+        const sql = 'SELECT v.*, u.nombre_completo,c.sector, u.municipio,u.descripcion AS descripcion_usuario FROM vacante v JOIN usuarios u ON v.id_usuario = u.id_usuario JOIN contratante c ON u.id_usuario = c.id_usuario;';
+        try {
+            const result = await db.query(sql);
+            return result.rows; // devuelve solo los datos
+        } catch (error) {
+            console.error('Error al obtener todas las vacantes:', error);
+            throw error;
+        }
 }
 
     

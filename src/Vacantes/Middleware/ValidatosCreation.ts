@@ -43,7 +43,7 @@ const validateCreationVacant = (req: Request, res: Response, next: NextFunction)
     }
 
    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-   const phoneRegex = /^(3\d{9}|[1-9]\d{6})$/;
+   const phoneRegex = /^3\d{9}$/;
 
   if (emailRegex.test(forma_contacto)) {
     console.log('Es un correo válido');
