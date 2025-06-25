@@ -3,6 +3,8 @@ import UserRepository from "../Models/UserRepository";
 import { ContratanteDTO, ContratistaDTO, InformalDTO } from "../DTO/TipoUser";
 import Auth from "../DTO/AuthDTO";
 import { subirFotoPerfil } from "../Helpers/BlobServices";
+import { normalizaTipoDoc } from "../Helpers/normalizarDocumento";
+import TipoDocumento from "../DTO/TipoDocumento";
 
 class UserService {
 
@@ -28,6 +30,10 @@ class UserService {
     static async registerContratista(User: ContratistaDTO){
         User.password = await generateHash(User.password)
         const foto = User.fotoPerfil;
+
+        const tipoDocumento: TipoDocumento = await normalizaTipoDoc(User.tipoDocumento);
+        User.tipoDocumento = tipoDocumento;
+        
 
         if (foto && typeof foto === 'string' && foto.startsWith('data:image')) {
             User.fotoPerfil = await subirFotoPerfil(foto); 

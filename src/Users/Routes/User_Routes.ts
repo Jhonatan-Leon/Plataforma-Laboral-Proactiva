@@ -18,7 +18,7 @@ router.post('/RegisterUser', upload.single('fotoPerfil'), ValidatorUser, registe
 router.get('/getUser/:id',verifyToken, validatorCookies, getUserById);
 router.get('/getUsers', GetUsers)
 router.get('/getRol/:tipo_usuario', getByRol)
-router.put('/updateUser/:email', upload.single('fotoPerfil'), verifyToken,validatorCookies, authorizeRole(['contratista','contratante_formal', 'contratante_informal']),validatorupdate.validatorEmail,validatorupdate.validateUpdateUser,updateUser);
+router.put('/updateUser', upload.single('fotoPerfil'), verifyToken,validatorCookies, authorizeRole(['contratista','contratante_formal', 'contratante_informal']), validatorupdate.validateUpdateUser,updateUser);
 router.delete('/deleteUser/:email',  verifyToken, validatorCookies, authorizeRole(['Contratista', 'Contratante']), deleteUser );
 
 export default router;

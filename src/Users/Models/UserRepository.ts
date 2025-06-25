@@ -6,16 +6,16 @@ import Auth from "../DTO/AuthDTO";
 class UserRepository {
 
     static async addContratanteInformal(User: InformalDTO) {
-        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 ) RETURNING id_usuario`;
-        const values = [ User.tipoUsuario, User.password, User.nombreCompleto, User.telefono, User.telefono2 ?? null, User.email, User.municipio, User.genero, User.fotoPerfil ?? null, User.descripcion, User.estadoPerfil];
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, estado_perfil, tipo_documento, documento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id_usuario`;
+        const values = [ User.tipoUsuario, User.password, User.nombreCompleto, User.telefono, User.telefono2 ?? null, User.email, User.municipio, User.genero, User.fotoPerfil ?? null, User.descripcion, User.estadoPerfil, User.tipoDocumento, User.NumeroCedula];
         const result: any = await db.query(sql, values)
         const id = result.rows[0].id_usuario;
         return id;
       }
   
     static async addContratante(User: ContratanteDTO) {
-        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
-        const values = [ User.tipoUsuario, User.password, User.nombreCompleto, User.telefono, User.telefono2 ?? null, User.email, User.municipio, User.genero, User.fotoPerfil ?? null, User.descripcion, User.estadoPerfil];        
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, estado_perfil, tipo_documento, documento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id_usuario`;
+        const values = [ User.tipoUsuario, User.password, User.nombreCompleto, User.telefono, User.telefono2 ?? null, User.email, User.municipio, User.genero, User.fotoPerfil ?? null, User.descripcion, User.estadoPerfil, User.tipoDocumento, User.NumeroCedula];        
         const result: any = await db.query(sql, values)
         if(result.rowCount > 0){
           try{
@@ -34,8 +34,8 @@ class UserRepository {
     }
 
     static async addContratista(User: ContratistaDTO) {
-        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, estado_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
-        const values = [ User.tipoUsuario, User.password, User.nombreCompleto, User.telefono, User.telefono2 ?? null, User.email, User.municipio, User.genero, User.fotoPerfil ?? null, User.descripcion, User.estadoPerfil];        
+        const sql = `INSERT INTO usuarios (rol, contraseña, nombre_completo, numero_de_telefono, numero_de_telefono_2, correo_electronico, municipio, genero, foto, descripcion, estado_perfil, tipo_documento, documento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id_usuario`;
+        const values = [ User.tipoUsuario, User.password, User.nombreCompleto, User.telefono, User.telefono2 ?? null, User.email, User.municipio, User.genero, User.fotoPerfil ?? null, User.descripcion, User.estadoPerfil, User.tipoDocumento, User.NumeroCedula];        
         const result: any = await db.query(sql, values)
         console.log(result)
         if(result.rowCount > 0){
@@ -134,6 +134,7 @@ class UserRepository {
       u.nombre_completo,
       u.correo_electronico,
       u.numero_de_telefono,
+      u.numero_de_telefono_2,
       u.contraseña,
       u.descripcion,
       u.foto,
@@ -141,13 +142,15 @@ class UserRepository {
       u.notificaciones,
       u.estado_perfil,
       u.rol,
+      u.tipo_documento,
+      u.documento,
+      u.genero,
       c.nit AS contratante_nit,
       c.sector AS contratante_sector,
       t.categoria_trabajo,
       t.habilidades_tecnicas,
-      t.habilidades_sociales,
+      t.habilidades_sociales,       
       t.estudio_complementario,
-      t.experiencia,
       t.ocupacion
       FROM usuarios u
       LEFT JOIN contratante c ON u.id_usuario = c.id_usuario

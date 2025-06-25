@@ -29,10 +29,12 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     } catch (error: any) {
         if (error.name === "TokenExpiredError") {
             res.status(401).json({ message: "Token expired, please refresh" });
+            return;
         }
         res.status(401).json({ message: "Invalid token" });
+        return;
     }
 };
-
+    
 
 export default verifyToken;

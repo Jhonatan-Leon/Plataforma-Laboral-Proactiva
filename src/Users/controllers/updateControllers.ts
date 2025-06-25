@@ -7,7 +7,6 @@ import eliminarFotoAnterior from "../Helpers/BlobDelete";
 
 const updateUser = async (req: Request, res: Response) => {
     try {
-        const { email } = req.params;
         const tokenInfo = req.user;
 
         const userId = tokenInfo?.data?.id;

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import UserService from "../Services/UserServices";
 import Auth from "../DTO/AuthDTO";
 import generateToken from "../Helpers/generateTokens";
+import jwt from "jsonwebtoken";
 
 
 let loginUser = async (req: Request, res: Response) => {
@@ -59,8 +60,19 @@ let loginUser = async (req: Request, res: Response) => {
 };
 
 
+let logout = async (_req: Request, res: Response) => {
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure  : true,
+        sameSite: 'strict',     
+        path: '/',    
+    });
+
+   res.status(200).json({ message: 'Sesión cerrada' })
+   return;
+};
 
 export  {
-    loginUser
-    
+    loginUser,
+    logout
 };

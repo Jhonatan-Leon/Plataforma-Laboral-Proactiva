@@ -1,5 +1,6 @@
 import EstadoUser from "./EstadoUser";
 import Usuario from "./UserDto";
+import TipoDocumento from "./TipoDocumento";
 
 class ContratanteDTO extends Usuario {
     private _NIT: string;

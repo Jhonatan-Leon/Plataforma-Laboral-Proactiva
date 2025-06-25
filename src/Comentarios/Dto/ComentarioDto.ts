@@ -1,36 +1,46 @@
 class Comentario {
-    private _fecha_calificacion: Date;
+    private _fecha_creacion: Date;
     private _reseña: string;
-    private _calificacion: Number; 
+    private _author_id: Number; 
+    private _target_user_id: Number;
 
-    constructor(fecha_calificacion: Date, reseña: string, calificacion: Number) {
-            this._fecha_calificacion = fecha_calificacion;
-            this._reseña = reseña;
-            this._calificacion = calificacion;
+    constructor(fecha_creacion: Date, reseña: string, author_id: Number, target_user_id: Number) {
+        this._fecha_creacion = fecha_creacion;
+        this._reseña = reseña;
+        this._author_id = author_id;
+        this._target_user_id = target_user_id;
     }
 
-    get fecha_calificacion():Date{
-        return this._fecha_calificacion;
+    get fecha_creacion():Date{
+        return this._fecha_creacion;
     }
 
     get reseña():string{
         return this._reseña;
     }
 
-    get calificacion():Number{
-        return this._calificacion;
+    get author_id():Number{
+        return this._author_id;
     }
 
-    set fecha_calificacion(Value:Date) {
-        this._fecha_calificacion = Value
+    get target_user_id():Number{
+        return this._target_user_id;
+    }
+
+    set fecha_creacion(Value:Date) {
+        this._fecha_creacion = Value
     }
 
     set reseña(Value:string) {
         this._reseña = Value
     }
 
-    set calificacion(Value:Number) {
-        this._calificacion = Value
+    set author_id(Value:Number) {
+        this._author_id = Value
+    }
+
+    set target_user_id(Value:Number) {
+        this._target_user_id = Value
     }
 
 

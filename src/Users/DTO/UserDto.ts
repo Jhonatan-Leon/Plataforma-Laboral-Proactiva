@@ -1,4 +1,5 @@
 import EstadoUser from "../DTO/EstadoUser";
+import TipoDocumento from "../DTO/TipoDocumento";
 
 abstract class Usuario {
     protected _Id?: Number;
