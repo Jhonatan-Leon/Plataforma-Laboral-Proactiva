@@ -461,6 +461,16 @@ class UserRepository {
     return result.rowCount > 0
   }
 
+  static async changePassword(userId: string,  newPassword: string) {
+    try {
+      const sql = `UPDATE usuarios SET contraseña = $1 WHERE id_usuario = $2`;
+      const values = [newPassword, userId];
+      await db.query(sql, values);
+    }catch (error) {
+      console.error("Error al cambiar la contraseña:", error);
+      throw error;
+    } 
+  }
 }
 
 export default UserRepository;

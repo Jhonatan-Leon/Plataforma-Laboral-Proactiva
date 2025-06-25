@@ -5,6 +5,8 @@ import Auth from "../DTO/AuthDTO";
 import { subirFotoPerfil } from "../Helpers/BlobServices";
 import { normalizaTipoDoc } from "../Helpers/normalizarDocumento";
 import TipoDocumento from "../DTO/TipoDocumento";
+import bcrypt from "bcryptjs";
+
 
 class UserService {
 
@@ -109,6 +111,26 @@ class UserService {
 
     static async deactivateUser(UserId: string){
         return await UserRepository.desactivarUser(UserId);
+    }
+
+    static async changePassword(userId: string, currentPassword: string, newPassword: string) {
+        const user = await UserRepository.getUserById(userId);
+        if (!user) {
+            throw new Error("Usuario no encontrado");
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, user.contraseña);
+
+        if (!isMatch) {
+            throw new Error("Contraseña actual incorrecta");
+        }
+
+        if (await bcrypt.compare(newPassword, user.password)) {
+            throw new Error('La nueva contraseña no puede ser igual a la actual');
+        }
+
+        user.password = await generateHash(newPassword);
+        return await UserRepository.changePassword(userId, user.password);
     }
 }
 
