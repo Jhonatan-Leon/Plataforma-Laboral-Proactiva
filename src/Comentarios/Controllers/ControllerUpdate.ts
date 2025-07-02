@@ -14,7 +14,7 @@ let Actualizar = async (req:Request, res:Response) => {
         calificacion
     } = req.body;
 
-    const comentario = await ServiceComent.UpComent (new Comentario(fecha_calificacion, reseña, calificacion), new codDto(id_comentario)) 
+    //const comentario = await ServiceComent.UpComent (new Comentario(fecha_calificacion, reseña, calificacion), new codDto(id_comentario)) 
     
     
     

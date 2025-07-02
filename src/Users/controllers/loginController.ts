@@ -14,7 +14,7 @@ let loginUser = async (req: Request, res: Response) => {
         if (!login.logged) {
             res.status(401).json({ status: login.status });
             return;
-        }
+        }   
 
         const secretKey = process.env.KEY_TOKEN;
         const refreshSecret = process.env.REFRESH_KEY_TOKEN;
