@@ -21,6 +21,19 @@ class postulacionServices {
 
   		return result;          
 	}
+
+	static async cancelarPostulacion(idPost: string, userId: string) {
+    	const owns = await PostulacionRepository.findByIdAndUser(idPost, userId);
+    	if (!owns) throw new Error('POST_NOT_FOUND');
+
+    	const deleted = await PostulacionRepository.deleteById(idPost);
+    	if (deleted !== 1) throw new Error('DELETE_FAILED');
+    	return true;
+  	}
+
+	static async listarPostulacionesDeVacante (creatorId: string) {
+		return PostulacionRepository.findByVacanteAndCreator(creatorId);
+	}
 }
 
 export default postulacionServices;
