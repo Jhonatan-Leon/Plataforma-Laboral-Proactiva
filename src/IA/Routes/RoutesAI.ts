@@ -4,6 +4,6 @@ import validateMessage from '../Middleware/middlewareIA';
 
 const router = Router();
 
-router.post('/chat', validateMessage, chatController);
+router.post('/', validateMessage, chatController);
 
 export default router;

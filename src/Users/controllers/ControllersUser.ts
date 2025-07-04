@@ -95,7 +95,7 @@ let register = async (req: Request, res: Response) => {
            
         });
 
-        res.status(200).json({ message: "Usuario registrado con éxito", token: accessToken,  });
+        res.status(200).json({ message: "Usuario registrado con éxito", token: accessToken, rol: usuarioFinal.tipoUsuario });
         return;
     } catch (error: any) {
         console.error(error);

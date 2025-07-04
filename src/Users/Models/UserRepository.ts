@@ -444,7 +444,6 @@ class UserRepository {
     return { message: "Usuario eliminado con éxito", affectedRows: result.rowCount };
   }
 
-  // Proximo integración con coockies
   static async deleUser(id: Number){
     const userDelete = `Delete From usuarios where id_usuario = $1`;
     const values = [id];

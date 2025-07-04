@@ -6,7 +6,7 @@ import { subirFotoPerfil } from "../Helpers/BlobServices";
 import { normalizaTipoDoc } from "../Helpers/normalizarDocumento";
 import TipoDocumento from "../DTO/TipoDocumento";
 import bcrypt from "bcryptjs";
-
+import { MailService } from '../../Services/Emails'; 
 
 class UserService {
 
@@ -17,7 +17,15 @@ class UserService {
         if (foto && typeof foto === 'string' && foto.startsWith('data:image')) {
             user.fotoPerfil = await subirFotoPerfil(foto); 
         }
-        return await UserRepository.addContratanteInformal(user);
+        const tipo_documento: TipoDocumento = await normalizaTipoDoc(user.tipoDocumento);
+        user.tipoDocumento = tipo_documento;
+
+        const savedUser =  await UserRepository.addContratanteInformal(user);
+
+        MailService.sendWelcomeEmail(user.email, user.nombreCompleto)
+            .catch(err => console.error('Error enviando e-mail de bienvenida:', err));
+
+        return savedUser;
     }
 
     static async registerContratante (User: ContratanteDTO){
@@ -26,7 +34,12 @@ class UserService {
         if(foto && typeof foto === 'string' && foto.startsWith('data:image')) {
             User.fotoPerfil = await subirFotoPerfil(foto); 
         }
-        return await UserRepository.addContratante(User)
+        const savedUser = await UserRepository.addContratante(User)
+        
+        MailService.sendWelcomeEmail(User.email, User.nombreCompleto)
+            .catch(err => console.error('Error enviando e-mail de bienvenida:', err));
+
+        return savedUser;
     }
 
     static async registerContratista(User: ContratistaDTO){
@@ -42,7 +55,13 @@ class UserService {
         }
 
         
-        return await UserRepository.addContratista(User)
+       const savedUser = await UserRepository.addContratista(User);
+
+        console.log(User.email, User.nombreCompleto)
+        MailService.sendWelcomeEmail(User.email, User.nombreCompleto)
+        .catch(err => console.error('Error enviando e-mail de bienvenida:', err));
+
+        return savedUser;
     }
 
     static async login(auth: Auth) {
