@@ -10,7 +10,7 @@ import  {validateChangePasswordBody}  from "../Middleware/validatedChangePasswor
 const router = Router();
 
 router.get('/', verifyToken, validatorCookies, authorizeRole(['contratista','contratante_formal', 'contratante_informal']) ,  Controllersprofile.profile)
-router.post('/desactivarcuenta', verifyToken, validatorCookies, authorizeRole(['contratista','contratante_formal', 'contratante_informal']), Controllersprofile.deactivateUser)
+router.put('/desactivarcuenta', verifyToken, validatorCookies, authorizeRole(['contratista','contratante_formal', 'contratante_informal']), Controllersprofile.deactivateUser)
 router.post('/logout', logout);
 router.put('/updatePassword', verifyToken, validatorCookies, authorizeRole(['contratista','contratante_formal', 'contratante_informal']), validateChangePasswordBody, changePassword);
 

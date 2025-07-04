@@ -27,7 +27,7 @@ const corsOptions = {
     }
   },
 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],  
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],  
   credentials: true, // permitir cookies
   allowedHeaders: ['Content-Type', 'Authorization'],
 };

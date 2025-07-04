@@ -452,13 +452,12 @@ class UserRepository {
     return await db.query(userDelete, values)
   }
 
-  static async desactivarUser(idUser: string){
+  static async desactivarUser(idUser: string): Promise<boolean> {
     const userdesactivar = `UPDATE usuarios SET estado_perfil = 'inactivo' WHERE id_usuario = $1 AND estado_perfil != 'inactivo'`;
-    const values = [idUser]
 
-    const result :any = await db.query(userdesactivar, values);
+    const {rowCount }   = await db.query(userdesactivar, [idUser]);
 
-    return result.rowCount > 0
+    return (rowCount ?? 0 ) > 0
   }
 
   static async changePassword(userId: string,  newPassword: string) {

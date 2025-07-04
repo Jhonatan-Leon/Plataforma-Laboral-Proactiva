@@ -109,8 +109,19 @@ class UserService {
         return await UserRepository.deleteUser(id);
     }
 
-    static async deactivateUser(UserId: string){
-        return await UserRepository.desactivarUser(UserId);
+    static async deactivateUser(UserId: string, password: string){
+        const user = await UserRepository.getUserById(UserId)
+        if (!user) throw new Error('USER_NOT_FOUND')
+
+        if (user.estado_perfil === 'inactivo') {
+            throw new Error('ALREADY_INACTIVE')
+        }
+
+        const valid = await bcrypt.compare(password, user.contraseña)
+        if (!valid) throw new Error('INVALID_PASSWORD')
+
+        const updated = await UserRepository.desactivarUser(UserId)
+        if (!updated) throw new Error('UPDATE_FAILED')
     }
 
     static async changePassword(userId: string, currentPassword: string, newPassword: string) {

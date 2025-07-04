@@ -34,6 +34,13 @@ class postulacionServices {
 	static async listarPostulacionesDeVacante (creatorId: string) {
 		return PostulacionRepository.findByVacanteAndCreator(creatorId);
 	}
+
+	static async chageStatus (id: string, estado: string)  {
+		const updated = await PostulacionRepository.updatePostulacionStatus(id, estado)
+		console.log(updated)
+		if(!updated) throw new Error('Status Failed');
+		return true;
+	}
 }
 
 export default postulacionServices;

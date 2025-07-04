@@ -34,35 +34,45 @@ let profile = async (req: Request, res: Response) => {
 };
 
 
-let deactivateUser = async (req: Request, res: Response) => {
+const deactivateUser = async (req: Request, res: Response) => {
   try {
-      const TokenData = req.user;
-      const userId = TokenData.data.id;
+    const userId = req.user?.data?.id
+    const { password } = req.body 
 
-      // 3. Desactivación
-      const result = await UserService.deactivateUser(userId);
-        
-      if (!result) {
-        res.status(404).json({ error: "Operation failed" }); // Mensaje genérico
+    if (!password) {
+       res.status(400).json({ error: 'Password is required' })
+       return;
+    }
+
+    console.log(userId, password) 
+    await UserService.deactivateUser(userId, password)
+
+    res.clearCookie('refreshToken', {
+      httpOnly : true,
+      sameSite : 'strict',
+      secure   : process.env.NODE_ENV === 'production'
+    })
+
+    res.status(200).json({ status: 'Account deactivated successfully' })
+    return;
+  } catch (err: any) {
+    switch (err.message) {
+      case 'USER_NOT_FOUND':
+        res.status(404).json({ error: 'User not found' })
         return;
-      }
-
-      // 4. Limpiar cookies si es necesario
-      res.clearCookie("refreshToken", {
-        httpOnly: true,
-        sameSite: "strict",
-        secure: process.env.NODE_ENV === "production"
-      });
-
-      res.status(200).json({ status: "Account deactivated successfully" });
-      return;
-
-    } catch (error: any) {
-        console.error(error);
-        res.status(500).json({ error: "Error inactivating account" });
+      case 'ALREADY_INACTIVE':
+        res.status(404).json({ error: 'Account already inactive' })
+        return;
+      case 'INVALID_PASSWORD':
+        res.status(401).json({ error: 'Invalid password' })
+        return;
+      default:
+        console.error(err)
+        res.status(500).json({ error: 'Internal server error' })
         return;
     }
-};
+  }
+}
 
 
 export default {

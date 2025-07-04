@@ -65,12 +65,13 @@ class PostulacionRepository {
                     SELECT json_agg(
                       json_build_object(
                         'id',       cmt.id_comentario,
-                        'authorId', cmt.author_id,
+                        'name', au.nombre_completo,
                         'text',     cmt.content,
-                        'date',     cmt.created_at
+                        'date',      cmt.created_at::date
                       ) ORDER BY cmt.created_at DESC
                     )
                     FROM comentario cmt
+                    JOIN usuarios au ON au.id_usuario = cmt.author_id 
                     WHERE cmt.target_user_id = u.id_usuario
                   ),
                   '[]'::json
@@ -80,7 +81,7 @@ class PostulacionRepository {
               JOIN vacante     v ON v.cod_vacante = p.cod_vacante
               JOIN usuarios    u ON u.id_usuario  = p.id_usuario
               LEFT JOIN contratista c ON c.id_usuario = u.id_usuario  
-              WHERE v.id_usuario = $1
+              WHERE v.id_usuario = $1 AND p.estado IN ('aceptada', 'pendiente')
               ORDER BY p.fecha_postulacion DESC;`
     
     const values = [creatorId]
@@ -88,6 +89,14 @@ class PostulacionRepository {
     const {rows} = await db.query(sql, values)
     console.log(rows)
     return rows
+  }
+
+  static async updatePostulacionStatus (id: string, estado: string){
+    const sql = `UPDATE postulacion SET estado = $2, fecha_postulacion = NOW() WHERE id_postulacion = $1  RETURNING id_postulacion; `;
+    const values = [id, estado]
+    const { rows } = await db.query(sql, values)
+
+    return rows.length > 0;
   }
 }
 

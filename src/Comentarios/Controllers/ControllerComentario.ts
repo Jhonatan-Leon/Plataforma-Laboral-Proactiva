@@ -12,8 +12,10 @@ const Registrar = async (req: Request, res: Response) => {
       content,
       fecha_creacion
     } = req.body;
-
+    
     const author_id = user?.data?.id;
+
+     console.log(target_user_id, content, fecha_creacion, author_id)
 
     if (!author_id || !target_user_id || !content?.trim()) {
        res.status(400).json({ error: 'author_id, target_user_id y content son obligatorios' });
