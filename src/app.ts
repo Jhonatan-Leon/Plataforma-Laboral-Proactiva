@@ -9,6 +9,7 @@ import RegisterComent from './Comentarios/Routes/RegisterComent'
 import cors from 'cors';
 import postulacionRotuer from './Postulaciones/Routes/postulacionesRotuer'
 import RoutesAI from './IA/Routes/RoutesAI'
+import Contact_Route from './Users/Routes/Contact_Route'
 
 dotenv.config();
 
@@ -47,7 +48,8 @@ app.use('/Users/Profile',  profileUser);
 app.use('/User/Vacantes',  Register)
 app.use('/comentarios',  RegisterComent)
 app.use('/postulacion', postulacionRotuer);
-app.use('/chat/IA', RoutesAI)
+app.use('/contact', Contact_Route);
+app.use('/chat/IA', RoutesAI);
 
 app.listen(PORT, () => {
   console.log(`Servidor ejecutándose en: http://localhost:${PORT}`);

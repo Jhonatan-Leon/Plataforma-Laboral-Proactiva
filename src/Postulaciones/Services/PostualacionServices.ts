@@ -1,6 +1,7 @@
 import { error } from "console";
 import postulacion from "../DTO/DtoPostulacion";
 import PostulacionRepository from "../Models/Repository";
+import { MailService } from "../../Services/Emails";
 
 class postulacionServices {
 	static async registrarPostulacion(post: postulacion): Promise<void> {
@@ -10,7 +11,12 @@ class postulacionServices {
     	if (rowCount !== 1) {
       	throw new Error('Usuario no postulado');
     	}
-  	}
+
+		/*
+		MailService.sendVacancyApplicationNotification()
+		.catch(err => console.error('Error enviando e-mail de bienvenida:', err));
+		*/
+	}
 
 	static async getpostulacion(id: string) {
   		const result = await PostulacionRepository.GetPostulacion(id);

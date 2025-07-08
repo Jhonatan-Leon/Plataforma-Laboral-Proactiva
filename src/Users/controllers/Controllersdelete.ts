@@ -6,14 +6,13 @@ const deleteUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        // 1. Extraer ID del token en cookies (autenticación)
+        
         const token = req.cookies?.refreshToken;
         if (!token) {
             res.status(401).json({ error: "Cookie de sesión requerida" });
             return;
         }
 
-        // 2. Verificar token y obtener ID del solicitante
         const { id: userId } = jwt.verify(token, process.env.REFRESH_KEY_TOKEN!) as { id: string };
 
         console.log(`Usuario ${userId} solicitando eliminar ID: ${id}`);
