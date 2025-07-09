@@ -112,6 +112,9 @@ class UserService {
         if (foto && typeof foto === 'string' && foto.startsWith('data:image')) {
             updateUser.fotoPerfil = await subirFotoPerfil(foto); 
         }
+
+        const tipoDocumento: TipoDocumento = await normalizaTipoDoc(updateUser.tipoDocumento);
+        updateUser.tipoDocumento = tipoDocumento;
         return await UserRepository.updateContratista(updateUser);
     }
 
@@ -121,6 +124,9 @@ class UserService {
         if (foto && typeof foto === 'string' && foto.startsWith('data:image')) {
             updateUser.fotoPerfil = await subirFotoPerfil(foto); 
         }
+
+        const tipoDocumento: TipoDocumento = await normalizaTipoDoc(updateUser.tipoDocumento);
+        updateUser.tipoDocumento = tipoDocumento;
         return await UserRepository.updateInformal(updateUser);
     }
 
