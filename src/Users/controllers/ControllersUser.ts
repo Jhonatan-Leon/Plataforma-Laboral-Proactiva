@@ -32,7 +32,8 @@ let register = async (req: Request, res: Response) => {
             EstudiosComplementario,
             experiencia,
             categoria_trabajo,
-            Ocupacion
+            Ocupacion,
+            sitio_web
         } = req.body;
 
        
@@ -46,7 +47,7 @@ let register = async (req: Request, res: Response) => {
         let ID: any;
 
         if (tipo_usuario.toLowerCase() === "contratante_formal" && NIT && sector ) {
-           usuarioFinal = new ContratanteDTO(NIT, sector, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil , municipio, tipoDocumento, numeroCedula, genero, estado_perfil, tipo_usuario);
+           usuarioFinal = new ContratanteDTO(NIT, sector, sitio_web, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil , municipio, tipoDocumento, numeroCedula, genero, estado_perfil, tipo_usuario);
            ID = await UserService.registerContratante(usuarioFinal);
         } else if (tipo_usuario.toLowerCase() === "contratista" && categoria_trabajo && HabilidadesTecnicas && HabilidadesSociales ) {
             usuarioFinal = new ContratistaDTO(HabilidadesTecnicas, HabilidadesSociales,EstudiosComplementario,experiencia, categoria_trabajo, Ocupacion, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil,municipio,tipoDocumento,numeroCedula,genero, estado_perfil, tipo_usuario);

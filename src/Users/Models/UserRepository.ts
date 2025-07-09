@@ -20,8 +20,8 @@ class UserRepository {
         if(result.rowCount > 0){
           try{
             let Id = result.rows[0].id_usuario;
-            const sql = `INSERT INTO contratante (id_usuario, nit, sector) VALUES ($1, $2, $3)`;
-            const values = [Id, User.NIT, User.sector];
+            const sql = `INSERT INTO contratante (id_usuario, nit, sector, sitio_web) VALUES ($1, $2, $3, $4)`;
+            const values = [Id, User.NIT, User.sector, User.sitio_web];
             console.log(values);
             return await db.query(sql, values);
           }catch(err){
@@ -330,9 +330,9 @@ class UserRepository {
   try {
     const updateUserQuery = `
       UPDATE usuarios SET rol = COALESCE($1, rol), contraseña = COALESCE($2, contraseña), nombre_completo = COALESCE($3, nombre_completo), numero_de_telefono = COALESCE($4, numero_de_telefono), numero_de_telefono_2 = COALESCE($5, numero_de_telefono_2),
-       correo_electronico = COALESCE($6, correo_electronico), foto = COALESCE($7, foto), descripcion = COALESCE($8, descripcion), estado_perfil = COALESCE($9, estado_perfil) WHERE id_usuario = $10 `;
+       correo_electronico = COALESCE($6, correo_electronico), municipio = COALESCE($7, municipio), genero = COALESCE($8, genero), foto = COALESCE($9, foto), descripcion = COALESCE($10, descripcion), estado_perfil = COALESCE($11, estado_perfil), tipo_documento = COALESCE($12, tipo_documento), documento = COALESCE($13, documento) WHERE id_usuario = $14 `;
 
-    const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.id]
+    const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.municipio, dataUpdate.genero, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.tipoDocumento, dataUpdate.NumeroCedula,  dataUpdate.id]
 
 
     const userResult = await db.query(updateUserQuery, values);
@@ -345,10 +345,11 @@ class UserRepository {
       UPDATE contratante SET
         nit = COALESCE($1, nit),
         sector = COALESCE($2, sector)
+        sitio_web = COALESCE($3, sitio_web)
       WHERE id_usuario = $3;
     `;
 
-    const contratanteValues = [dataUpdate.NIT, dataUpdate.sector, dataUpdate.id];
+    const contratanteValues = [dataUpdate.NIT, dataUpdate.sector, dataUpdate.sitio_web, dataUpdate.id];
     const contratanteResult = await db.query(updateContratanteQuery, contratanteValues);
 
     return {
@@ -367,8 +368,9 @@ class UserRepository {
     // Primero: actualizar los campos de la tabla usuarios
     const updateUserQuery = `
       UPDATE usuarios SET rol = COALESCE($1, rol), contraseña = COALESCE($2, contraseña), nombre_completo = COALESCE($3, nombre_completo), numero_de_telefono = COALESCE($4, numero_de_telefono), numero_de_telefono_2 = COALESCE($5, numero_de_telefono_2),
-       correo_electronico = COALESCE($6, correo_electronico), foto = COALESCE($7, foto), descripcion = COALESCE($8, descripcion), estado_perfil = COALESCE($9, estado_perfil) WHERE id_usuario = $10`;
-    const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.id]
+       correo_electronico = COALESCE($6, correo_electronico), municipio = COALESCE($7, municipio), genero = COALESCE($8, genero), foto = COALESCE($9, foto), descripcion = COALESCE($10, descripcion), estado_perfil = COALESCE($11, estado_perfil), tipo_documento = COALESCE($12, tipo_documento), documento = COALESCE($13, documento) WHERE id_usuario = $14 RETURNING * `;
+
+    const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.municipio, dataUpdate.genero, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.tipoDocumento, dataUpdate.NumeroCedula,  dataUpdate.id]
 
 
     const userResult = await db.query(updateUserQuery, values);
@@ -416,13 +418,14 @@ class UserRepository {
 
   static async updateInformal(user: InformalDTO){
     try {
-      console.log("DTO recibido:", user);
+      const put = `
+      UPDATE usuarios SET rol = COALESCE($1, rol), contraseña = COALESCE($2, contraseña), nombre_completo = COALESCE($3, nombre_completo), numero_de_telefono = COALESCE($4, numero_de_telefono), numero_de_telefono_2 = COALESCE($5, numero_de_telefono_2),
+       correo_electronico = COALESCE($6, correo_electronico), municipio = COALESCE($7, municipio), genero = COALESCE($8, genero), foto = COALESCE($9, foto), descripcion = COALESCE($10, descripcion), estado_perfil = COALESCE($11, estado_perfil), tipo_documento = COALESCE($12, tipo_documento), documento = COALESCE($13, documento) WHERE id_usuario = $14 `;
+
+    const values = [user.tipoUsuario, user.password, user.nombreCompleto, user.telefono, user.telefono2 ?? null, user.email, user.municipio, user.genero, user.fotoPerfil ?? null, user.descripcion, user.estadoPerfil, user.tipoDocumento, user.NumeroCedula,  user.id]
 
 
-      const put =  `UPDATE usuarios SET rol = COALESCE($1, rol), contraseña = COALESCE($2, contraseña), nombre_completo = COALESCE($3, nombre_completo), numero_de_telefono = COALESCE($4, numero_de_telefono), numero_de_telefono_2 = COALESCE($5, numero_de_telefono_2),
-       correo_electronico = COALESCE($6, correo_electronico), foto = COALESCE($7, foto), descripcion = COALESCE($8, descripcion), estado_perfil = COALESCE($9, estado_perfil) WHERE id_usuario = $10`;
-      const values = [user.tipoUsuario, user.password, user.nombreCompleto, user.telefono, user.telefono2 ?? null, user.email, user.fotoPerfil ?? null, user.descripcion, user.estadoPerfil, user.id]
-       const result : any = await db.query(put, values)
+        const result : any = await db.query(put, values)
        if (result.rowCount === 0) {
         return { message: "No se realizaron cambios o el usuario no existe." };
       }

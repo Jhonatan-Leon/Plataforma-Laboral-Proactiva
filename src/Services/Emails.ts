@@ -68,16 +68,84 @@ export class MailService {
   }
 
   static async sendPasswordChangeEmail(to: string, name: string, date = new Date()) {
-    await this.dispatch({
-      senderAddress: this.sender,
-      recipients: { to: [{ address: to, displayName: name }] },
-      content: {
-        subject: 'Tu contraseña ha sido actualizada',
-        html: `<p>Hola ${name}, confirmamos que tu contraseña cambió el ${date.toLocaleString(
-          'es-CO'
-        )}.</p>`,
-      },
+    const subject = 'Tu contraseña ha sido actualizada';
+
+    const formattedDate = date.toLocaleString('es-CO', {
+      dateStyle: 'long',
+      timeStyle: 'short',
     });
+
+    const html = `
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+            style="font-family:Arial,Helvetica,sans-serif;background:#f6f8fa;padding:0;margin:0">
+        <tr>
+          <td align="center" style="padding:25px 0">
+            <table width="600" cellpadding="0" cellspacing="0" role="presentation"
+                  style="background:#ffffff;border-radius:8px;
+                          box-shadow:0 3px 8px rgba(0,0,0,.06);overflow:hidden">
+
+              <!-- Cabecera azul -------------------------------------------->
+              <tr>
+                <td style="background:#2b6cb0;padding:20px 40px;color:#ffffff;
+                          font-size:24px;font-weight:600;text-align:center">
+                  Seguridad de tu cuenta
+                </td>
+              </tr>
+
+              <!-- Contenido principal ------------------------------------->
+              <tr>
+                <td style="padding:32px 40px;color:#333333;font-size:16px;line-height:1.6">
+                  <p style="margin:0 0 18px">Hola <b>${name}</b>,</p>
+
+                  <p style="margin:0 0 18px">
+                    Te confirmamos que tu contraseña fue actualizada el <b>${formattedDate}</b>.
+                  </p>
+
+                  <p style="margin:0 0 24px">
+                    Si realizaste este cambio, no necesitas hacer nada más.
+                    <br>
+                    Si <b>no</b> fuiste tú, por favor restablece tu contraseña de inmediato
+                    o comunícate con nuestro equipo de soporte.
+                  </p>
+
+                  <table role="presentation" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td align="center" bgcolor="#2b6cb0" style="border-radius:4px">
+                        <a href="http://localhost:5173"
+                          style="display:inline-block;padding:12px 24px;
+                                  font-size:16px;color:#ffffff;text-decoration:none;
+                                  font-weight:600">
+                          Revisar seguridad
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <p style="margin:24px 0 0;font-size:14px;color:#555555">
+                    Gracias por confiar en nosotros.<br>
+                    — Equipo de Soporte
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="background:#f2f4f6;padding:16px 40px;font-size:12px;
+                          color:#999999;text-align:center">
+                  Si tienes dudas, responde a este correo o visita&nbsp;
+                  <a href="soporte.laboralproactiva@gmail.com" style="color:#2b6cb0">
+                    nuestro centro de ayuda
+                  </a>.
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>`;
+
+      await this.dispatch({
+        senderAddress: this.sender,
+        recipients   : { to: [{ address: to, displayName: name }] },
+        content      : { subject, html },
+      });
   }
 
   static async sendContactFormEmail(

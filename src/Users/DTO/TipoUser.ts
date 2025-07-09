@@ -5,12 +5,14 @@ import TipoDocumento from "./TipoDocumento";
 class ContratanteDTO extends Usuario {
     private _NIT: string;
     private _sector: string;
+    private _sitio_web: string;
 
-    constructor(NIT: string, sector: string, nombreCompleto: string, email: string, telefono: string, telefono2: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,  
+    constructor(NIT: string, sector: string, sitio_web: string,  nombreCompleto: string, email: string, telefono: string, telefono2: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento:TipoDocumento, NumeroCedula: Number, genero: TipoGenero, estadoPerfil: EstadoUser,  
          tipoUsuario: TipoUsuario, id?: number ) {
         super(nombreCompleto, email, telefono, telefono2, password, descripcion, fotoPerfil, municipio, tipoDocumento, NumeroCedula, genero, estadoPerfil, tipoUsuario, id)
         this._NIT = NIT;
         this._sector = sector;
+        this._sitio_web = sitio_web;
     }
 
     get NIT(): string {
@@ -19,6 +21,14 @@ class ContratanteDTO extends Usuario {
 
     set NIT(value: String){
         this.NIT = value;
+    }
+
+    get sitio_web(): string {
+        return this._sitio_web;
+    }
+
+    set sitio_web(value: String){
+        this.sitio_web = value;
     }
 
     get sector(): string {

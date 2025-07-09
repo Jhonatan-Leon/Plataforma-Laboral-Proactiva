@@ -48,6 +48,7 @@ const updateUser = async (req: Request, res: Response) => {
             const dto = new ContratanteDTO(
                 input.NIT ?? existingUser.NIT,
                 input.sector ?? existingUser.sector,
+                input.sitio_web ?? existingUser.sitio_web,
                 input.nombreCompleto ?? existingUser.nombreCompleto,
                 input.email ?? existingUser.email,
                 input.telefono ?? existingUser.telefono,

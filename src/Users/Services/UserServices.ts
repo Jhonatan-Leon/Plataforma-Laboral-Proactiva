@@ -7,6 +7,8 @@ import { normalizaTipoDoc } from "../Helpers/normalizarDocumento";
 import TipoDocumento from "../DTO/TipoDocumento";
 import bcrypt from "bcryptjs";
 import { MailService } from '../../Services/Emails'; 
+import { Jwt } from "jsonwebtoken";
+
 
 class UserService {
 
@@ -149,24 +151,27 @@ class UserService {
         if (!updated) throw new Error('UPDATE_FAILED')
     }
 
-    static async changePassword(userId: string, currentPassword: string, newPassword: string) {
-        const user = await UserRepository.getUserById(userId);
-        if (!user) {
-            throw new Error("Usuario no encontrado");
-        }
+   static async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const user = await UserRepository.getUserById(userId);
+    if (!user) throw new Error('Usuario no encontrado');
 
-        const isMatch = await bcrypt.compare(currentPassword, user.contraseña);
+    const isMatch = await bcrypt.compare(currentPassword, user.contraseña);
+    if (!isMatch) throw new Error('Contraseña actual incorrecta');
 
-        if (!isMatch) {
-            throw new Error("Contraseña actual incorrecta");
-        }
+    if (await bcrypt.compare(newPassword, user.contraseña)) {
+        throw new Error('La nueva contraseña no puede ser igual a la actual');
+    }
 
-        if (await bcrypt.compare(newPassword, user.password)) {
-            throw new Error('La nueva contraseña no puede ser igual a la actual');
-        }
+    const hashed = await generateHash(newPassword);
+    await UserRepository.changePassword(userId, hashed);
 
-        user.password = await generateHash(newPassword);
-        return await UserRepository.changePassword(userId, user.password);
+    await MailService.sendPasswordChangeEmail(
+        user.correo_electronico,
+        user.nombre_completo,
+        new Date(),
+    );
+
+    return { msg: 'Contraseña actualizada y correo enviado' };
     }
 }
 
