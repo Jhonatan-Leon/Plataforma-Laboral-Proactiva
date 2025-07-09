@@ -24,7 +24,7 @@ const updateUser = async (req: Request, res: Response) => {
         }
 
         const input = req.body;
-        console.log("Datos de entrada: ", input);
+        console.log("Datos de entrada: ", input);   
 
         // Encriptar la contraseña si se envía
         if (input.password) {
@@ -49,11 +49,11 @@ const updateUser = async (req: Request, res: Response) => {
                 input.NIT ?? existingUser.NIT,
                 input.sector ?? existingUser.sector,
                 input.sitio_web ?? existingUser.sitio_web,
-                input.nombreCompleto ?? existingUser.nombreCompleto,
-                input.email ?? existingUser.email,
-                input.telefono ?? existingUser.telefono,
-                input.telefono2 ?? existingUser.telefono2,
-                input.password ?? existingUser.password,
+                input.nombreCompleto ?? existingUser.nombre_completo,
+                input.email ?? existingUser.correo_electronico,
+                input.telefono ?? existingUser.numero_de_telefono,
+                input.telefono2 ?? existingUser.numero_de_telefono_2,
+                input.password ?? existingUser.constraseña,
                 input.descripcion ?? existingUser.descripcion,
                 input.fotoPerfil ?? existingUser.fotoPerfil,
                 input.municipio ?? existingUser.municipio,
@@ -75,10 +75,10 @@ const updateUser = async (req: Request, res: Response) => {
                 input.Ocupacion ?? existingUser.Ocupacion,
                 input.categoria_trabajo ?? existingUser.categoria_trabajo,
                 input.nombreCompleto ?? existingUser.nombreCompleto,
-                input.email ?? existingUser.email,
-                input.telefono ?? existingUser.telefono,
-                input.telefono2 ?? existingUser.telefono2,
-                input.password ?? existingUser.password,
+                input.email ?? existingUser.correo_electronico,
+                input.telefono ?? existingUser.numero_de_telefono,
+                input.telefono2 ?? existingUser.numero_de_telefono_2,
+                input.password ?? existingUser.contraseña,
                 input.descripcion ?? existingUser.descripcion,
                 input.fotoPerfil ?? existingUser.fotoPerfil,
                 input.municipio ?? existingUser.municipio,
@@ -93,11 +93,11 @@ const updateUser = async (req: Request, res: Response) => {
 
         } else if (rol === "contratante_informal") {
             const dto = new InformalDTO(
-                input.nombreCompleto ?? existingUser.nombreCompleto,
-                input.email ?? existingUser.email,
-                input.telefono ?? existingUser.telefono,
-                input.telefono2 ?? existingUser.telefono2,
-                input.password ?? existingUser.password,
+                input.nombreCompleto ?? existingUser.nombre_completo,
+                input.email ?? existingUser.correo_electronico,
+                input.telefono ?? existingUser.numero_de_telefono,
+                input.telefono2 ?? existingUser.numero_de_telefono_2,
+                input.password ?? existingUser.contraseña,
                 input.descripcion ?? existingUser.descripcion,
                 input.fotoPerfil ?? existingUser.fotoPerfil,
                 input.municipio ?? existingUser.municipio,

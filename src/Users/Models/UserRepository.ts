@@ -371,7 +371,7 @@ class UserRepository {
        correo_electronico = COALESCE($6, correo_electronico), municipio = COALESCE($7, municipio), genero = COALESCE($8, genero), foto = COALESCE($9, foto), descripcion = COALESCE($10, descripcion), estado_perfil = COALESCE($11, estado_perfil), tipo_documento = COALESCE($12, tipo_documento), documento = COALESCE($13, documento) WHERE id_usuario = $14 RETURNING * `;
 
     const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.municipio, dataUpdate.genero, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.tipoDocumento, dataUpdate.NumeroCedula,  dataUpdate.id]
-
+    console.log('repository', dataUpdate)
 
     const userResult = await db.query(updateUserQuery, values);
     if (userResult.rowCount === 0) {
