@@ -5,7 +5,7 @@ const patchStatus = async (req: Request, res: Response) => {
   const id = req.params.id
   const { estado } = req.body;
 
-  console.log(id, estado)
+  console.log('Datos: ', id, estado)
 
   if (!id) {
      res.status(400).json({ message: 'ID inválido' })

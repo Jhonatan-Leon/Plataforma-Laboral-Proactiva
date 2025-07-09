@@ -8,7 +8,7 @@ import cancelarPostulacion from "../Controller/cancelarPostulacion";
 import getMisPostulaciones from '../Controller/ObtenerPostulacionVac'
 import patchStatus from '../Controller/updateStatus'
 
-const router = Router()
+const 	router = Router()
 
 router.post('/RegisterPostulacion', verifyToken, validatorCookies, authorizeRole(['contratista', 'contratante_informal']), resgisterPost)
 router.get('/getPostulacion', verifyToken, validatorCookies, authorizeRole(['contratista']), GetPostulacionAplicada)
