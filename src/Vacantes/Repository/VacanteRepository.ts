@@ -35,7 +35,7 @@ class VacanteRepository{
     }
 
     static async ObtenerTodosVacantes() {
-        const sql = 'SELECT v.*, u.nombre_completo,c.sector, u.municipio,u.descripcion AS descripcion_usuario, u.rol FROM vacante v JOIN usuarios u ON v.id_usuario = u.id_usuario JOIN contratante c ON u.id_usuario = c.id_usuario;';
+        const sql = 'SELECT v.*, u.nombre_completo,c.sector, u.numero_de_telefono as contact, u.correo_electronico as contact, u.municipio,u.descripcion AS descripcion_usuario, u.rol, c.sitio_web  FROM vacante v JOIN usuarios u ON v.id_usuario = u.id_usuario JOIN contratante c ON u.id_usuario = c.id_usuario;';
         try {
             const result = await db.query(sql);
             return result.rows; // devuelve solo los datos
@@ -50,8 +50,9 @@ class VacanteRepository{
         const sql = `UPDATE vacante SET tipo_vacante = $1, nombre_vacante = $2, persona_de_contacto = $3, numero_de_telefono = $4, correo_electronico = $5, direccion = $6, descripcion = $7, 
         logo = $8, salario_estimado = $9, disponibilidad = $10 where cod_vacante = $11 returning *;`;
 
+        const salario = parseFloat(vacante.salario_vacante.replace(/[^\d.]/g, ''));
         const values = [vacante.categoria_trabajo, vacante.nombre_vacante, vacante.persona_contacto, vacante.numero_contacto, vacante.correo_electronico, vacante.direccion, vacante.descripcion_vacante,
-            vacante.logo, vacante.salario_vacante, vacante.disponibilidad, cod_vacante
+            vacante.logo, salario, vacante.disponibilidad, cod_vacante
         ];
         const result = await db.query(sql,values)
         return result.rows[0]

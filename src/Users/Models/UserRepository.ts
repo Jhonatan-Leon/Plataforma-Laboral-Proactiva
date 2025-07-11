@@ -20,10 +20,12 @@ class UserRepository {
         if(result.rowCount > 0){
           try{
             let Id = result.rows[0].id_usuario;
-            const sql = `INSERT INTO contratante (id_usuario, nit, sector, sitio_web) VALUES ($1, $2, $3, $4)`;
-            const values = [Id, User.NIT, User.sector, User.sitio_web];
+            const sql = `INSERT INTO contratante (id_usuario, nit, sector, sitio_web) VALUES ($1, $2, $3, $4) RETURNING id_usuario`;
+            const values = [Id, User.documentNumber, User.sector, User.sitio_web];
             console.log(values);
-            return await db.query(sql, values);
+            const result_ID: any = await db.query(sql, values);
+            const idUser = result_ID.rows[0].id_usuario;
+            return idUser
           }catch(err){
             console.log("Error al ingresar usuario contratante ", err)
             throw err;
@@ -147,6 +149,7 @@ class UserRepository {
       u.genero,
       c.nit AS contratante_nit,
       c.sector AS contratante_sector,
+      c.sitio_web,
       t.categoria_trabajo,
       t.habilidades_tecnicas,
       t.habilidades_sociales,       
@@ -182,29 +185,72 @@ class UserRepository {
     
   static async getByRol(rol: string){
       try {
-        const query = `SELECT 
-          u.id_usuario,
-          u.nombre_completo,
-          u.correo_electronico,
-          u.numero_de_telefono,
-          u.contraseña,
-          u.descripcion,
-          u.foto,
-          u.municipio,
-          u.estado_perfil,
-          u.rol,
-          c.nit AS contratante_nit,
-          c.sector AS contratante_sector,
-          t.categoria_trabajo,
-          t.habilidades_tecnicas,
-          t.habilidades_sociales,
-          t.estudio_complementario,
-          t.experiencia,
-          t.ocupacion
-        FROM usuarios u
-        LEFT JOIN contratante c ON u.id_usuario = c.id_usuario AND u.rol = 'contratante_formal'
-        LEFT JOIN contratista t ON u.id_usuario = t.id_usuario AND u.rol = 'contratista'
-        WHERE u.rol = $1;`;
+        const query = `
+                  SELECT 
+                  u.id_usuario,
+                  u.nombre_completo,
+                  u.correo_electronico,
+                  u.numero_de_telefono,
+                  u.numero_de_telefono_2,
+                  u.contraseña,
+                  u.descripcion,
+                  u.foto,
+                  u.municipio,
+                  u.estado_perfil,
+                  u.rol,
+                  u.tipo_documento,
+                  u.documento,
+                  t.ocupacion,
+                  t.categoria_trabajo,
+                  t.habilidades_tecnicas,
+                  t.habilidades_sociales,
+                  t.estudio_complementario,
+
+                  -- Comentarios enriquecidos
+                  COALESCE(com.comentarios, '[]') AS comments,
+
+                  -- Postulaciones
+                  COALESCE(post.postulaciones, '[]') AS appliedTo
+
+                FROM usuarios u
+                LEFT JOIN contratista t ON u.id_usuario = t.id_usuario AND u.rol = 'contratista'
+
+                -- Comentarios
+                LEFT JOIN (
+                  SELECT 
+                    c.target_user_id,
+                    json_agg(
+                      json_build_object(
+                        'role', a.rol,
+                        'name', a.nombre_completo,
+                        'date', c.created_at,
+                        'coment', c.content
+                      )
+                    ) AS comentarios
+                  FROM comentario c
+                  JOIN usuarios a ON a.id_usuario = c.author_id
+                  GROUP BY c.target_user_id
+                ) com ON com.target_user_id = u.id_usuario
+
+                -- Postulaciones
+                LEFT JOIN (
+                  SELECT 
+                    p.id_usuario,
+                    json_agg(
+                      json_build_object(
+                        'vacancyId', v.cod_vacante,
+                        'vacancyTitle', v.nombre_vacante,
+                        'appliedDate', TO_CHAR(p.fecha_postulacion, 'YYYY-MM-DD'),
+                        'status', p.estado
+                      )
+                    ) AS postulaciones
+                  FROM postulacion p
+                  JOIN vacante v ON v.cod_vacante = p.cod_vacante
+                  GROUP BY p.id_usuario
+                ) post ON post.id_usuario = u.id_usuario
+
+                WHERE u.rol = $1
+        ;`;
       
         const values = [rol]
       
@@ -330,10 +376,10 @@ class UserRepository {
   try {
     const updateUserQuery = `
       UPDATE usuarios SET rol = COALESCE($1, rol), contraseña = COALESCE($2, contraseña), nombre_completo = COALESCE($3, nombre_completo), numero_de_telefono = COALESCE($4, numero_de_telefono), numero_de_telefono_2 = COALESCE($5, numero_de_telefono_2),
-       correo_electronico = COALESCE($6, correo_electronico), municipio = COALESCE($7, municipio), genero = COALESCE($8, genero), foto = COALESCE($9, foto), descripcion = COALESCE($10, descripcion), estado_perfil = COALESCE($11, estado_perfil), tipo_documento = COALESCE($12, tipo_documento), documento = COALESCE($13, documento) WHERE id_usuario = $14 `;
+       correo_electronico = COALESCE($6, correo_electronico), municipio = COALESCE($7, municipio), genero = COALESCE($8, genero), foto = COALESCE($9, foto), descripcion = COALESCE($10, descripcion), estado_perfil = COALESCE($11, estado_perfil), tipo_documento = COALESCE($12, tipo_documento), documento = COALESCE($13, documento), notificaciones = COALESCE($14, notificaciones) WHERE id_usuario = $15 `;
 
-    const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.municipio, dataUpdate.genero, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.tipoDocumento, dataUpdate.NumeroCedula,  dataUpdate.id]
-
+    const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.municipio, dataUpdate.genero, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.tipoDocumento, dataUpdate.NumeroCedula, dataUpdate.notificaciones, dataUpdate.id]
+    console.log('valores de actualizaciòn', dataUpdate)
 
     const userResult = await db.query(updateUserQuery, values);
 
@@ -344,12 +390,12 @@ class UserRepository {
     const updateContratanteQuery = `
       UPDATE contratante SET
         nit = COALESCE($1, nit),
-        sector = COALESCE($2, sector)
+        sector = COALESCE($2, sector),
         sitio_web = COALESCE($3, sitio_web)
-      WHERE id_usuario = $3;
+      WHERE id_usuario = $4;
     `;
 
-    const contratanteValues = [dataUpdate.NIT, dataUpdate.sector, dataUpdate.sitio_web, dataUpdate.id];
+    const contratanteValues = [dataUpdate.documentNumber, dataUpdate.sector, dataUpdate.sitio_web, dataUpdate.id];
     const contratanteResult = await db.query(updateContratanteQuery, contratanteValues);
 
     return {
@@ -368,9 +414,9 @@ class UserRepository {
     // Primero: actualizar los campos de la tabla usuarios
     const updateUserQuery = `
       UPDATE usuarios SET rol = COALESCE($1, rol), contraseña = COALESCE($2, contraseña), nombre_completo = COALESCE($3, nombre_completo), numero_de_telefono = COALESCE($4, numero_de_telefono), numero_de_telefono_2 = COALESCE($5, numero_de_telefono_2),
-       correo_electronico = COALESCE($6, correo_electronico), municipio = COALESCE($7, municipio), genero = COALESCE($8, genero), foto = COALESCE($9, foto), descripcion = COALESCE($10, descripcion), estado_perfil = COALESCE($11, estado_perfil), tipo_documento = COALESCE($12, tipo_documento), documento = COALESCE($13, documento) WHERE id_usuario = $14 RETURNING * `;
+       correo_electronico = COALESCE($6, correo_electronico), municipio = COALESCE($7, municipio), genero = COALESCE($8, genero), foto = COALESCE($9, foto), descripcion = COALESCE($10, descripcion), estado_perfil = COALESCE($11, estado_perfil), tipo_documento = COALESCE($12, tipo_documento), documento = COALESCE($13, documento), notificaciones = COALESCE($14, notificaciones) WHERE id_usuario = $15 RETURNING * `;
 
-    const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.municipio, dataUpdate.genero, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.tipoDocumento, dataUpdate.NumeroCedula,  dataUpdate.id]
+    const values = [dataUpdate.tipoUsuario, dataUpdate.password, dataUpdate.nombreCompleto, dataUpdate.telefono, dataUpdate.telefono2 ?? null, dataUpdate.email, dataUpdate.municipio, dataUpdate.genero, dataUpdate.fotoPerfil ?? null, dataUpdate.descripcion, dataUpdate.estadoPerfil, dataUpdate.tipoDocumento, dataUpdate.NumeroCedula, dataUpdate.notificaciones,  dataUpdate.id]
     console.log('repository', dataUpdate)
 
     const userResult = await db.query(updateUserQuery, values);
@@ -420,9 +466,9 @@ class UserRepository {
     try {
       const put = `
       UPDATE usuarios SET rol = COALESCE($1, rol), contraseña = COALESCE($2, contraseña), nombre_completo = COALESCE($3, nombre_completo), numero_de_telefono = COALESCE($4, numero_de_telefono), numero_de_telefono_2 = COALESCE($5, numero_de_telefono_2),
-       correo_electronico = COALESCE($6, correo_electronico), municipio = COALESCE($7, municipio), genero = COALESCE($8, genero), foto = COALESCE($9, foto), descripcion = COALESCE($10, descripcion), estado_perfil = COALESCE($11, estado_perfil), tipo_documento = COALESCE($12, tipo_documento), documento = COALESCE($13, documento) WHERE id_usuario = $14 `;
+       correo_electronico = COALESCE($6, correo_electronico), municipio = COALESCE($7, municipio), genero = COALESCE($8, genero), foto = COALESCE($9, foto), descripcion = COALESCE($10, descripcion), estado_perfil = COALESCE($11, estado_perfil), tipo_documento = COALESCE($12, tipo_documento), documento = COALESCE($13, documento), notificaciones = COALESCE($14, notificaciones) WHERE id_usuario = $15 `;
 
-    const values = [user.tipoUsuario, user.password, user.nombreCompleto, user.telefono, user.telefono2 ?? null, user.email, user.municipio, user.genero, user.fotoPerfil ?? null, user.descripcion, user.estadoPerfil, user.tipoDocumento, user.NumeroCedula,  user.id]
+    const values = [user.tipoUsuario, user.password, user.nombreCompleto, user.telefono, user.telefono2 ?? null, user.email, user.municipio, user.genero, user.fotoPerfil ?? null, user.descripcion, user.estadoPerfil, user.tipoDocumento, user.NumeroCedula, user.notificaciones,  user.id]
 
 
         const result : any = await db.query(put, values)

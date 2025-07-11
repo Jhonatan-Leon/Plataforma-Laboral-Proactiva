@@ -22,9 +22,9 @@ const updateUser = async (req: Request, res: Response) => {
             res.status(404).json({ error: "Usuario no encontrado" });
             return;
         }
+        console.log('datos de entrada', req.body);
 
         const input = req.body;
-        console.log("Datos de entrada: ", input);   
 
         // Encriptar la contraseña si se envía
         if (input.password) {
@@ -46,8 +46,8 @@ const updateUser = async (req: Request, res: Response) => {
 
         if (rol === "contratante_formal") {
             const dto = new ContratanteDTO(
-                input.NIT ?? existingUser.NIT,
-                input.sector ?? existingUser.sector,
+                input.NIT ?? existingUser.contratante_nit,
+                input.categoria_trabajo ?? existingUser.contratante_sector,
                 input.sitio_web ?? existingUser.sitio_web,
                 input.nombreCompleto ?? existingUser.nombre_completo,
                 input.email ?? existingUser.correo_electronico,
@@ -58,15 +58,16 @@ const updateUser = async (req: Request, res: Response) => {
                 input.fotoPerfil ?? existingUser.fotoPerfil,
                 input.municipio ?? existingUser.municipio,
                 input.tipoDocumento ?? existingUser.tipoDocumento,
-                input.numeroCedula ?? existingUser.documento,
+                input.valor ?? existingUser.documento,
                 input.genero ?? existingUser.genero,
                 input.estadoPerfil ?? existingUser.estadoPerfil,
                 input.tipo_usuario ?? existingUser.tipo_usuario,
+                input.notificaciones ?? existingUser.notificaciones,
                 userId
             );
             result = await UserService.updateContratante(dto);
 
-        } else if (rol === "contratista") {
+        } else if (rol === "contratista") { 
             const dto = new ContratistaDTO(
                 input.HabilidadesTecnicas ?? existingUser.HabilidadesTecnicas,
                 input.HabilidadesSociales ?? existingUser.HabilidadesSociales,
@@ -87,6 +88,7 @@ const updateUser = async (req: Request, res: Response) => {
                 input.genero ?? existingUser.genero,
                 input.estadoPerfil ?? existingUser.estadoPerfil,
                 input.tipo_usuario ?? existingUser.tipo_usuario,
+                input.notificationsEnabled ?? existingUser.notificaciones,
                 userId
             );
             result = await UserService.updateContratista(dto);
@@ -106,10 +108,12 @@ const updateUser = async (req: Request, res: Response) => {
                 input.genero ?? existingUser.genero,
                 input.estadoPerfil ?? existingUser.estadoPerfil,
                 input.tipo_usuario ?? existingUser.tipo_usuario,
+                input.notificaciones ?? existingUser.notificaciones,
                 userId
             );
             result = await UserService.updateInformal(dto);
         }
+
 
         res.status(200).json({
             message: "Usuario actualizado con éxito",

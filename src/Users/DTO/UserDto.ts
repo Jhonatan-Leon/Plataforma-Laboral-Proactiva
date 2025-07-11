@@ -16,9 +16,10 @@ abstract class Usuario {
     protected _genero: TipoGenero;
     protected _estadoPerfil: EstadoUser;
     protected _tipoUsuario: TipoUsuario;
+    protected _notificaciones: boolean;
 
     constructor( nombreCompleto: string, email: string, telefono: string, telefono2: string, password: string, descripcion: string, fotoPerfil: string | File | null, municipio: string, tipoDocumento: TipoDocumento, NumeroCedula: Number, genero: TipoGenero,
-        estadoPerfil: EstadoUser,  tipoUsuario: TipoUsuario, id?: number) { 
+        estadoPerfil: EstadoUser,  tipoUsuario: TipoUsuario, notificaciones: boolean, id?: number) { 
         this._Id = id;
         this._nombreCompleto = nombreCompleto;
         this._email = email;
@@ -33,6 +34,7 @@ abstract class Usuario {
         this._municipio = municipio;
         this._tipoDocumento = tipoDocumento;
         this._NumeroCedula = NumeroCedula;
+        this._notificaciones = notificaciones;
     }
 
     get id():Number | undefined {
@@ -89,6 +91,14 @@ abstract class Usuario {
 
     get tipoDocumento(): TipoDocumento {
         return this._tipoDocumento;
+    }
+
+    get notificaciones(): boolean {
+        return this._notificaciones;
+    }
+
+    set notificaciones(value: boolean){
+        this.notificaciones = value;
     }
 
     set NumeroCedula(value: Number){

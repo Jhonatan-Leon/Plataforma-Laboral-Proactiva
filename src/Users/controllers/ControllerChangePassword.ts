@@ -3,10 +3,10 @@ import { Request, Response } from 'express';
 
 
 const changePassword = async (req: Request, res: Response) => {
-  const userId = req.user.id; 
+  const data = req.user;
   const { currentPassword, newPassword } = req.body;
 
-  console.log('Datos de entrada: ', { userId, currentPassword, newPassword });
+	const userId = data.data?.id;
 
   try {
     await UserService.changePassword(userId, currentPassword, newPassword);

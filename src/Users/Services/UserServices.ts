@@ -105,6 +105,7 @@ class UserService {
         if (foto && typeof foto === 'string' && foto.startsWith('data:image')) {
             updateUser.fotoPerfil = await subirFotoPerfil(foto); 
         }
+
         return await UserRepository.updateContratante(updateUser);
     }
 

@@ -26,7 +26,7 @@ let register = async (req: Request, res: Response) => {
             sector,
             estado_perfil,
             tipo_usuario,
-            NIT,
+            documentNumber,
             HabilidadesTecnicas,
             HabilidadesSociales,
             EstudiosComplementario,
@@ -37,24 +37,24 @@ let register = async (req: Request, res: Response) => {
         } = req.body;
 
        
-
+        const notificaciones = true;
        //Datos de entrada:
        console.log(`Datos de entrada: , Nombre: ${nombreCompleto}, email: ${email}, telefono: ${telefono}, telefono2: ${telefono2}, password: ${password}, descripcion: ${descripcion}, municipio ${municipio}, 
-        tipoDocumento: ${tipoDocumento}, numeroCedula: ${numeroCedula}, NIT: ${NIT}, genero: ${genero}, sector: ${sector}, estadoPerfil: ${estado_perfil}, tipo_usuario: ${tipo_usuario}, NIT, HabilidadesTecnicas: ${HabilidadesTecnicas}, HabilidadesSociales ${HabilidadesSociales}
+        tipoDocumento: ${tipoDocumento}, numeroCedula: ${numeroCedula}, NIT: ${documentNumber}, genero: ${genero}, sector: ${sector}, estadoPerfil: ${estado_perfil}, tipo_usuario: ${tipo_usuario}, NIT, HabilidadesTecnicas: ${HabilidadesTecnicas}, HabilidadesSociales ${HabilidadesSociales}
         , EstudiosComplementario: ${EstudiosComplementario}, experiencia: ${experiencia}, categoria_trabajo: ${categoria_trabajo}`);
         
         let usuarioFinal: any;
         let ID: any;
 
-        if (tipo_usuario.toLowerCase() === "contratante_formal" && NIT && sector ) {
-           usuarioFinal = new ContratanteDTO(NIT, sector, sitio_web, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil , municipio, tipoDocumento, numeroCedula, genero, estado_perfil, tipo_usuario);
+        if (tipo_usuario.toLowerCase() === "contratante_formal" && documentNumber && sector ) {
+           usuarioFinal = new ContratanteDTO(documentNumber, sector, sitio_web, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil , municipio, tipoDocumento, documentNumber, genero, estado_perfil, tipo_usuario, notificaciones);
            ID = await UserService.registerContratante(usuarioFinal);
         } else if (tipo_usuario.toLowerCase() === "contratista" && categoria_trabajo && HabilidadesTecnicas && HabilidadesSociales ) {
-            usuarioFinal = new ContratistaDTO(HabilidadesTecnicas, HabilidadesSociales,EstudiosComplementario,experiencia, categoria_trabajo, Ocupacion, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil,municipio,tipoDocumento,numeroCedula,genero, estado_perfil, tipo_usuario);
+            usuarioFinal = new ContratistaDTO(HabilidadesTecnicas, HabilidadesSociales,EstudiosComplementario,experiencia, categoria_trabajo, Ocupacion, nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil,municipio,tipoDocumento,numeroCedula,genero, estado_perfil, tipo_usuario, notificaciones);
             const result: any = await UserService.registerContratista(usuarioFinal);
             ID = result.idUser;
         } else if(tipo_usuario.toLowerCase() === "contratante_informal") {
-            usuarioFinal = new InformalDTO(nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil , municipio, tipoDocumento,numeroCedula,genero, estado_perfil,tipo_usuario);
+            usuarioFinal = new InformalDTO(nombreCompleto, email, telefono, telefono2, password,descripcion, fotoPerfil , municipio, tipoDocumento,numeroCedula,genero, estado_perfil,tipo_usuario, notificaciones);
             ID = await UserService.registerContratanteInformal(usuarioFinal);
         }else {
             throw new Error("Datos insuficientes para registrar un Contratante o Contratista");
@@ -70,7 +70,7 @@ let register = async (req: Request, res: Response) => {
         }
 
         const accessToken = generateToken(
-            { id: ID , estado_perfil: usuarioFinal.estadoPerfil, rol: usuarioFinal.tipoUsuario }, 
+            { id: ID  , estado_perfil: usuarioFinal.estadoPerfil, rol: usuarioFinal.tipoUsuario }, 
             secretKey, 
             3
         );
@@ -95,13 +95,14 @@ let register = async (req: Request, res: Response) => {
             path: '/'
            
         });
-
         res.status(200).json({ message: "Usuario registrado con éxito", token: accessToken, rol: usuarioFinal.tipoUsuario });
         return;
     } catch (error: any) {
         console.error(error);
-        res.status(500).json({ error: error.message });
-        return;
+        if (!res.headersSent) {
+            res.status(500).json({ error: error.message });
+            return;
+        }
     }
 };
 
