@@ -15,6 +15,7 @@ RUN npm install
 
 # Paso 5: Copiar el resto del código de la aplicación (incluyendo los archivos TypeScript)
 COPY . .
+COPY .env .env
 
 # Paso 6: Compilar el código TypeScript a JavaScript (importante para producción)
 # Asegúrate de que tu package.json tenga un script "build" que haga esto (ej. "tsc")
