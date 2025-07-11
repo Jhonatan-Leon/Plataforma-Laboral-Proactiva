@@ -51,6 +51,7 @@ const getByRol = async (req: Request, res: Response) => {
 
         if(!tipo){
             res.status(404).json({ message: "Usuario no encontrados "})
+            return;
         }
 
         res.status(200).json(tipo)
