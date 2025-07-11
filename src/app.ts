@@ -17,7 +17,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:8000',
-  'https://plp-plataforma-laboral-proactiva.vercel.app'
+  'https://plataforma-laboral-proactiva-web.onrender.com'
 ];
 const corsOptions = {
   origin: function (origin: any, callback: any) {
