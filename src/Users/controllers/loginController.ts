@@ -37,12 +37,11 @@ let loginUser = async (req: Request, res: Response) => {
 
         // Guardar refreshToken en cookie
         res.cookie("refreshToken", refreshToken, { 
-            httpOnly: true,  
+             httpOnly: true,  
             secure: true,    
-            sameSite: "strict",
+            sameSite: "none", // <-- importante para permitir cross-site
             maxAge: 7 * 24 * 60 * 60 * 1000,
-            domain: "localhost",
-            path: '/'
+            path: '/',  
            
         });
 
