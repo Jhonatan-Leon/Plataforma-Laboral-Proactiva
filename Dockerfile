@@ -1,30 +1,21 @@
-# Paso 1: Seleccionar la imagen base
+# Paso 1: Imagen base liviana de Node.js
 FROM node:18-alpine
 
-# Paso 2: Definir el directorio de trabajo dentro del contenedor
+# Paso 2: Establecer directorio de trabajo
 WORKDIR /app
 
-# Paso 3: Copiar los archivos de definición de dependencias
-# Esto permite que Docker cachee la capa de npm install si package.json no cambia
+# Paso 3: Copiar y instalar dependencias
 COPY package.json package-lock.json ./
-COPY .env .env
-
-# Paso 4: Instalar las dependencias de producción
 RUN npm install
 
-
-# Paso 5: Copiar el resto del código de la aplicación (incluyendo los archivos TypeScript)
+# Paso 4: Copiar el resto del código (sin .env)
 COPY . .
-COPY .env .env
 
-# Paso 6: Compilar el código TypeScript a JavaScript (importante para producción)
-# Asegúrate de que tu package.json tenga un script "build" que haga esto (ej. "tsc")
+# Paso 5: Compilar TypeScript
 RUN npm run build
 
-# Paso 7: Exponer el puerto real en el que tu aplicación Node.js escucha
-# ¡Ajusta este puerto al que tu aplicación Node.js realmente usa!
-EXPOSE 5432
+# Paso 6: Exponer el puerto
+EXPOSE 3000
 
-# Paso 8: Comando para iniciar la aplicación compilada cuando el contenedor se ejecute
-# Ejecuta el archivo JavaScript compilado (normalmente en el directorio 'dist')
-CMD ["node", "dist/app.js"]
+# Paso 7: Comando de arranque
+CMD ["node", "dist/index.js"]
